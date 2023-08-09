@@ -17,14 +17,14 @@ CREATE TABLE `users`
 CREATE TABLE `vehicles`
 (
     `id`                   int(11) PRIMARY KEY AUTO_INCREMENT,
-    `maker`                varchar(20)                                                   NOT NULL,
+    `make`                varchar(20)                                                   NOT NULL,
     `model`                varchar(20)                                                   NOT NULL,
     `licence_plate_number` varchar(20)                                                   NOT NULL,
     `type`                 enum ('SUV','Saloon','Hatchback','Cabriolet','Station Wagon') NOT NULL,
     `color`                varchar(20)                                                   NOT NULL,
     `year_of_production`   varchar(10)                                                   NOT NULL,
-    `user_id`              int(11)                                                       NOT NULL,
-    CONSTRAINT `vehicles_users_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+    `owner_id`              int(11)                                                       NOT NULL,
+    CONSTRAINT `vehicles_users_user_id_fk` FOREIGN KEY (`owner_id`) REFERENCES `users` (`id`)
 );
 
 CREATE TABLE `travels`

@@ -1,4 +1,4 @@
 package com.example.carpooling.repositories.contracts;
 
-public class TravelRepository {
+public interface TravelRepository {
 }
