@@ -76,6 +76,8 @@ create table feedbacks
     constraint feedback_travels_travel_id_fk
         foreign key (travel_id) references travels (travel_id),
     constraint feedback_users_user_id_fk
-        foreign key (user_id) references users (user_id)
+        foreign key (user_id) references users (user_id),
+    constraint unique_user_id_travel_id
+        unique (user_id, travel_id)
 );
 
