@@ -1,4 +1,6 @@
-create or replace table coordinates
+CREATE SCHEMA IF NOT EXISTS `carpooling`;
+USE `carpooling`;
+create table coordinates
 (
     coordinate_id int auto_increment
         primary key,
@@ -6,7 +8,7 @@ create or replace table coordinates
     longitude     varchar(30) not null
 );
 
-create or replace table users
+create table users
 (
     user_id      int auto_increment
         primary key,
@@ -26,7 +28,7 @@ create or replace table users
         unique (phone_number)
 );
 
-create or replace table vehicles
+create table vehicles
 (
     vehicle_id           int auto_increment
         primary key,
@@ -41,7 +43,7 @@ create or replace table vehicles
         foreign key (user_id) references users (user_id)
 );
 
-create or replace table travels
+create table travels
 (
     travel_id      int auto_increment
         primary key,
@@ -63,7 +65,7 @@ create or replace table travels
         foreign key (vehicle_id) references vehicles (vehicle_id)
 );
 
-create or replace table feedback
+create table feedbacks
 (
     feedback_id int auto_increment
         primary key,
