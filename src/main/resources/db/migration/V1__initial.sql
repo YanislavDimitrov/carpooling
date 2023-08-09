@@ -1,6 +1,3 @@
-CREATE DATABASE IF NOT EXISTS carpooling;
-USE carpooling;
-
 CREATE TABLE `users`
 (
     `id`           int(11) PRIMARY KEY AUTO_INCREMENT,

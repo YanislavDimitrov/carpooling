@@ -9,7 +9,7 @@ public interface UserService {
 
     User getById(Long id);
 
-    public void delete(Long id);
+    void delete(Long id);
 
-    public Long count();
+    Long count();
 }

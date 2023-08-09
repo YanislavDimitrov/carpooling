@@ -32,10 +32,14 @@ public class UserServiceImpl implements UserService {
     }
 
     public void delete(Long id) {
-        this.userRepository.deleteById(id);
+        this.userRepository.deleteUserById(id);
     }
 
     public Long count() {
         return this.userRepository.count();
+    }
+
+    public List<User> getByFirstName(String firstName) {
+        return this.userRepository.findAllByFirstNameEquals(firstName);
     }
 }
