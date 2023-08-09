@@ -35,3 +35,20 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# IntelliJ IDEA
+/**/out/
+
+# User-specific stuff
+/**/.idea/**/workspace.xml
+/**/.idea/**/tasks.xml
+/**/.idea/**/usage.statistics.xml
+/**/.idea/**/dictionaries
+/**/.idea/**/shelf
+
+# Generated files
+/**/.idea/**/contentModel.xml
+/**/.idea/**/uiDesigner.xml
+
+# Mac OS
+.DS_Store
