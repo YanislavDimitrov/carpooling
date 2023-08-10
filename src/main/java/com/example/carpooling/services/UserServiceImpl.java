@@ -5,6 +5,7 @@ import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.services.contracts.UserService;
 import jakarta.persistence.EntityExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,5 +42,9 @@ public class UserServiceImpl implements UserService {
 
     public List<User> getByFirstName(String firstName) {
         return this.userRepository.findAllByFirstNameEquals(firstName);
+    }
+
+    public List<User> findByCriteria(String firstName, String lastName, String username, String email, String phoneNumber, Sort sort) {
+        return this.userRepository.findByCriteria(firstName, lastName, username, email, phoneNumber, sort);
     }
 }
