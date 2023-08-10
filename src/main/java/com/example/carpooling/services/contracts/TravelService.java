@@ -20,13 +20,13 @@ public interface TravelService {
 
     void create(Travel travel);
 
-    void update(Travel travel);
+    void update(Long id);
 
-    void delete(Travel travel);
+    void delete(Long id);
 
-    void completeTravel(Travel travel);
+    void completeTravel(Long id);
 
-    void cancelTravel(Travel travel);
+    void cancelTravel(Long id);
 
 
 }

@@ -38,6 +38,7 @@ public class Travel {
     private User driver;
     @ManyToOne
     private Vehicle vehicle;
+
     @Enumerated(EnumType.STRING)
     private TravelStatus status;
 
