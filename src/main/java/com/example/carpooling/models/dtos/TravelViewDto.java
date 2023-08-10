@@ -2,18 +2,26 @@ package com.example.carpooling.models.dtos;
 
 import com.example.carpooling.models.Coordinate;
 import com.example.carpooling.models.enums.TravelStatus;
+import jakarta.validation.constraints.NotEmpty;
 
 import java.time.LocalDateTime;
 
 public class TravelViewDto {
+    @NotEmpty(message = "Driver  field cannot be empty!")
     private String driverName;
+    @NotEmpty(message = "Vehicle field cannot be empty!")
     private String vehicle;
+    @NotEmpty(message = "Free Spots field cannot be empty!")
     private Short freeSpots;
+    @NotEmpty(message = "Departure Time cannot be empty")
     private LocalDateTime departureTime;
-    private String comment;
-    private Coordinate startPoint;
-    private Coordinate endPoint;
 
+    private String comment;
+    @NotEmpty(message = "Starting point cannot be empty!")
+    private Coordinate startPoint;
+    @NotEmpty(message = "End Point field cannot be empty!")
+    private Coordinate endPoint;
+    @NotEmpty(message = "Travel Status cannot be empty!")
     private TravelStatus status;
 
     public TravelViewDto() {

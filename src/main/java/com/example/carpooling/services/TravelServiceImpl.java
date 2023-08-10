@@ -39,30 +39,16 @@ public class TravelServiceImpl implements TravelService {
     }
 
     @Override
-    public List<Travel> getByDriver(Long id) {
-        User user = userRepository
-                .findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format(USER_NOT_FOUND, id)));
-        return travelRepository.findAllByDriverIs(user);
-    }
-
-    @Override
     public List<Travel> findByCriteria(String driver, TravelStatus status, Short freeSpots, LocalDateTime departureTime, Sort sort) {
         return travelRepository.findByCriteria(driver, status, freeSpots, departureTime, sort);
     }
-
     public List<Travel> findAll(Sort sort) {
         return travelRepository.findAll(sort);
     }
 
     @Override
-    public List<Travel> getByStatus(TravelStatus status) {
-        return travelRepository.findAllByStatus(status);
-    }
-
-    @Override
-    public List<Travel> getByFreeSpots(int freeSpots) {
-        return travelRepository.findAllByFreeSpots(freeSpots);
+    public Long count() {
+        return travelRepository.count();
     }
 
     @Override

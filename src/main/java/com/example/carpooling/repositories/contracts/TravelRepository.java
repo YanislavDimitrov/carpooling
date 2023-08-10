@@ -17,12 +17,6 @@ import java.util.List;
 @Repository
 public interface TravelRepository extends JpaRepository<Travel, Long> {
 
-    List<Travel> findAllByDriverIs(User user) throws EntityNotFoundException;
-
-    List<Travel> findAllByStatus(TravelStatus status) throws EntityNotFoundException;
-
-    List<Travel> findAllByFreeSpots(int freeSpots) throws EntityNotFoundException;
-
     @Modifying
     @Query("UPDATE Travel AS t SET t.status='INACTIVE' WHERE t.id = :id")
     void delete(@Param("id") Long id) throws EntityNotFoundException;

@@ -14,8 +14,6 @@ public interface TravelService {
 
     Travel getById(Long id);
 
-    List<Travel> getByDriver(Long id);
-
     List<Travel> findByCriteria(String driver,
                                 TravelStatus status,
                                 Short freeSpots,
@@ -23,9 +21,7 @@ public interface TravelService {
                                 Sort sort);
     List<Travel> findAll(Sort sort);
 
-    List<Travel> getByStatus(TravelStatus status);
-
-    List<Travel> getByFreeSpots(int freeSpots);
+    Long count ();
 
     void create(Travel travel);
 
