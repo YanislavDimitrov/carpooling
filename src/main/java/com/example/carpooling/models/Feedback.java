@@ -16,14 +16,10 @@ public class Feedback {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "creator_id")
     @ManyToOne
-    @JoinColumn(name = "creator_id", referencedColumnName = "user_id")
     private User creator;
 
-    @Column(name = "travel_id")
     @ManyToOne
-    @JoinColumn(name = "travel_id", referencedColumnName = "id")
     private Travel travel;
     @Column(name = "comment")
     private String comment;

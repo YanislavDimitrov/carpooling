@@ -35,14 +35,11 @@ public class Travel {
     @Column(name = "comment")
     private String comment;
     @ManyToOne
-    @JoinColumn(name = "driver_id", referencedColumnName = "user_id")
     private User driver;
     @ManyToOne
-    @JoinColumn(name = "vehicle_id" , referencedColumnName = "vehicle_id")
     private Vehicle vehicle;
-    @Column(name = "status")
     @Enumerated(EnumType.STRING)
-    private TravelStatus travelStatus;
+    private TravelStatus status;
 
 
 }

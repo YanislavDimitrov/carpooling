@@ -1,6 +1,5 @@
-package com.example.carpooling.controllers;
+package com.example.carpooling.controllers.rest;
 
-import com.example.carpooling.helpers.UserMapper;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.dtos.UserViewDto;
 import com.example.carpooling.repositories.contracts.UserRepository;
@@ -19,14 +18,11 @@ import java.util.stream.Collectors;
 @RequestMapping("api/users")
 public class UserRestController {
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
-
     private final ModelMapper modelMapper;
 
     @Autowired
-    public UserRestController(UserRepository userRepository, UserMapper userMapper, ModelMapper modelMapper) {
+    public UserRestController(UserRepository userRepository, ModelMapper modelMapper) {
         this.userRepository = userRepository;
-        this.userMapper = userMapper;
         this.modelMapper = modelMapper;
     }
 
