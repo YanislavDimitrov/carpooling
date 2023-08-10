@@ -10,8 +10,8 @@ public class UserMapper {
     public UserViewDto toViewDto(User user) {
         UserViewDto dto = new UserViewDto();
         dto.setId(user.getId());
-        dto.setFirstName(user.getFirstName());
-        dto.setLastName(user.getLastName());
+//        dto.setFirstName(user.getFirstName());
+//        dto.setLastName(user.getLastName());
         dto.setUserName(user.getUserName());
         dto.setPhoneNumber(user.getPhoneNumber());
         dto.setEmail(user.getEmail());

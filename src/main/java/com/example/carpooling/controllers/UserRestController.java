@@ -4,6 +4,7 @@ import com.example.carpooling.helpers.UserMapper;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.dtos.UserViewDto;
 import com.example.carpooling.repositories.contracts.UserRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,10 +21,13 @@ public class UserRestController {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
+    private final ModelMapper modelMapper;
+
     @Autowired
-    public UserRestController(UserRepository userRepository, UserMapper userMapper) {
+    public UserRestController(UserRepository userRepository, UserMapper userMapper, ModelMapper modelMapper) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping()
@@ -51,6 +55,10 @@ public class UserRestController {
             filteredUsers = userRepository.findAll(sort);
         }
 
-        return filteredUsers.stream().map(userMapper::toViewDto).collect(Collectors.toList());
+        return filteredUsers.stream().map(user -> {
+            UserViewDto dto = this.modelMapper.map(user, UserViewDto.class);
+            dto.setFullName(String.format("%s %s", user.getFirstName(), user.getLastName()));
+            return dto;
+        }).collect(Collectors.toList());
     }
 }
