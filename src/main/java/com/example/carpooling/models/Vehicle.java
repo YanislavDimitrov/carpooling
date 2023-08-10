@@ -7,9 +7,9 @@ import lombok.Setter;
 
 @Table(name = "vehicles")
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
+//@Getter
+//@Setter
+//@NoArgsConstructor
 public class Vehicle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,4 +27,63 @@ public class Vehicle {
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;
+
+    public Vehicle() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getMake() {
+        return make;
+    }
+
+    public void setMake(String make) {
+        this.make = make;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public String getLicencePlateNumber() {
+        return licencePlateNumber;
+    }
+
+    public void setLicencePlateNumber(String licencePlateNumber) {
+        this.licencePlateNumber = licencePlateNumber;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public String getYearOfProduction() {
+        return yearOfProduction;
+    }
+
+    public void setYearOfProduction(String yearOfProduction) {
+        this.yearOfProduction = yearOfProduction;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
 }

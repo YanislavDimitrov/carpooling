@@ -1,15 +1,16 @@
 package com.example.carpooling.controllers.rest;
 
+import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.dtos.UserViewDto;
 import com.example.carpooling.repositories.contracts.UserRepository;
+import com.example.carpooling.services.contracts.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,12 +18,15 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("api/users")
 public class UserRestController {
+    public static final String USER_NOT_FOUND = "User with username %s was not found!";
     private final UserRepository userRepository;
+    private final UserService userService;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public UserRestController(UserRepository userRepository, ModelMapper modelMapper) {
+    public UserRestController(UserRepository userRepository, UserService userService, ModelMapper modelMapper) {
         this.userRepository = userRepository;
+        this.userService = userService;
         this.modelMapper = modelMapper;
     }
 
@@ -56,5 +60,17 @@ public class UserRestController {
             dto.setFullName(String.format("%s %s", user.getFirstName(), user.getLastName()));
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    @GetMapping("/{username}")
+    public UserViewDto getByUsername(@PathVariable String username) {
+        try {
+            User user = userService.getByUsername(username);
+            UserViewDto userViewDto = this.modelMapper.map(user, UserViewDto.class);
+            userViewDto.setFullName(String.format("%s %s", user.getFirstName(), user.getLastName()));
+            return userViewDto;
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(USER_NOT_FOUND, username));
+        }
     }
 }

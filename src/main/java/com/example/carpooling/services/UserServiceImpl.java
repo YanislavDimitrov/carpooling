@@ -1,5 +1,6 @@
 package com.example.carpooling.services;
 
+import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.models.User;
 import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.services.contracts.UserService;
@@ -30,6 +31,11 @@ public class UserServiceImpl implements UserService {
             throw new EntityExistsException("User");
         }
         return optionalUser.get();
+    }
+
+    @Override
+    public User getByUsername(String username) {
+        return userRepository.findByUserName(username);
     }
 
     public void delete(Long id) {

@@ -1,5 +1,6 @@
 package com.example.carpooling.repositories.contracts;
 
+import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.models.User;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,4 +33,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
             @Param("phoneNumber") String phoneNumber,
             Sort sort
     );
+    User findByUserName(String username) throws EntityNotFoundException;
 }
