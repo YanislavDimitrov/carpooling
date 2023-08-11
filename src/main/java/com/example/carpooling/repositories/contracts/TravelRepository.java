@@ -37,4 +37,5 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
             @Param("departureTime") LocalDateTime departureTime,
             Sort sort
     );
+
 }

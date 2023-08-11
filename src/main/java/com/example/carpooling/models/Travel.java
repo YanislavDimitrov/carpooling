@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Table(name = "travels")
 @Entity
@@ -41,6 +42,8 @@ public class Travel {
 
     @Enumerated(EnumType.STRING)
     private TravelStatus status;
+    @ManyToMany
+    private List<User> applicants;
 
     public Travel() {
     }

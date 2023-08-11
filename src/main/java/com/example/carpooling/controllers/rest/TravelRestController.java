@@ -8,6 +8,7 @@ import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.dtos.TravelViewDto;
 import com.example.carpooling.models.enums.TravelStatus;
+import com.example.carpooling.services.BingMapsService;
 import com.example.carpooling.services.contracts.TravelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -29,12 +30,15 @@ public class TravelRestController {
     private final TravelMapper travelMapper;
     private final AuthenticationHelper authenticationHelper;
 
+    private final BingMapsService bingMapsService;
+
 
     @Autowired
-    public TravelRestController(TravelService travelService, TravelMapper travelMapper, AuthenticationHelper authenticationHelper) {
+    public TravelRestController(TravelService travelService, TravelMapper travelMapper, AuthenticationHelper authenticationHelper, BingMapsService bingMapsService) {
         this.travelService = travelService;
         this.travelMapper = travelMapper;
         this.authenticationHelper = authenticationHelper;
+        this.bingMapsService = bingMapsService;
     }
 
     @GetMapping
@@ -83,5 +87,17 @@ public class TravelRestController {
         } catch (AuthenticationFailureException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, AUTHENTICATION_ERROR);
         }
+    }
+
+    @GetMapping("/travel-distance")
+    public String getTravelDistance(@RequestParam String origin, @RequestParam String destination) {
+        return bingMapsService.getTravelDistance(origin, destination);
+    }
+
+    @GetMapping("/location-coordinates")
+    public String getLocationCoordinates(@RequestParam String address) {
+        String locationJson = bingMapsService.getLocationJson(address);
+        double[] coordinates = bingMapsService.parseCoordinates(locationJson);
+        return "Latitude: " + coordinates[0] + ", Longitude: " + coordinates[1];
     }
 }
