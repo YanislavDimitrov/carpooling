@@ -15,8 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.carpooling.helpers.CustomMessages.AUTHORIZATION_MESSAGE;
+
 @Service
 public class UserServiceImpl implements UserService {
+
     private final UserRepository userRepository;
 
     @Autowired
@@ -44,7 +47,8 @@ public class UserServiceImpl implements UserService {
         }
         return user;
     }
-@Transactional
+
+    @Transactional
     public void delete(Long id, User loggedUser) {
 
         Optional<User> userToDelete = this.userRepository.findById(id);
@@ -57,12 +61,11 @@ public class UserServiceImpl implements UserService {
             this.userRepository.delete(id);
         } else {
             throw new AuthorizationException(
-                    String.format("User with username \"%s\" not authorized to delete user with id %d"
+                    String.format(AUTHORIZATION_MESSAGE
                             , loggedUser.getUserName()
                             , id));
         }
     }
-
 
     public Long count() {
         return this.userRepository.count();
@@ -73,7 +76,6 @@ public class UserServiceImpl implements UserService {
         checkForDuplicateUser(user);
         return this.userRepository.save(user);
     }
-
 
     @Override
     public List<User> findAll(Sort sort) {
