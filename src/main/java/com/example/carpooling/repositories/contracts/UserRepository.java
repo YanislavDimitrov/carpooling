@@ -18,7 +18,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Modifying
     @Query("UPDATE User AS u SET u.status='DELETED' WHERE u.id = :id")
-    void deleteUserById(@Param("id") Long id);
+    void delete(@Param("id") Long id);
 
     @Query("SELECT u FROM User u WHERE " +
             "(:firstName IS NULL OR u.firstName LIKE %:firstName%) " +

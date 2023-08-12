@@ -1,15 +1,16 @@
 package com.example.carpooling.services;
 
+import com.example.carpooling.exceptions.AuthorizationException;
 import com.example.carpooling.exceptions.DuplicateEntityException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.models.User;
-import com.example.carpooling.models.dtos.UserCreateDto;
+import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.services.contracts.UserService;
-import jakarta.persistence.EntityExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -43,10 +44,25 @@ public class UserServiceImpl implements UserService {
         }
         return user;
     }
+@Transactional
+    public void delete(Long id, User loggedUser) {
 
-    public void delete(Long id) {
-        this.userRepository.deleteUserById(id);
+        Optional<User> userToDelete = this.userRepository.findById(id);
+
+        if (userToDelete.isEmpty()) {
+            throw new EntityNotFoundException("User", id);
+        }
+
+        if (isAdmin(loggedUser) || isSameUser(loggedUser, userToDelete.get())) {
+            this.userRepository.delete(id);
+        } else {
+            throw new AuthorizationException(
+                    String.format("User with username \"%s\" not authorized to delete user with id %d"
+                            , loggedUser.getUserName()
+                            , id));
+        }
     }
+
 
     public Long count() {
         return this.userRepository.count();
@@ -85,5 +101,13 @@ public class UserServiceImpl implements UserService {
         if (!userWithPhoneNumber.isEmpty()) {
             throw new DuplicateEntityException("User", "phone number", user.getPhoneNumber());
         }
+    }
+
+    private boolean isAdmin(User loggedUser) {
+        return loggedUser.getRole().equals(UserRole.ADMIN);
+    }
+
+    private static boolean isSameUser(User loggedUser, User userToDelete) {
+        return userToDelete.getUserName().equals(loggedUser.getUserName());
     }
 }

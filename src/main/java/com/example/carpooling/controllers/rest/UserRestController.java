@@ -1,15 +1,17 @@
 package com.example.carpooling.controllers.rest;
 
+import com.example.carpooling.exceptions.AuthenticationFailureException;
 import com.example.carpooling.exceptions.DuplicateEntityException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
+import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.dtos.UserCreateDto;
 import com.example.carpooling.models.dtos.UserViewDto;
-import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.services.contracts.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -22,11 +24,13 @@ import java.util.stream.Collectors;
 public class UserRestController {
     private final UserService userService;
     private final ModelMapper modelMapper;
+    private final AuthenticationHelper authenticationHelper;
 
     @Autowired
-    public UserRestController(UserService userService, ModelMapper modelMapper) {
+    public UserRestController(UserService userService, ModelMapper modelMapper, AuthenticationHelper authenticationHelper) {
         this.userService = userService;
         this.modelMapper = modelMapper;
+        this.authenticationHelper = authenticationHelper;
     }
 
     /**
@@ -123,6 +127,16 @@ public class UserRestController {
             return this.modelMapper.map(this.userService.create(user), UserViewDto.class);
         } catch (DuplicateEntityException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(headers);
+            this.userService.delete(id,loggedUser);
+        } catch (AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
 }

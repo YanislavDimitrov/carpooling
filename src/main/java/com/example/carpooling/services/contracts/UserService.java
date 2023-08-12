@@ -1,7 +1,6 @@
 package com.example.carpooling.services.contracts;
 
 import com.example.carpooling.models.User;
-import com.example.carpooling.models.dtos.UserCreateDto;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
@@ -12,7 +11,7 @@ public interface UserService {
     User getById(Long id);
     User getByUsername(String username);
 
-    void delete(Long id);
+    void delete(Long id, User loggedUser);
 
     Long count();
 
