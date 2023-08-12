@@ -34,6 +34,8 @@ public class User {
     private UserStatus status;
 
     public User() {
+        this.role = UserRole.USER;
+        this.status = UserStatus.ACTIVE;
     }
 
     public Long getId() {

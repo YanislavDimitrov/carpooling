@@ -1,33 +1,17 @@
 package com.example.carpooling.models.dtos;
 
-import com.example.carpooling.models.enums.UserRole;
-import com.example.carpooling.models.enums.UserStatus;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 //@Getter
 //@Setter
 //@NoArgsConstructor
-public class UserViewDto {
-    private Long id;
+public class UserCreateDto {
     private String firstName;
     private String lastName;
     private String userName;
+    private String password;
     private String email;
     private String phoneNumber;
-    private UserRole role;
-    private UserStatus status;
 
-    public UserViewDto() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public UserCreateDto() {
     }
 
     public String getFirstName() {
@@ -54,6 +38,14 @@ public class UserViewDto {
         this.userName = userName;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -68,21 +60,5 @@ public class UserViewDto {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-
-    public UserRole getRole() {
-        return role;
-    }
-
-    public void setRole(UserRole role) {
-        this.role = role;
-    }
-
-    public UserStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(UserStatus status) {
-        this.status = status;
     }
 }
