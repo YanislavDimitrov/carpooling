@@ -33,5 +33,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
             @Param("phoneNumber") String phoneNumber,
             Sort sort
     );
-    User findByUserName(String username) throws EntityNotFoundException;
+    User findByUserName(String username);
 }

@@ -28,14 +28,18 @@ public class UserServiceImpl implements UserService {
     public User getById(Long id) {
         Optional<User> optionalUser = this.userRepository.findById(id);
         if (optionalUser.isEmpty()) {
-            throw new EntityExistsException("User");
+            throw new EntityNotFoundException("User");
         }
         return optionalUser.get();
     }
 
     @Override
     public User getByUsername(String username) {
-        return userRepository.findByUserName(username);
+        User user = userRepository.findByUserName(username);
+        if (user == null) {
+            throw new EntityNotFoundException("User", "username", username);
+        }
+        return user;
     }
 
     public void delete(Long id) {
