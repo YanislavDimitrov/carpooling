@@ -36,6 +36,21 @@ public class TravelMapper {
         travelViewDto.setDeparturePoint(travel.getDeparturePoint());
         travelViewDto.setFreeSpots(travel.getFreeSpots());
         travelViewDto.setDistance(travel.getDistance());
+        int wholeNumberIndex = travel.getTravelDuration().indexOf(" ");
+        double durationAsDouble = Double.parseDouble(travel.getTravelDuration().substring(0,wholeNumberIndex));
+        int hours = (int) (durationAsDouble / 60);
+        double minutes = durationAsDouble - hours * 60;
+        if (hours > 0 && minutes > 0) {
+            travelViewDto.setDuration(String.format("%d hours and %.2f minutes", hours, minutes));
+        }
+        if (hours > 0 && minutes == 0) {
+            travelViewDto.setDuration(String.format("%d hours", hours));
+        }
+        if (hours < 0 && minutes > 0) {
+            travelViewDto.setDuration(String.format("%.2f minutes", minutes));
+        }
+        travelViewDto.setArrivalTime(travel.getEstimatedTimeOfArrival());
+
         travelViewDto.setRequests(travel.
                 getTravelRequests()
                 .stream()

@@ -39,8 +39,12 @@ public class Travel {
 
     @Column(name = "distance")
     private String distance;
+    @Column(name = "duration")
+    private String travelDuration;
+@Column(name = "arrival_time")
+    private LocalDateTime estimatedTimeOfArrival;
     @JsonIgnore
-    @OneToMany(mappedBy = "travel",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "travel", fetch = FetchType.EAGER)
     private List<TravelRequest> travelRequests;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
@@ -51,26 +55,15 @@ public class Travel {
 
     public Travel() {
         travelRequests = new ArrayList<>();
-        passengers=new ArrayList<>();
+        passengers = new ArrayList<>();
     }
 
-    public List<TravelRequest> getTravelRequests() {
-        return travelRequests;
+    public LocalDateTime getEstimatedTimeOfArrival() {
+        return estimatedTimeOfArrival;
     }
 
-    public void setTravelRequests(List<TravelRequest> travelRequests) {
-        this.travelRequests = travelRequests;
-    }
-
-
-
-
-    public String getDistance() {
-        return distance;
-    }
-
-    public void setDistance(String distance) {
-        this.distance = distance;
+    public void setEstimatedTimeOfArrival(LocalDateTime estimatedTimeOfArrival) {
+        this.estimatedTimeOfArrival = estimatedTimeOfArrival;
     }
 
     public Long getId() {
@@ -97,11 +90,11 @@ public class Travel {
         this.arrivalPoint = arrivalPoint;
     }
 
-    public short getFreeSpots() {
+    public Short getFreeSpots() {
         return freeSpots;
     }
 
-    public void setFreeSpots(short freeSpots) {
+    public void setFreeSpots(Short freeSpots) {
         this.freeSpots = freeSpots;
     }
 
@@ -143,5 +136,37 @@ public class Travel {
 
     public void setStatus(TravelStatus status) {
         this.status = status;
+    }
+
+    public String getDistance() {
+        return distance;
+    }
+
+    public void setDistance(String distance) {
+        this.distance = distance;
+    }
+
+    public String getTravelDuration() {
+        return travelDuration;
+    }
+
+    public void setTravelDuration(String travelDuration) {
+        this.travelDuration = travelDuration;
+    }
+
+    public List<TravelRequest> getTravelRequests() {
+        return travelRequests;
+    }
+
+    public void setTravelRequests(List<TravelRequest> travelRequests) {
+        this.travelRequests = travelRequests;
+    }
+
+    public List<User> getPassengers() {
+        return passengers;
+    }
+
+    public void setPassengers(List<User> passengers) {
+        this.passengers = passengers;
     }
 }

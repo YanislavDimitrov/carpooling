@@ -65,7 +65,7 @@ public class BingMapsService {
                 .getAsJsonObject().getAsJsonArray("results").get(0)
                 .getAsJsonObject().get("travelDuration").getAsDouble();
 
-        return "Travel Distance: " + travelDistance + " km, Travel Duration: " + travelDuration + " minutes";
+        return  travelDistance + " km" + travelDuration + " minutes";
     }
 
 

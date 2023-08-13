@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -67,13 +68,14 @@ public class TravelServiceImpl implements TravelService {
      *               of Microsoft Bing Maps External API method.
      *               On the second row we are extracting the coordinates of the departure location
      *               again using external API endpoint and this is repeating for the arrival point.
-     *
+     *               <p>
      *               When we have extracted coordinates for both the departure and arrival locations
      *               we can calculate the distance and the estimated time duration between them using
      *               Microsft Bing Maps API external endpoint for calculation.
+     *               After that we are extracting the distance in one variable and the duration in other variable.
      */
     @Override
-    public void create(Travel travel , User driver) {
+    public void create(Travel travel, User driver) {
         String departurePoint = bingMapsService.getLocationJson(travel.getDeparturePoint());
         double[] coordinatesOfDeparturePoint = bingMapsService.parseCoordinates(departurePoint);
         double departureLatitude = coordinatesOfDeparturePoint[0];
@@ -86,7 +88,20 @@ public class TravelServiceImpl implements TravelService {
 
         String departurePointInCoordinates = String.format("%f,%f", departureLatitude, departureLongitude);
         String arrivalPointInCoordinates = String.format("%f,%f", arrivalLatitude, arrivalLongitude);
-        travel.setDistance(bingMapsService.getTravelDistance(departurePointInCoordinates,arrivalPointInCoordinates));
+
+        int intervalBetweenDurationAndDistance = bingMapsService.getTravelDistance(
+                departurePointInCoordinates, arrivalPointInCoordinates).indexOf('m');
+
+        travel.setTravelDuration(bingMapsService.getTravelDistance(
+                        departurePointInCoordinates, arrivalPointInCoordinates)
+                .substring(intervalBetweenDurationAndDistance + 1));
+        travel.setDistance(bingMapsService.getTravelDistance(departurePointInCoordinates, arrivalPointInCoordinates)
+                .substring(0, intervalBetweenDurationAndDistance + 1));
+        int indexOfMinutes = travel.getTravelDuration().indexOf('m');
+        double minutesToAdd = Double.parseDouble(travel.getTravelDuration().substring(0, indexOfMinutes - 1));
+        long secondsToAdd = (long) (minutesToAdd * 60);
+        LocalDateTime arrivalTime = travel.getDepartureTime().plusSeconds(secondsToAdd);
+        travel.setEstimatedTimeOfArrival(arrivalTime);
         travel.setStatus(TravelStatus.ACTIVE);
         travel.setDriver(driver);
         travelRepository.save(travel);

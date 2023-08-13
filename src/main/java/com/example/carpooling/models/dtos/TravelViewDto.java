@@ -10,8 +10,7 @@ import java.util.List;
 public class TravelViewDto {
     @NotEmpty(message = "Driver  field cannot be empty!")
     private String driverName;
-    @NotEmpty(message = "Vehicle field cannot be empty!")
-    private String vehicle;
+
     @NotEmpty(message = "Free Spots field cannot be empty!")
     private Short freeSpots;
     @NotEmpty(message = "Departure point cannot be empty!")
@@ -21,13 +20,32 @@ public class TravelViewDto {
     @NotEmpty(message = "Departure Time cannot be empty")
     private LocalDateTime departureTime;
 
-    private String distance ;
+    private String distance;
+    private String duration;
+
+    private LocalDateTime arrivalTime;
     private String comment;
 
     private TravelStatus status;
     private List<TravelRequestDto> requests;
 
     public TravelViewDto() {
+    }
+
+    public LocalDateTime getArrivalTime() {
+        return arrivalTime;
+    }
+
+    public void setArrivalTime(LocalDateTime arrivalTime) {
+        this.arrivalTime = arrivalTime;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
     }
 
     public String getDistance() {
@@ -94,13 +112,7 @@ public class TravelViewDto {
         this.driverName = driverName;
     }
 
-    public String getVehicle() {
-        return vehicle;
-    }
 
-    public void setVehicle(String vehicle) {
-        this.vehicle = vehicle;
-    }
 
     public TravelStatus getStatus() {
         return status;
