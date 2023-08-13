@@ -10,10 +10,13 @@ import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.dtos.TravelCreationOrUpdateDto;
 import com.example.carpooling.models.dtos.TravelViewDto;
+import com.example.carpooling.models.dtos.UserViewDto;
+import com.example.carpooling.models.enums.TravelRequestStatus;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.services.BingMapsService;
 import com.example.carpooling.services.contracts.TravelRequestService;
 import com.example.carpooling.services.contracts.TravelService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +26,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/travels")
@@ -36,16 +40,18 @@ public class TravelRestController {
     private final TravelService travelService;
     private final TravelRequestService travelRequestService;
     private final TravelMapper travelMapper;
+    private final ModelMapper modelMapper;
     private final AuthenticationHelper authenticationHelper;
 
     private final BingMapsService bingMapsService;
 
 
     @Autowired
-    public TravelRestController(TravelService travelService, TravelRequestService travelRequestService, TravelMapper travelMapper, AuthenticationHelper authenticationHelper, BingMapsService bingMapsService) {
+    public TravelRestController(TravelService travelService, TravelRequestService travelRequestService, TravelMapper travelMapper, ModelMapper modelMapper, AuthenticationHelper authenticationHelper, BingMapsService bingMapsService) {
         this.travelService = travelService;
         this.travelRequestService = travelRequestService;
         this.travelMapper = travelMapper;
+        this.modelMapper = modelMapper;
         this.authenticationHelper = authenticationHelper;
         this.bingMapsService = bingMapsService;
     }
@@ -151,6 +157,30 @@ public class TravelRestController {
         } catch (AuthorizationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, NOT_AUTHORIZED);
         }
+    }
+
+    @GetMapping("/{id}/passengers")
+    public List<UserViewDto> getPassengersForTravel(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
+        try {
+            User userToAuthenticate = authenticationHelper.tryGetUser(headers);
+            Travel travel = travelService.getById(id);
+            List<User> passengers = travel.getTravelRequests().stream()
+                    .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.ACCEPTED)
+                    .map(TravelRequest::getPassenger)
+                    .collect(Collectors.toList());
+
+        return passengers.stream().map(user -> {
+            UserViewDto dto = this.modelMapper.map(user, UserViewDto.class);
+            dto.setFullName(String.format("%s %s", user.getFirstName(), user.getLastName()));
+            return dto;
+        }).collect(Collectors.toList());
+
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(TRAVEL_NOT_FOUND, id));
+        } catch (AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        }
+
     }
 
     @PostMapping("/{id}/apply")

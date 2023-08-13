@@ -56,7 +56,7 @@ public class TravelRequestServiceImpl implements TravelRequestService {
     public TravelRequest createRequest(Travel travel, User user) {
         TravelRequest travelRequest = new TravelRequest();
         travelRequest.setTravel(travel);
-        travelRequest.setUser(user);
+        travelRequest.setPassenger(user);
         travelRequest.setStatus(TravelRequestStatus.PENDING);
         travelRequestRepository.save(travelRequest);
         return travelRequest;
@@ -97,7 +97,7 @@ public class TravelRequestServiceImpl implements TravelRequestService {
      */
     @Override
     public void update(TravelRequest travelRequest, User editor) {
-        if (travelRequest.getUser() != editor) {
+        if (travelRequest.getPassenger() != editor) {
             throw new AuthorizationException(NOT_AUTHORIZED);
         }
         travelRequestRepository.save(travelRequest);
@@ -111,7 +111,7 @@ public class TravelRequestServiceImpl implements TravelRequestService {
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public void delete(Long id, User editor) {
-        if (get(id).getUser() != editor) {
+        if (get(id).getPassenger() != editor) {
             throw new AuthorizationException(NOT_AUTHORIZED);
         }
         travelRequestRepository.delete(get(id));

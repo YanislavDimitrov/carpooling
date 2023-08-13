@@ -47,15 +47,14 @@ public class Travel {
     @OneToMany(mappedBy = "travel", fetch = FetchType.EAGER)
     private List<TravelRequest> travelRequests;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
-    @JoinTable(name = "users_travels",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "travel_id"))
-    private List<User> passengers;
+//    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+//    @JoinTable(name = "users_travels",
+//            joinColumns = @JoinColumn(name = "user_id"),
+//            inverseJoinColumns = @JoinColumn(name = "travel_id"))
+//    private List<User> passengers;
 
     public Travel() {
         travelRequests = new ArrayList<>();
-        passengers = new ArrayList<>();
     }
 
     public LocalDateTime getEstimatedTimeOfArrival() {
@@ -162,11 +161,4 @@ public class Travel {
         this.travelRequests = travelRequests;
     }
 
-    public List<User> getPassengers() {
-        return passengers;
-    }
-
-    public void setPassengers(List<User> passengers) {
-        this.passengers = passengers;
-    }
 }

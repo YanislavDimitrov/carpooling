@@ -16,7 +16,7 @@ public class TravelRequestMapper {
 
     public TravelRequestDto toDto(TravelRequest travelRequest) {
     TravelRequestDto travelRequestDto = new TravelRequestDto();
-    travelRequestDto.setUsername(travelRequest.getUser().getUserName());
+    travelRequestDto.setUsername(travelRequest.getPassenger().getUserName());
     return travelRequestDto;
     }
 }

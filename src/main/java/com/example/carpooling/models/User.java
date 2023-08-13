@@ -2,10 +2,14 @@ package com.example.carpooling.models;
 
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.models.enums.UserStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Table(name = "users")
 @Entity
@@ -32,10 +36,32 @@ public class User {
     private UserRole role;
     @Enumerated(EnumType.STRING)
     private UserStatus status;
+    @JsonIgnore
+    @OneToMany(mappedBy = "driver")
+    private List<Travel> travelsAsDriver;
+    @JsonIgnore
+    @OneToMany(mappedBy = "passenger")
+    private List<TravelRequest> travelsAsPassenger;
 
     public User() {
-        this.role = UserRole.USER;
-        this.status = UserStatus.ACTIVE;
+        travelsAsPassenger = new ArrayList<>();
+        travelsAsDriver = new ArrayList<>();
+    }
+
+    public List<Travel> getTravelsAsDriver() {
+        return travelsAsDriver;
+    }
+
+    public void setTravelsAsDriver(List<Travel> travelsAsDriver) {
+        this.travelsAsDriver = travelsAsDriver;
+    }
+
+    public List<TravelRequest> getTravelsAsPassenger() {
+        return travelsAsPassenger;
+    }
+
+    public void setTravelsAsPassenger(List<TravelRequest> travelsAsPassenger) {
+        this.travelsAsPassenger = travelsAsPassenger;
     }
 
     public Long getId() {
