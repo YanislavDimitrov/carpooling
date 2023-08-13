@@ -1,6 +1,7 @@
 package com.example.carpooling.controllers.rest;
 
 import com.example.carpooling.exceptions.AuthenticationFailureException;
+import com.example.carpooling.exceptions.AuthorizationException;
 import com.example.carpooling.exceptions.DuplicateEntityException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.helpers.AuthenticationHelper;
@@ -130,12 +131,24 @@ public class UserRestController {
         }
     }
 
+    /**
+     * Logically deleting a user.
+     * Changing the UserStatus property to "Deleted".
+     *
+     * @param id      The id of the user to delete
+     * @param headers Autorization key holding Username and Password
+     * @throws AuthenticationFailureException if username or/and password are not recognized
+     * @throws EntityNotFoundException If user with specified id does not exist
+     * @throws AuthorizationException If user is not authorized to perform delete operation on user with specified id
+     */
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         try {
             User loggedUser = authenticationHelper.tryGetUser(headers);
-            this.userService.delete(id,loggedUser);
-        } catch (AuthenticationFailureException e) {
+            this.userService.delete(id, loggedUser);
+        } catch (AuthorizationException | AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
