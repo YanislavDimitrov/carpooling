@@ -14,12 +14,6 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    List<User> findAllByFirstNameEquals(String firstName);
-
-    @Modifying
-    @Query("UPDATE User AS u SET u.status='DELETED' WHERE u.id = :id")
-    void delete(@Param("id") Long id);
-
     @Query("SELECT u FROM User u WHERE " +
             "(:firstName IS NULL OR u.firstName LIKE %:firstName%) " +
             "AND (:lastName IS NULL OR u.lastName LIKE %:lastName%) " +
@@ -36,4 +30,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
     );
 
     User findByUserName(String username);
+
+    @Modifying
+    @Query("UPDATE User AS u SET u.status='DELETED' WHERE u.id = :id")
+    void delete(@Param("id") Long id);
+
+    @Modifying
+    @Query("UPDATE User AS u SET u.status='ACTIVE' WHERE u.id = :id")
+    void restore(@Param("id") Long id);
 }

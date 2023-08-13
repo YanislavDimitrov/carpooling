@@ -27,8 +27,14 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
     }
 
-    public List<User> getAll() {
+    @Override
+    public List<User> findAll(Sort sort) {
         return this.userRepository.findAll();
+    }
+
+    @Override
+    public List<User> findAll(String firstName, String lastName, String username, String email, String phoneNumber, Sort sort) {
+        return this.userRepository.findByCriteria(firstName, lastName, username, email, phoneNumber, sort);
     }
 
     public User getById(Long id) {
@@ -48,6 +54,14 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+
+    @Override
+    public User create(User user) {
+        checkForDuplicateUser(user);
+        return this.userRepository.save(user);
+    }
+
+    @Override
     @Transactional
     public void delete(Long id, User loggedUser) {
 
@@ -67,24 +81,27 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    @Transactional
+    public void restore(Long id, User loggedUser) {
+        Optional<User> userToRestore = this.userRepository.findById(id);
+
+        if (userToRestore.isEmpty()) {
+            throw new EntityNotFoundException("User", id);
+        }
+
+        if (isAdmin(loggedUser) || isSameUser(loggedUser, userToRestore.get())) {
+            this.userRepository.restore(id);
+        } else {
+            throw new AuthorizationException(
+                    String.format(AUTHORIZATION_MESSAGE
+                            , loggedUser.getUserName()
+                            , id));
+        }
+    }
+
     public Long count() {
         return this.userRepository.count();
-    }
-
-    @Override
-    public User create(User user) {
-        checkForDuplicateUser(user);
-        return this.userRepository.save(user);
-    }
-
-    @Override
-    public List<User> findAll(Sort sort) {
-        return this.userRepository.findAll();
-    }
-
-    @Override
-    public List<User> findAll(String firstName, String lastName, String username, String email, String phoneNumber, Sort sort) {
-        return this.userRepository.findByCriteria(firstName, lastName, username, email, phoneNumber, sort);
     }
 
     private void checkForDuplicateUser(User user) {

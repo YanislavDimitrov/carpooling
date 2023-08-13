@@ -49,7 +49,7 @@ public class UserRestController {
      * @return List of users that suit all provided set of filtering parameters
      */
     @GetMapping()
-    public List<UserViewDto> getAll(
+    public List<UserViewDto> getAllUsers(
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String lastName,
             @RequestParam(required = false) String username,
@@ -87,7 +87,7 @@ public class UserRestController {
      * @throws EntityNotFoundException when User with 'target username' is not found in the DataBase.
      */
     @GetMapping("/username/{username}")
-    public UserViewDto getByUsername(@PathVariable String username) {
+    public UserViewDto getUserByUsername(@PathVariable String username) {
         try {
             User user = userService.getByUsername(username);
 
@@ -105,7 +105,7 @@ public class UserRestController {
      * @throws EntityNotFoundException when User with 'target id' is not found in the DataBase.
      */
     @GetMapping("/{id}")
-    public UserViewDto getById(@PathVariable Long id) {
+    public UserViewDto getUserById(@PathVariable Long id) {
         try {
             User user = userService.getById(id);
             return this.modelMapper.map(user, UserViewDto.class);
@@ -122,7 +122,7 @@ public class UserRestController {
      * @throws DuplicateEntityException if either username, email or phoneNumber already exist in DataBase
      */
     @PostMapping()
-    public UserViewDto create(@RequestBody UserCreateDto payloadUser) {
+    public UserViewDto createUser(@RequestBody UserCreateDto payloadUser) {
         try {
             User user = this.modelMapper.map(payloadUser, User.class);
             return this.modelMapper.map(this.userService.create(user), UserViewDto.class);
@@ -133,19 +133,41 @@ public class UserRestController {
 
     /**
      * Logically deleting a user.
-     * Changing the UserStatus property to "Deleted".
+     * Changing the UserStatus property to "DELETED". Only the user itself and admin can delete a user.
      *
      * @param id      The id of the user to delete
      * @param headers Autorization key holding Username and Password
      * @throws AuthenticationFailureException if username or/and password are not recognized
-     * @throws EntityNotFoundException If user with specified id does not exist
-     * @throws AuthorizationException If user is not authorized to perform delete operation on user with specified id
+     * @throws EntityNotFoundException        If user with specified id does not exist
+     * @throws AuthorizationException         If user is not authorized to perform delete operation on user with specified id
      */
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
+    @PutMapping("/{id}/delete")
+    public void deleteUser(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         try {
             User loggedUser = authenticationHelper.tryGetUser(headers);
             this.userService.delete(id, loggedUser);
+        } catch (AuthorizationException | AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    /**
+     * Logically restoring a user.
+     * Changing the UserStatus property to "ACTIVE". Only the user itself and admin can restore a user.
+     *
+     * @param id      The id of the user to restore
+     * @param headers Autorization key holding Username and Password
+     * @throws AuthenticationFailureException if username or/and password are not recognized
+     * @throws EntityNotFoundException        If user with specified id does not exist
+     * @throws AuthorizationException         If user is not authorized to perform delete operation on user with specified id
+     */
+    @PutMapping("/{id}/restore")
+    public void restoreUser(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(headers);
+            this.userService.restore(id, loggedUser);
         } catch (AuthorizationException | AuthenticationFailureException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         } catch (EntityNotFoundException e) {
