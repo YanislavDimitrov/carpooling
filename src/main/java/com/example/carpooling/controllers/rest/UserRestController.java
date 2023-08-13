@@ -7,6 +7,7 @@ import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.dtos.UserCreateDto;
+import com.example.carpooling.models.dtos.UserUpdateDto;
 import com.example.carpooling.models.dtos.UserViewDto;
 import com.example.carpooling.services.contracts.UserService;
 import org.modelmapper.ModelMapper;
@@ -126,6 +127,35 @@ public class UserRestController {
         try {
             User user = this.modelMapper.map(payloadUser, User.class);
             return this.modelMapper.map(this.userService.create(user), UserViewDto.class);
+        } catch (DuplicateEntityException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+        }
+    }
+
+    /**
+     * Update user by id.
+     * Update user by id, by setting all its fields to the fields of the provided payload.
+     *
+     * @param id          Target user id.
+     * @param payloadUser The user details that will use to update the existing user (if such).
+     * @param headers     Autorization key holding Username and Password
+     * @return The updated user with provided target id (if such).
+     * @throws AuthenticationFailureException if username or/and password are not recognized
+     * @throws EntityNotFoundException        If user with specified id does not exist
+     * @throws AuthorizationException         If user is not authorized to perform update operation on user with specified id
+     * @throws DuplicateEntityException       if either username, email or phoneNumber already exist in DataBase
+     */
+    @PutMapping("/{id}")
+    public UserViewDto updateUser(@PathVariable Long id,
+                                  @RequestBody UserUpdateDto payloadUser,
+                                  @RequestHeader HttpHeaders headers) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(headers);
+            return this.modelMapper.map(this.userService.update(id, payloadUser, loggedUser), UserViewDto.class);
+        } catch (AuthorizationException | AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (DuplicateEntityException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         }

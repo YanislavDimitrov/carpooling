@@ -4,6 +4,7 @@ import com.example.carpooling.exceptions.AuthorizationException;
 import com.example.carpooling.exceptions.DuplicateEntityException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.models.User;
+import com.example.carpooling.models.dtos.UserUpdateDto;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.services.contracts.UserService;
@@ -15,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.carpooling.helpers.CustomMessages.AUTHORIZATION_MESSAGE;
+import static com.example.carpooling.helpers.CustomMessages.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -62,20 +63,47 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
-    public void delete(Long id, User loggedUser) {
+    public User update(Long id, UserUpdateDto payloadUser, User loggedUser) {
+        Optional<User> optionalTargetUser = this.userRepository.findById(id);
 
-        Optional<User> userToDelete = this.userRepository.findById(id);
-
-        if (userToDelete.isEmpty()) {
+        if (optionalTargetUser.isEmpty()) {
             throw new EntityNotFoundException("User", id);
         }
 
-        if (isAdmin(loggedUser) || isSameUser(loggedUser, userToDelete.get())) {
+        User targetUser = optionalTargetUser.get();
+        if (isAdmin(loggedUser) || isSameUser(loggedUser, targetUser)) {
+
+            targetUser.setFirstName(payloadUser.getFirstName());
+            targetUser.setLastName(payloadUser.getLastName());
+            targetUser.setEmail(payloadUser.getEmail());
+            targetUser.setPhoneNumber(payloadUser.getPhoneNumber());
+            targetUser.setUserName(payloadUser.getUserName());
+
+            checkForDuplicateUser(targetUser);
+            return this.userRepository.save(targetUser);
+        } else {
+            throw new AuthorizationException(
+                    String.format(UPDATE_AUTHORIZATION_MESSAGE
+                            , loggedUser.getUserName()
+                            , id));
+        }
+    }
+
+    @Override
+    @Transactional
+    public void delete(Long id, User loggedUser) {
+
+        Optional<User> optionalUserToDelete = this.userRepository.findById(id);
+
+        if (optionalUserToDelete.isEmpty()) {
+            throw new EntityNotFoundException("User", id);
+        }
+
+        if (isAdmin(loggedUser) || isSameUser(loggedUser, optionalUserToDelete.get())) {
             this.userRepository.delete(id);
         } else {
             throw new AuthorizationException(
-                    String.format(AUTHORIZATION_MESSAGE
+                    String.format(DELETE_AUTHORIZATION_MESSAGE
                             , loggedUser.getUserName()
                             , id));
         }
@@ -84,21 +112,22 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void restore(Long id, User loggedUser) {
-        Optional<User> userToRestore = this.userRepository.findById(id);
+        Optional<User> optionalUserToRestore = this.userRepository.findById(id);
 
-        if (userToRestore.isEmpty()) {
+        if (optionalUserToRestore.isEmpty()) {
             throw new EntityNotFoundException("User", id);
         }
 
-        if (isAdmin(loggedUser) || isSameUser(loggedUser, userToRestore.get())) {
+        if (isAdmin(loggedUser) || isSameUser(loggedUser, optionalUserToRestore.get())) {
             this.userRepository.restore(id);
         } else {
             throw new AuthorizationException(
-                    String.format(AUTHORIZATION_MESSAGE
+                    String.format(DELETE_AUTHORIZATION_MESSAGE
                             , loggedUser.getUserName()
                             , id));
         }
     }
+
 
     public Long count() {
         return this.userRepository.count();
@@ -108,17 +137,23 @@ public class UserServiceImpl implements UserService {
         List<User> userWithUserName =
                 this.findAll(null, null, user.getUserName(), null, null, null);
         if (!userWithUserName.isEmpty()) {
-            throw new DuplicateEntityException("User", "username", user.getUserName());
+            if (!userWithUserName.get(0).getId().equals(user.getId())) {
+                throw new DuplicateEntityException("User", "username", user.getUserName());
+            }
         }
         List<User> userWithEmail =
                 this.findAll(null, null, null, user.getEmail(), null, null);
         if (!userWithEmail.isEmpty()) {
-            throw new DuplicateEntityException("User", "email", user.getEmail());
+            if (!userWithEmail.get(0).getId().equals(user.getId())) {
+                throw new DuplicateEntityException("User", "email", user.getEmail());
+            }
         }
         List<User> userWithPhoneNumber =
                 this.findAll(null, null, null, null, user.getPhoneNumber(), null);
         if (!userWithPhoneNumber.isEmpty()) {
-            throw new DuplicateEntityException("User", "phone number", user.getPhoneNumber());
+            if (!userWithPhoneNumber.get(0).getId().equals(user.getId())) {
+                throw new DuplicateEntityException("User", "phone number", user.getPhoneNumber());
+            }
         }
     }
 

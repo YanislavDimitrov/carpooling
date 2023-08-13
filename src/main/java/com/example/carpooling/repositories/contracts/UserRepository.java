@@ -38,4 +38,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying
     @Query("UPDATE User AS u SET u.status='ACTIVE' WHERE u.id = :id")
     void restore(@Param("id") Long id);
+
 }

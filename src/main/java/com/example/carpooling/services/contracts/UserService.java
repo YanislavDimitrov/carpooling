@@ -1,6 +1,7 @@
 package com.example.carpooling.services.contracts;
 
 import com.example.carpooling.models.User;
+import com.example.carpooling.models.dtos.UserUpdateDto;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
@@ -21,4 +22,6 @@ public interface UserService {
     Long count();
 
     void restore(Long id, User loggedUser);
+
+    User update(Long id, UserUpdateDto payloadUser, User loggedUser);
 }
