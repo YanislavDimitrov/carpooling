@@ -205,4 +205,5 @@ public class UserServiceImpl implements UserService {
     private static boolean isSameUser(User loggedUser, User targetUser) {
         return targetUser.getUserName().equals(loggedUser.getUserName());
     }
+
 }

@@ -1,10 +1,11 @@
 package com.example.carpooling.models.dtos;
 
-import com.example.carpooling.models.Coordinate;
+import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.enums.TravelStatus;
 import jakarta.validation.constraints.NotEmpty;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class TravelViewDto {
     @NotEmpty(message = "Driver  field cannot be empty!")
@@ -13,34 +14,52 @@ public class TravelViewDto {
     private String vehicle;
     @NotEmpty(message = "Free Spots field cannot be empty!")
     private Short freeSpots;
+    @NotEmpty(message = "Departure point cannot be empty!")
+    private String departurePoint;
+    @NotEmpty(message = "Arrival point cannot be empty!")
+    private String arrivalPoint;
     @NotEmpty(message = "Departure Time cannot be empty")
     private LocalDateTime departureTime;
 
+    private String distance ;
     private String comment;
-    @NotEmpty(message = "Starting point cannot be empty!")
-    private Coordinate startPoint;
-    @NotEmpty(message = "End Point field cannot be empty!")
-    private Coordinate endPoint;
-    @NotEmpty(message = "Travel Status cannot be empty!")
+
     private TravelStatus status;
+    private List<TravelRequestDto> requests;
 
     public TravelViewDto() {
     }
 
-    public Coordinate getStartPoint() {
-        return startPoint;
+    public String getDistance() {
+        return distance;
     }
 
-    public void setStartPoint(Coordinate startPoint) {
-        this.startPoint = startPoint;
+    public void setDistance(String distance) {
+        this.distance = distance;
     }
 
-    public Coordinate getEndPoint() {
-        return endPoint;
+    public List<TravelRequestDto> getRequests() {
+        return requests;
     }
 
-    public void setEndPoint(Coordinate endPoint) {
-        this.endPoint = endPoint;
+    public void setRequests(List<TravelRequestDto> requests) {
+        this.requests = requests;
+    }
+
+    public String getDeparturePoint() {
+        return departurePoint;
+    }
+
+    public void setDeparturePoint(String departurePoint) {
+        this.departurePoint = departurePoint;
+    }
+
+    public String getArrivalPoint() {
+        return arrivalPoint;
+    }
+
+    public void setArrivalPoint(String arrivalPoint) {
+        this.arrivalPoint = arrivalPoint;
     }
 
     public Short getFreeSpots() {

@@ -1,6 +1,7 @@
 package com.example.carpooling.services.contracts;
 
 import com.example.carpooling.models.Travel;
+import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.TravelStatus;
 import org.springframework.data.domain.Sort;
@@ -19,11 +20,12 @@ public interface TravelService {
                                 Short freeSpots,
                                 LocalDateTime departureTime,
                                 Sort sort);
+
     List<Travel> findAll(Sort sort);
 
-    Long count ();
+    Long count();
 
-    void create(Travel travel);
+    void create(Travel travel,User driver);
 
     void update(Long id);
 
@@ -32,6 +34,14 @@ public interface TravelService {
     void completeTravel(Long id);
 
     void cancelTravel(Long id);
+
+    TravelRequest createRequest(Travel travel, User user);
+
+    void approveRequest(Long id);
+
+    void rejectRequest(Long id);
+
+    TravelRequest get(Long id);
 
 
 }

@@ -44,17 +44,17 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     @Override
     public List<Feedback> findAll(Sort sort) {
-        return null;
+        return feedbackRepository.findAll();
     }
 
     @Override
     public Long count() {
-        return null;
+        return feedbackRepository.count();
     }
 
     @Override
     public void create(Feedback feedback) {
-
+        feedbackRepository.save(feedback);
     }
 
     @Override

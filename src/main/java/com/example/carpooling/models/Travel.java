@@ -1,10 +1,12 @@
 package com.example.carpooling.models;
 
 import com.example.carpooling.models.enums.TravelStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Table(name = "travels")
@@ -15,18 +17,10 @@ public class Travel {
     @Column(name = "id",
             updatable = false)
     private Long id;
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "latitude", column = @Column(name = "start_latitude")),
-            @AttributeOverride(name = "longitude", column = @Column(name = "start_longitude"))
-    })
-    private Coordinate startPoint;
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "latitude", column = @Column(name = "end_latitude")),
-            @AttributeOverride(name = "longitude", column = @Column(name = "end_longitude"))
-    })
-    private Coordinate endpoint;
+    @Column(name = "departure_point")
+    private String departurePoint;
+    @Column(name = "arrival_point")
+    private String arrivalPoint;
     @Column(name = "free_spots")
     private Short freeSpots;
     @Column(name = "departure_time")
@@ -42,10 +36,41 @@ public class Travel {
 
     @Enumerated(EnumType.STRING)
     private TravelStatus status;
-    @ManyToMany
-    private List<User> applicants;
+
+    @Column(name = "distance")
+    private String distance;
+    @JsonIgnore
+    @OneToMany(mappedBy = "travel",fetch = FetchType.EAGER)
+    private List<TravelRequest> travelRequests;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @JoinTable(name = "users_travels",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "travel_id"))
+    private List<User> passengers;
 
     public Travel() {
+        travelRequests = new ArrayList<>();
+        passengers=new ArrayList<>();
+    }
+
+    public List<TravelRequest> getTravelRequests() {
+        return travelRequests;
+    }
+
+    public void setTravelRequests(List<TravelRequest> travelRequests) {
+        this.travelRequests = travelRequests;
+    }
+
+
+
+
+    public String getDistance() {
+        return distance;
+    }
+
+    public void setDistance(String distance) {
+        this.distance = distance;
     }
 
     public Long getId() {
@@ -56,20 +81,20 @@ public class Travel {
         this.id = id;
     }
 
-    public Coordinate getStartPoint() {
-        return startPoint;
+    public String getDeparturePoint() {
+        return departurePoint;
     }
 
-    public void setStartPoint(Coordinate startPoint) {
-        this.startPoint = startPoint;
+    public void setDeparturePoint(String departurePoint) {
+        this.departurePoint = departurePoint;
     }
 
-    public Coordinate getEndpoint() {
-        return endpoint;
+    public String getArrivalPoint() {
+        return arrivalPoint;
     }
 
-    public void setEndpoint(Coordinate endpoint) {
-        this.endpoint = endpoint;
+    public void setArrivalPoint(String arrivalPoint) {
+        this.arrivalPoint = arrivalPoint;
     }
 
     public short getFreeSpots() {

@@ -28,7 +28,7 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
     @Query("select t from Travel t where" +
             "(:driver is null or t.driver.userName like %:driver%) " +
             " and(:status is null or t.status =:status)" +
-            " and (:freeSpots is null or t.freeSpots  =:freeSpots)" +
+            " and (:free_spots is null or t.freeSpots  =:freeSpots)" +
             " and(:departureTime is null or t.departureTime =:departureTime)")
     List<Travel> findByCriteria(
             @Param("driver") String driver,

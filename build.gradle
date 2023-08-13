@@ -21,8 +21,8 @@ dependencies {
 // implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.flywaydb:flyway-core'
-    implementation 'org.flywaydb:flyway-mysql'
+//    implementation 'org.flywaydb:flyway-core'
+//    implementation 'org.flywaydb:flyway-mysql'
     compileOnly 'org.projectlombok:lombok'
     //  implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
@@ -33,8 +33,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.0.0'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    // https://mvnrepository.com/artifact/io.github.openfeign.form/feign-form-spring
-    implementation group: 'io.github.openfeign', name: 'feign-core', version: '12.4'
+//    // https://mvnrepository.com/artifact/io.github.openfeign.form/feign-form-spring
+//    implementation group: 'io.github.openfeign', name: 'feign-core', version: '12.4'
     implementation group: 'org.json', name: 'json', version: '20230227'
     implementation 'com.google.code.gson:gson:2.8.9'
 
