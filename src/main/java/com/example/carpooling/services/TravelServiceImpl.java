@@ -27,7 +27,7 @@ public class TravelServiceImpl implements TravelService {
 
     public static final String TRAVEL_NOT_FOUND = "Travel with ID %d is not existing!";
     public static final String USER_NOT_FOUND = "User with ID %d does not exist!";
-    public static final String TRAVEL_REQUEST_NOT_FOUND = "Travel request with ID %d was not found!";
+
     public static final String UPDATE_CANCELLED = "You cannot update this travel!";
     public static final String OPERATION_DENIED = "You are not authorized to complete this operation!";
     private final TravelRepository travelRepository;
@@ -43,10 +43,18 @@ public class TravelServiceImpl implements TravelService {
     }
 
 
+    /**
+     * @return Returns all travels which are in the database using JPA Repository findAll method
+     */
     public List<Travel> get() {
         return travelRepository.findAll();
     }
 
+    /**
+     * @param id This parameter refers to the ID of the Travel we want to return
+     * @return Returns Travel entity if existing one is found
+     * @Throws - EntityNotFoundException if Travel with this ID is not existing.
+     */
     @Override
     public Travel getById(Long id) {
         return travelRepository
@@ -54,15 +62,31 @@ public class TravelServiceImpl implements TravelService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, id)));
     }
 
+    /**
+     * @param driver        This acts as a parameter for filtering using the driver field of the travel entity
+     * @param status        This acts as a parameter for filtering using the status field of the travel entity
+     * @param freeSpots     This acts as a parameter for filtering using the freeSpots field of the travel entity
+     * @param departureTime This acts as a parameter for filtering using the departureTime field of the travel entity
+     * @param sort          This is used for sorting the result of the method
+     * @return List<Travel> filled with the travels which have completed the condition if there is a filtering ,
+     * otherwise returns all travels if there are any and empty list if there are not any.
+     */
     @Override
     public List<Travel> findByCriteria(String driver, TravelStatus status, Short freeSpots, LocalDateTime departureTime, Sort sort) {
         return travelRepository.findByCriteria(driver, status, freeSpots, departureTime, sort);
     }
 
+    /**
+     * @param sort – the Sort specification to sort the results by, can be Sort.unsorted(), must not be null.
+     * @return all entities sorted by the given options
+     */
     public List<Travel> findAll(Sort sort) {
         return travelRepository.findAll(sort);
     }
 
+    /**
+     * @return number of entities available(status = 'ACTIVE' || 'COMPLETED') in the database.
+     */
     @Override
     public Long count() {
         return travelRepository.count();
@@ -71,15 +95,7 @@ public class TravelServiceImpl implements TravelService {
     /**
      * @param travel This parameter is needed to create the travel itself
      * @param driver This parameter is needed to set the driver of the travel automatically
-     *               First departurePoint is extracted from the user's input with the help
-     *               of Microsoft Bing Maps External API method.
-     *               On the second row we are extracting the coordinates of the departure location
-     *               again using external API endpoint and this is repeating for the arrival point.
-     *               <p>
-     *               When we have extracted coordinates for both the departure and arrival locations
-     *               we can calculate the distance and the estimated time duration between them using
-     *               Microsft Bing Maps API external endpoint for calculation.
-     *               After that we are extracting the distance in one variable and the duration in other variable.
+     *               With the help of external Microsoft Bing Maps API endpoints , a new travel has been created.
      */
     @Override
     public void create(Travel travel, User driver) {
@@ -89,6 +105,13 @@ public class TravelServiceImpl implements TravelService {
         travelRepository.save(travel);
     }
 
+
+    /**
+     * @param travel this parameter is used for extraction of departure address of the travel and arrival address
+     *               of the travel and then via methods of Microsoft Bing Maps these addresses are converted to
+     *               coordinates and are held to other external API endpoint which calculates the distance and the
+     *               estimated time of travelling between the two places the user typed in the input field.
+     */
     private void calculatingDistanceAndDuration(Travel travel) {
         String departurePoint = bingMapsService.getLocationJson(travel.getDeparturePoint());
         double[] coordinatesOfDeparturePoint = bingMapsService.parseCoordinates(departurePoint);
@@ -118,9 +141,17 @@ public class TravelServiceImpl implements TravelService {
         travel.setEstimatedTimeOfArrival(arrivalTime);
     }
 
+    /**
+     * @param travel this parameter is the travel which was held by the controller class and it is with already refactored
+     *               fields so this is the new travel to be persisted in the database
+     * @param editor this parameters refers to the person who is trying to update the travel
+     * @return updated Travel
+     *
+     * @throws AuthorizationException if the editor is not the driver of the travel.
+     */
     @Override
-    public Travel update(Travel travel , User editor ) {
-        if(travel.getDriver() != editor ) {
+    public Travel update(Travel travel, User editor) {
+        if (travel.getDriver() != editor) {
             throw new AuthorizationException(UPDATE_CANCELLED);
         }
         calculatingDistanceAndDuration(travel);
@@ -128,59 +159,40 @@ public class TravelServiceImpl implements TravelService {
         return travel;
     }
 
+    /**
+     * @param id     This parameter refers to the ID of the travel we would like to delete
+     * @param editor This parameter refers to the person who is trying to delete the travel
+     * @Transactional - This annotation is needed for update/delete queries when using JPA Repository,
+     * its default value is Propagation.REQUIRED which means if a transaction doesn't exist, a new one will be created
+     * @Throws: AuthorizationException - if the editor is not admin or creator of the travel
+     */
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void delete(Long id , User editor) {
-        if(editor.getRole() != UserRole.ADMIN && getById(id).getDriver() != editor) {
+    public void delete(Long id, User editor) {
+        if (editor.getRole() != UserRole.ADMIN && getById(id).getDriver() != editor) {
             throw new AuthorizationException(OPERATION_DENIED);
         }
 
         travelRepository.delete(id);
     }
 
+    /**
+     * @param id this parameters is used to find a travel with this ID
+     *           This method is changing the status of a certain travel with status 'COMPLETED'
+     */
     @Override
     public void completeTravel(Long id) {
 
         travelRepository.completeTravel(id);
     }
 
+    /**
+     * @param id this parameter is used to find a travel with this ID
+     *           This method is used to change the status of a certain travel with status 'DELETED'
+     */
     @Override
     public void cancelTravel(Long id) {
         travelRepository.delete(id);
     }
 
-    @Override
-    public TravelRequest createRequest(Travel travel, User user) {
-        TravelRequest travelRequest = new TravelRequest();
-        travelRequest.setTravel(travel);
-        travelRequest.setUser(user);
-        travelRequest.setStatus(TravelRequestStatus.PENDING);
-        travelRequestRepository.save(travelRequest);
-        return travelRequest;
-    }
-
-    @Override
-    public void approveRequest(Long id) {
-        TravelRequest request = travelRequestRepository
-                .findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format(TRAVEL_REQUEST_NOT_FOUND, id)));
-        request.setStatus(TravelRequestStatus.ACCEPTED);
-        travelRequestRepository.save(request);
-    }
-
-    @Override
-    public void rejectRequest(Long id) {
-        TravelRequest request = travelRequestRepository
-                .findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format(TRAVEL_REQUEST_NOT_FOUND, id)));
-        request.setStatus(TravelRequestStatus.REJECTED);
-        travelRequestRepository.save(request);
-    }
-
-    @Override
-    public TravelRequest get(Long id) {
-        return travelRequestRepository
-                .findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format(TRAVEL_REQUEST_NOT_FOUND, id)));
-    }
 }

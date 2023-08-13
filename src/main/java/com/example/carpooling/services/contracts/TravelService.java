@@ -35,13 +35,7 @@ public interface TravelService {
 
     void cancelTravel(Long id);
 
-    TravelRequest createRequest(Travel travel, User user);
 
-    void approveRequest(Long id);
-
-    void rejectRequest(Long id);
-
-    TravelRequest get(Long id);
 
 
 }

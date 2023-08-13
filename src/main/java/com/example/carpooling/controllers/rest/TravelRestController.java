@@ -9,10 +9,10 @@ import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.dtos.TravelCreationOrUpdateDto;
-import com.example.carpooling.models.dtos.TravelUpdateDto;
 import com.example.carpooling.models.dtos.TravelViewDto;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.services.BingMapsService;
+import com.example.carpooling.services.contracts.TravelRequestService;
 import com.example.carpooling.services.contracts.TravelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -34,6 +34,7 @@ public class TravelRestController {
     public static final String DELETED_SUCCESSFULLY = "Travel with ID %d was deleted successfully!";
     public static final String NOT_AUTHORIZED = "You are not authorized to delete this travel!";
     private final TravelService travelService;
+    private final TravelRequestService travelRequestService;
     private final TravelMapper travelMapper;
     private final AuthenticationHelper authenticationHelper;
 
@@ -41,8 +42,9 @@ public class TravelRestController {
 
 
     @Autowired
-    public TravelRestController(TravelService travelService, TravelMapper travelMapper, AuthenticationHelper authenticationHelper, BingMapsService bingMapsService) {
+    public TravelRestController(TravelService travelService, TravelRequestService travelRequestService, TravelMapper travelMapper, AuthenticationHelper authenticationHelper, BingMapsService bingMapsService) {
         this.travelService = travelService;
+        this.travelRequestService = travelRequestService;
         this.travelMapper = travelMapper;
         this.authenticationHelper = authenticationHelper;
         this.bingMapsService = bingMapsService;
@@ -156,7 +158,7 @@ public class TravelRestController {
         try {
             User user = authenticationHelper.tryGetUser(headers);
             Travel travel = travelService.getById(id);
-            travelService.createRequest(travel, user);
+            travelRequestService.createRequest(travel, user);
             return REQUEST_CREATED_SUCCESSFULLY;
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
@@ -168,9 +170,9 @@ public class TravelRestController {
     @PostMapping("/approve/{id}")
     public String approveRequest(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         try {
-            TravelRequest travelRequest = travelService.get(id);
+            TravelRequest travelRequest = travelRequestService.get(id);
             User user = authenticationHelper.tryGetUser(headers);
-            travelService.approveRequest(travelRequest.getId());
+            travelRequestService.approveRequest(travelRequest.getId());
             return "Your request for travel was approved!";
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
@@ -182,9 +184,9 @@ public class TravelRestController {
     @PostMapping("/reject/{id}")
     public String rejectRequest(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         try {
-            TravelRequest travelRequest = travelService.get(id);
+            TravelRequest travelRequest = travelRequestService.get(id);
             User user = authenticationHelper.tryGetUser(headers);
-            travelService.rejectRequest(id);
+            travelRequestService.rejectRequest(id);
             return "Your request for travel was rejected by the driver!";
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
