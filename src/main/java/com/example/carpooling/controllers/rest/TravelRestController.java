@@ -8,6 +8,7 @@ import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.dtos.TravelCreationDto;
+import com.example.carpooling.models.dtos.TravelUpdateDto;
 import com.example.carpooling.models.dtos.TravelViewDto;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.services.BingMapsService;
@@ -104,7 +105,7 @@ public class TravelRestController {
         return "Latitude: " + coordinates[0] + ", Longitude: " + coordinates[1];
     }
     @PostMapping
-    public TravelViewDto createTravel (@RequestBody TravelCreationDto travelCreationDto , @RequestHeader HttpHeaders headers) {
+    public TravelViewDto create(@RequestBody TravelCreationDto travelCreationDto , @RequestHeader HttpHeaders headers) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
             Travel travel = travelMapper.toTravelFromTravelCreationDto(travelCreationDto);
@@ -112,6 +113,19 @@ public class TravelRestController {
             return travelMapper.fromTravel(travel);
         } catch (AuthenticationFailureException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,e.getMessage());
+        }
+    }
+    @PutMapping("/{id}")
+    public TravelViewDto update( @PathVariable Long id, @RequestBody TravelUpdateDto travelUpdateDto , @RequestHeader HttpHeaders headers) {
+        try {
+            User user = authenticationHelper.tryGetUser(headers);
+            Travel travel = travelService.getById(id);
+           return travelMapper.fromTravel(travelService
+                   .update(travelMapper.toTravelFromTravelUpdateDto(travel,travelUpdateDto),user));
+        }catch (AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,e.getMessage());
+        }catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage());
         }
     }
 

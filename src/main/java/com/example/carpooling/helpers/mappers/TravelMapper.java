@@ -3,6 +3,7 @@ package com.example.carpooling.helpers.mappers;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.Vehicle;
 import com.example.carpooling.models.dtos.TravelCreationDto;
+import com.example.carpooling.models.dtos.TravelUpdateDto;
 import com.example.carpooling.models.dtos.TravelViewDto;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.services.contracts.TravelService;
@@ -37,7 +38,7 @@ public class TravelMapper {
         travelViewDto.setFreeSpots(travel.getFreeSpots());
         travelViewDto.setDistance(travel.getDistance());
         int wholeNumberIndex = travel.getTravelDuration().indexOf(" ");
-        double durationAsDouble = Double.parseDouble(travel.getTravelDuration().substring(0,wholeNumberIndex));
+        double durationAsDouble = Double.parseDouble(travel.getTravelDuration().substring(0, wholeNumberIndex));
         int hours = (int) (durationAsDouble / 60);
         double minutes = durationAsDouble - hours * 60;
         if (hours > 0 && minutes > 0) {
@@ -67,6 +68,15 @@ public class TravelMapper {
         travel.setDepartureTime(travelCreationDto.getDepartureTime());
         travel.setComment(travelCreationDto.getComment());
         travel.setFreeSpots(travelCreationDto.getFreeSpots());
+        return travel;
+    }
+
+    public Travel toTravelFromTravelUpdateDto(Travel travel, TravelUpdateDto travelUpdateDto) {
+        travel.setArrivalPoint(travelUpdateDto.getArrivalPoint());
+        travel.setDeparturePoint(travelUpdateDto.getDeparturePoint());
+        travel.setComment(travelUpdateDto.getComment());
+        travel.setDepartureTime(travelUpdateDto.getDepartureTime());
+        travel.setFreeSpots(travelUpdateDto.getFreeSpots());
         return travel;
     }
 }

@@ -27,7 +27,7 @@ public interface TravelService {
 
     void create(Travel travel,User driver);
 
-    void update(Long id);
+    Travel update(Travel travel  , User editor);
 
     void delete(Long id);
 

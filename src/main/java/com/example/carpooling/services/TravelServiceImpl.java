@@ -1,9 +1,11 @@
 package com.example.carpooling.services;
 
+import com.example.carpooling.exceptions.AuthorizationException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
+import com.example.carpooling.models.dtos.TravelViewDto;
 import com.example.carpooling.models.enums.TravelRequestStatus;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.repositories.contracts.TravelRepository;
@@ -23,6 +25,7 @@ public class TravelServiceImpl implements TravelService {
     public static final String TRAVEL_NOT_FOUND = "Travel with ID %d is not existing!";
     public static final String USER_NOT_FOUND = "User with ID %d does not exist!";
     public static final String TRAVEL_REQUEST_NOT_FOUND = "Travel request with ID %d was not found!";
+    public static final String UPDATE_CANCELLED = "You cannot update this travel!";
     private final TravelRepository travelRepository;
     private final TravelRequestRepository travelRequestRepository;
     private final UserRepository userRepository;
@@ -76,6 +79,13 @@ public class TravelServiceImpl implements TravelService {
      */
     @Override
     public void create(Travel travel, User driver) {
+        calculatingDistanceAndDuration(travel);
+        travel.setStatus(TravelStatus.ACTIVE);
+        travel.setDriver(driver);
+        travelRepository.save(travel);
+    }
+
+    private void calculatingDistanceAndDuration(Travel travel) {
         String departurePoint = bingMapsService.getLocationJson(travel.getDeparturePoint());
         double[] coordinatesOfDeparturePoint = bingMapsService.parseCoordinates(departurePoint);
         double departureLatitude = coordinatesOfDeparturePoint[0];
@@ -102,15 +112,16 @@ public class TravelServiceImpl implements TravelService {
         long secondsToAdd = (long) (minutesToAdd * 60);
         LocalDateTime arrivalTime = travel.getDepartureTime().plusSeconds(secondsToAdd);
         travel.setEstimatedTimeOfArrival(arrivalTime);
-        travel.setStatus(TravelStatus.ACTIVE);
-        travel.setDriver(driver);
-        travelRepository.save(travel);
     }
 
     @Override
-    public void update(Long id) {
-        Travel travel = getById(id);
+    public Travel update(Travel travel , User editor ) {
+        if(travel.getDriver() != editor ) {
+            throw new AuthorizationException(UPDATE_CANCELLED);
+        }
+        calculatingDistanceAndDuration(travel);
         travelRepository.save(travel);
+        return travel;
     }
 
     @Override
