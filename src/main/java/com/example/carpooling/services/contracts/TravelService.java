@@ -29,7 +29,7 @@ public interface TravelService {
 
     Travel update(Travel travel  , User editor);
 
-    void delete(Long id);
+    void delete(Long id , User editor);
 
     void completeTravel(Long id);
 

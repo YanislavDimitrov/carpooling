@@ -1,8 +1,7 @@
 package com.example.carpooling.helpers.mappers;
 
 import com.example.carpooling.models.Travel;
-import com.example.carpooling.models.Vehicle;
-import com.example.carpooling.models.dtos.TravelCreationDto;
+import com.example.carpooling.models.dtos.TravelCreationOrUpdateDto;
 import com.example.carpooling.models.dtos.TravelUpdateDto;
 import com.example.carpooling.models.dtos.TravelViewDto;
 import com.example.carpooling.models.enums.TravelStatus;
@@ -60,18 +59,18 @@ public class TravelMapper {
         return travelViewDto;
     }
 
-    public Travel toTravelFromTravelCreationDto(TravelCreationDto travelCreationDto) {
+    public Travel toTravelFromTravelCreationDto(TravelCreationOrUpdateDto travelCreationOrUpdateDto) {
         Travel travel = new Travel();
         travel.setStatus(TravelStatus.ACTIVE);
-        travel.setArrivalPoint(travelCreationDto.getArrivalPoint());
-        travel.setDeparturePoint(travelCreationDto.getDeparturePoint());
-        travel.setDepartureTime(travelCreationDto.getDepartureTime());
-        travel.setComment(travelCreationDto.getComment());
-        travel.setFreeSpots(travelCreationDto.getFreeSpots());
+        travel.setArrivalPoint(travelCreationOrUpdateDto.getArrivalPoint());
+        travel.setDeparturePoint(travelCreationOrUpdateDto.getDeparturePoint());
+        travel.setDepartureTime(travelCreationOrUpdateDto.getDepartureTime());
+        travel.setComment(travelCreationOrUpdateDto.getComment());
+        travel.setFreeSpots(travelCreationOrUpdateDto.getFreeSpots());
         return travel;
     }
 
-    public Travel toTravelFromTravelUpdateDto(Travel travel, TravelUpdateDto travelUpdateDto) {
+    public Travel toTravelFromTravelUpdateSaveDto(Travel travel, TravelCreationOrUpdateDto travelUpdateDto) {
         travel.setArrivalPoint(travelUpdateDto.getArrivalPoint());
         travel.setDeparturePoint(travelUpdateDto.getDeparturePoint());
         travel.setComment(travelUpdateDto.getComment());

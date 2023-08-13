@@ -18,7 +18,7 @@ import java.util.List;
 public interface TravelRepository extends JpaRepository<Travel, Long> {
 
     @Modifying
-    @Query("UPDATE Travel AS t SET t.status='INACTIVE' WHERE t.id = :id")
+    @Query("UPDATE Travel AS t SET t.status='DELETED' WHERE t.id = :id")
     void delete(@Param("id") Long id) throws EntityNotFoundException;
 
     @Modifying

@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotEmpty;
 
 import java.time.LocalDateTime;
 
-public class TravelCreationDto {
+public class TravelCreationOrUpdateDto {
     @NotEmpty(message = "Departure point field  cannot be empty!")
     private String departurePoint;
     @NotEmpty(message = "Arrival point field cannot be empty!")
@@ -16,7 +16,7 @@ public class TravelCreationDto {
     private String comment;
 
 
-    public TravelCreationDto() {
+    public TravelCreationOrUpdateDto() {
     }
 
     public String getDeparturePoint() {

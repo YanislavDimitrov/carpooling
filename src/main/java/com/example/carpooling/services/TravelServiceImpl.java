@@ -8,12 +8,15 @@ import com.example.carpooling.models.User;
 import com.example.carpooling.models.dtos.TravelViewDto;
 import com.example.carpooling.models.enums.TravelRequestStatus;
 import com.example.carpooling.models.enums.TravelStatus;
+import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.repositories.contracts.TravelRepository;
 import com.example.carpooling.repositories.contracts.TravelRequestRepository;
 import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.services.contracts.TravelService;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -26,6 +29,7 @@ public class TravelServiceImpl implements TravelService {
     public static final String USER_NOT_FOUND = "User with ID %d does not exist!";
     public static final String TRAVEL_REQUEST_NOT_FOUND = "Travel request with ID %d was not found!";
     public static final String UPDATE_CANCELLED = "You cannot update this travel!";
+    public static final String OPERATION_DENIED = "You are not authorized to complete this operation!";
     private final TravelRepository travelRepository;
     private final TravelRequestRepository travelRequestRepository;
     private final UserRepository userRepository;
@@ -125,7 +129,12 @@ public class TravelServiceImpl implements TravelService {
     }
 
     @Override
-    public void delete(Long id) {
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void delete(Long id , User editor) {
+        if(editor.getRole() != UserRole.ADMIN && getById(id).getDriver() != editor) {
+            throw new AuthorizationException(OPERATION_DENIED);
+        }
+
         travelRepository.delete(id);
     }
 

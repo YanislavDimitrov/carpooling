@@ -1,13 +1,14 @@
 package com.example.carpooling.controllers.rest;
 
 import com.example.carpooling.exceptions.AuthenticationFailureException;
+import com.example.carpooling.exceptions.AuthorizationException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.helpers.mappers.TravelMapper;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
-import com.example.carpooling.models.dtos.TravelCreationDto;
+import com.example.carpooling.models.dtos.TravelCreationOrUpdateDto;
 import com.example.carpooling.models.dtos.TravelUpdateDto;
 import com.example.carpooling.models.dtos.TravelViewDto;
 import com.example.carpooling.models.enums.TravelStatus;
@@ -30,6 +31,8 @@ public class TravelRestController {
     public static final String TRAVEL_NOT_FOUND = "Travel with ID %d was not found!";
     public static final String AUTHENTICATION_ERROR = "Failed to authenticate!";
     public static final String REQUEST_CREATED_SUCCESSFULLY = "Your request has been made successfully!You will receive answer from the driver soon!Thank you for choosing us!";
+    public static final String DELETED_SUCCESSFULLY = "Travel with ID %d was deleted successfully!";
+    public static final String NOT_AUTHORIZED = "You are not authorized to delete this travel!";
     private final TravelService travelService;
     private final TravelMapper travelMapper;
     private final AuthenticationHelper authenticationHelper;
@@ -104,28 +107,47 @@ public class TravelRestController {
         double[] coordinates = bingMapsService.parseCoordinates(locationJson);
         return "Latitude: " + coordinates[0] + ", Longitude: " + coordinates[1];
     }
+
     @PostMapping
-    public TravelViewDto create(@RequestBody TravelCreationDto travelCreationDto , @RequestHeader HttpHeaders headers) {
+    public TravelViewDto create(@RequestBody TravelCreationOrUpdateDto travelCreationOrUpdateDto, @RequestHeader HttpHeaders headers) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
-            Travel travel = travelMapper.toTravelFromTravelCreationDto(travelCreationDto);
-            travelService.create(travel,user);
+            Travel travel = travelMapper.toTravelFromTravelCreationDto(travelCreationOrUpdateDto);
+            travelService.create(travel, user);
             return travelMapper.fromTravel(travel);
         } catch (AuthenticationFailureException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,e.getMessage());
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
+
     @PutMapping("/{id}")
-    public TravelViewDto update( @PathVariable Long id, @RequestBody TravelUpdateDto travelUpdateDto , @RequestHeader HttpHeaders headers) {
+    public TravelViewDto update(@PathVariable Long id, @RequestBody TravelCreationOrUpdateDto travelUpdateDto, @RequestHeader HttpHeaders headers) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
             Travel travel = travelService.getById(id);
-           return travelMapper.fromTravel(travelService
-                   .update(travelMapper.toTravelFromTravelUpdateDto(travel,travelUpdateDto),user));
-        }catch (AuthenticationFailureException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,e.getMessage());
-        }catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage());
+            return travelMapper.fromTravel(travelService
+                    .update(travelMapper.toTravelFromTravelUpdateSaveDto(travel, travelUpdateDto), user));
+        } catch (AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, NOT_AUTHORIZED);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public String delete(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
+        try {
+            User editor = authenticationHelper.tryGetUser(headers);
+            travelService.delete(id, editor);
+            return String.format(DELETED_SUCCESSFULLY, id);
+        } catch (AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, NOT_AUTHORIZED);
         }
     }
 
@@ -142,30 +164,32 @@ public class TravelRestController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
+
     @PostMapping("/approve/{id}")
-    public String approveRequest(@PathVariable Long id , @RequestHeader HttpHeaders headers) {
+    public String approveRequest(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         try {
             TravelRequest travelRequest = travelService.get(id);
             User user = authenticationHelper.tryGetUser(headers);
             travelService.approveRequest(travelRequest.getId());
             return "Your request for travel was approved!";
-        } catch ( EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage());
-        }catch (AuthenticationFailureException e ) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,e.getMessage());
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
+
     @PostMapping("/reject/{id}")
-    public String rejectRequest(@PathVariable Long id , @RequestHeader HttpHeaders headers) {
+    public String rejectRequest(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         try {
             TravelRequest travelRequest = travelService.get(id);
             User user = authenticationHelper.tryGetUser(headers);
             travelService.rejectRequest(id);
             return "Your request for travel was rejected by the driver!";
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage());
-        }catch (AuthenticationFailureException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,e.getMessage());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
 
