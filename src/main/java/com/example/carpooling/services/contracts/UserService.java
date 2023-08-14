@@ -3,6 +3,7 @@ package com.example.carpooling.services.contracts;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.Vehicle;
 import com.example.carpooling.models.dtos.UserUpdateDto;
+import com.example.carpooling.models.dtos.VehicleViewDto;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
@@ -27,4 +28,6 @@ public interface UserService {
     User update(Long id, UserUpdateDto payloadUser, User loggedUser);
 
     Vehicle addVehicle(Long id, Vehicle payloadVehicle, User loggedUser);
+
+    List<Vehicle> getVehiclesByUserId(Long id, User loggedUser);
 }

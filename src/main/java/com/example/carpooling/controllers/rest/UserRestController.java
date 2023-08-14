@@ -205,7 +205,35 @@ public class UserRestController {
     }
 
     /**
-     * Create a car and add it to target user vehicle list.
+     * Get a collection of all vehicles associated to a user.
+     *
+     * @param id             The id of the potential vehicle(s) owner.
+     * @param headers        Autorization key holding Username and Password
+     * @return Collection of vehicles in the specified user vehicle list
+     * @throws AuthenticationFailureException if username or/and password are not recognized
+     * @throws EntityNotFoundException        If user with specified id does not exist
+     * @throws AuthorizationException         If user is not authorized to see vehicles in the specified user vehicle list
+     */
+    @GetMapping("/{id}/vehicles")
+    public List<VehicleViewDto> getVehiclesByUserId(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(headers);
+
+            List<Vehicle> vehiclesByUserId = this.userService.getVehiclesByUserId(id, loggedUser);
+            return vehiclesByUserId
+                    .stream()
+                    .map(vehicle -> this.modelMapper.map(vehicle, VehicleViewDto.class))
+                    .collect(Collectors.toList());
+
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (AuthenticationFailureException | AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        }
+    }
+
+    /**
+     * Create a vehicle and add it to a target user vehicle list.
      *
      * @param id             The id of the potential vehicle owner.
      * @param payloadVehicle The vehicle details that will use to create a new vehicle.
@@ -213,9 +241,8 @@ public class UserRestController {
      * @return The newly created entity.
      * @throws AuthenticationFailureException if username or/and password are not recognized
      * @throws EntityNotFoundException        If user with specified id does not exist
-     * @throws AuthorizationException         If user is not authorized to add vehicle in the user with specified id vehicle list
+     * @throws AuthorizationException         If user is not authorized to add vehicle in the specified user vehicle list
      */
-
     @PostMapping("/{id}/vehicles")
     public VehicleViewDto addVehicleInUser(@PathVariable Long id,
                                            @RequestBody VehicleCreateDto payloadVehicle,

@@ -93,24 +93,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Override
-    public Vehicle addVehicle(Long id, Vehicle payloadVehicle, User loggedUser) {
-        Optional<User> optionalTargetUser = this.userRepository.findById(id);
-
-        if (optionalTargetUser.isEmpty()) {
-            throw new EntityNotFoundException("User", id);
-        }
-        User targetUser = optionalTargetUser.get();
-        if (isAdmin(loggedUser) || isSameUser(loggedUser, targetUser)) {
-            payloadVehicle.setOwner(targetUser);
-            return this.vehicleRepository.save(payloadVehicle);
-        } else {
-            throw new AuthorizationException(
-                    String.format(VEHICLE_CREATE_AUTHORIZATION_MESSAGE
-                            , loggedUser.getUserName()
-                            , id));
-        }
-    }
 
     @Override
     @Transactional
@@ -151,6 +133,42 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public List<Vehicle> getVehiclesByUserId(Long id, User loggedUser) {
+        Optional<User> optionalTargetUser = this.userRepository.findById(id);
+
+        if (optionalTargetUser.isEmpty()) {
+            throw new EntityNotFoundException("User", id);
+        }
+
+        if (isAdmin(loggedUser) || isSameUser(loggedUser, optionalTargetUser.get())) {
+            return this.vehicleRepository.findAllByOwnerId(id);
+        } else {
+            throw new AuthorizationException(
+                    String.format(VEHICLES_VIEW_AUTHORIZATION_MESSAGE
+                            , loggedUser.getUserName()
+                            , id));
+        }
+    }
+
+    @Override
+    public Vehicle addVehicle(Long id, Vehicle payloadVehicle, User loggedUser) {
+        Optional<User> optionalTargetUser = this.userRepository.findById(id);
+
+        if (optionalTargetUser.isEmpty()) {
+            throw new EntityNotFoundException("User", id);
+        }
+        User targetUser = optionalTargetUser.get();
+        if (isAdmin(loggedUser) || isSameUser(loggedUser, targetUser)) {
+            payloadVehicle.setOwner(targetUser);
+            return this.vehicleRepository.save(payloadVehicle);
+        } else {
+            throw new AuthorizationException(
+                    String.format(VEHICLE_CREATE_AUTHORIZATION_MESSAGE
+                            , loggedUser.getUserName()
+                            , id));
+        }
+    }
 
     public Long count() {
         return this.userRepository.count();

@@ -2,6 +2,7 @@ package com.example.carpooling.repositories.contracts;
 
 import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.models.User;
+import com.example.carpooling.models.Vehicle;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -38,5 +39,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying
     @Query("UPDATE User AS u SET u.status='ACTIVE' WHERE u.id = :id")
     void restore(@Param("id") Long id);
-
 }
