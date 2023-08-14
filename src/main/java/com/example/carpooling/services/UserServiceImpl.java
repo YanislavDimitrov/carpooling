@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
             return this.userRepository.save(targetUser);
         } else {
             throw new AuthorizationException(
-                    String.format(UPDATE_AUTHORIZATION_MESSAGE
+                    String.format(UPDATE_USER_AUTHORIZATION_MESSAGE
                             , loggedUser.getUserName()
                             , id));
         }
@@ -108,7 +108,7 @@ public class UserServiceImpl implements UserService {
             this.userRepository.delete(id);
         } else {
             throw new AuthorizationException(
-                    String.format(DELETE_AUTHORIZATION_MESSAGE
+                    String.format(DELETE_USER_AUTHORIZATION_MESSAGE
                             , loggedUser.getUserName()
                             , id));
         }
@@ -127,7 +127,7 @@ public class UserServiceImpl implements UserService {
             this.userRepository.restore(id);
         } else {
             throw new AuthorizationException(
-                    String.format(DELETE_AUTHORIZATION_MESSAGE
+                    String.format(DELETE_USER_AUTHORIZATION_MESSAGE
                             , loggedUser.getUserName()
                             , id));
         }
@@ -145,7 +145,7 @@ public class UserServiceImpl implements UserService {
             return this.vehicleRepository.findAllByOwnerId(id);
         } else {
             throw new AuthorizationException(
-                    String.format(VEHICLES_VIEW_AUTHORIZATION_MESSAGE
+                    String.format(GET_VEHICLES_AUTHORIZATION_MESSAGE
                             , loggedUser.getUserName()
                             , id));
         }
@@ -164,7 +164,7 @@ public class UserServiceImpl implements UserService {
             return this.vehicleRepository.save(payloadVehicle);
         } else {
             throw new AuthorizationException(
-                    String.format(VEHICLE_CREATE_AUTHORIZATION_MESSAGE
+                    String.format(CREATE_VEHICLE_AUTHORIZATION_MESSAGE
                             , loggedUser.getUserName()
                             , id));
         }
@@ -202,7 +202,7 @@ public class UserServiceImpl implements UserService {
         return loggedUser.getRole().equals(UserRole.ADMIN);
     }
 
-    private static boolean isSameUser(User loggedUser, User userToDelete) {
-        return userToDelete.getUserName().equals(loggedUser.getUserName());
+    private static boolean isSameUser(User loggedUser, User targetUser) {
+        return targetUser.getUserName().equals(loggedUser.getUserName());
     }
 }

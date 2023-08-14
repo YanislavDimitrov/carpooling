@@ -30,6 +30,8 @@ public class Vehicle {
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;
+    @Column(name = "is_deleted")
+    private boolean isDeleted;
 
     public Vehicle() {
     }
