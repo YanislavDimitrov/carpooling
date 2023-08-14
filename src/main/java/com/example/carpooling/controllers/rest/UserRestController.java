@@ -204,6 +204,18 @@ public class UserRestController {
         }
     }
 
+    /**
+     * Create a car and add it to target user vehicle list.
+     *
+     * @param id             The id of the potential vehicle owner.
+     * @param payloadVehicle The vehicle details that will use to create a new vehicle.
+     * @param headers        Autorization key holding Username and Password
+     * @return The newly created entity.
+     * @throws AuthenticationFailureException if username or/and password are not recognized
+     * @throws EntityNotFoundException        If user with specified id does not exist
+     * @throws AuthorizationException         If user is not authorized to add vehicle in the user with specified id vehicle list
+     */
+
     @PostMapping("/{id}/vehicles")
     public VehicleViewDto addVehicleInUser(@PathVariable Long id,
                                            @RequestBody VehicleCreateDto payloadVehicle,
