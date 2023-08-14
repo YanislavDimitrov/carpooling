@@ -21,11 +21,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "AND (:email IS NULL OR u.email LIKE :email) " +
             "AND (:phoneNumber IS NULL OR u.phoneNumber = :phoneNumber) ")
     List<User> findByCriteria(
-            @Param("firstName") String firstName,
-            @Param("lastName") String lastName,
-            @Param("username") String username,
-            @Param("email") String email,
-            @Param("phoneNumber") String phoneNumber,
+            String firstName,
+            String lastName,
+            String username,
+            String email,
+            String phoneNumber,
             Sort sort
     );
 

@@ -4,9 +4,11 @@ import com.example.carpooling.exceptions.AuthorizationException;
 import com.example.carpooling.exceptions.DuplicateEntityException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.models.User;
+import com.example.carpooling.models.Vehicle;
 import com.example.carpooling.models.dtos.UserUpdateDto;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.repositories.contracts.UserRepository;
+import com.example.carpooling.repositories.contracts.VehicleRepository;
 import com.example.carpooling.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -22,10 +24,12 @@ import static com.example.carpooling.helpers.CustomMessages.*;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final VehicleRepository vehicleRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, VehicleRepository vehicleRepository) {
         this.userRepository = userRepository;
+        this.vehicleRepository = vehicleRepository;
     }
 
     @Override
@@ -84,6 +88,25 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new AuthorizationException(
                     String.format(UPDATE_AUTHORIZATION_MESSAGE
+                            , loggedUser.getUserName()
+                            , id));
+        }
+    }
+
+    @Override
+    public Vehicle addVehicle(Long id, Vehicle payloadVehicle, User loggedUser) {
+        Optional<User> optionalTargetUser = this.userRepository.findById(id);
+
+        if (optionalTargetUser.isEmpty()) {
+            throw new EntityNotFoundException("User", id);
+        }
+        User targetUser = optionalTargetUser.get();
+        if (isAdmin(loggedUser) || isSameUser(loggedUser, targetUser)) {
+            payloadVehicle.setOwner(targetUser);
+            return this.vehicleRepository.save(payloadVehicle);
+        } else {
+            throw new AuthorizationException(
+                    String.format(VEHICLE_CREATE_AUTHORIZATION_MESSAGE
                             , loggedUser.getUserName()
                             , id));
         }

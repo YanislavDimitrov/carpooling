@@ -6,9 +6,8 @@ import com.example.carpooling.exceptions.DuplicateEntityException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.models.User;
-import com.example.carpooling.models.dtos.UserCreateDto;
-import com.example.carpooling.models.dtos.UserUpdateDto;
-import com.example.carpooling.models.dtos.UserViewDto;
+import com.example.carpooling.models.Vehicle;
+import com.example.carpooling.models.dtos.*;
 import com.example.carpooling.services.contracts.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -198,10 +197,25 @@ public class UserRestController {
         try {
             User loggedUser = authenticationHelper.tryGetUser(headers);
             this.userService.restore(id, loggedUser);
-        } catch (AuthorizationException | AuthenticationFailureException e) {
+        } catch (AuthenticationFailureException | AuthorizationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    @PostMapping("/{id}/vehicles")
+    public VehicleViewDto addVehicleInUser(@PathVariable Long id,
+                                           @RequestBody VehicleCreateDto payloadVehicle,
+                                           @RequestHeader HttpHeaders headers) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(headers);
+            Vehicle vehicle = this.modelMapper.map(payloadVehicle, Vehicle.class);
+            return this.modelMapper.map(this.userService.addVehicle(id, vehicle, loggedUser), VehicleViewDto.class);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (AuthenticationFailureException | AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
 }

@@ -1,37 +1,17 @@
-package com.example.carpooling.models;
+package com.example.carpooling.models.dtos;
 
-import com.example.carpooling.models.enums.VehicleType;
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.example.carpooling.models.User;
 
-@Table(name = "vehicles")
-@Entity
-//@Getter
-//@Setter
-//@NoArgsConstructor
-public class Vehicle {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class VehicleViewDto {
     private Long id;
-    @Column
     private String make;
-    @Column
     private String model;
-    @Column(name = "licence_plate_number")
     private String licencePlateNumber;
-    @Column
     private String color;
-    @Enumerated(EnumType.STRING)
-    private VehicleType type;
-    @Column(name = "year_of_production")
     private String yearOfProduction;
-    @ManyToOne
-    @JoinColumn(name = "owner_id")
-    private User owner;
+    private UserViewDto owner;
 
-    public Vehicle() {
+    public VehicleViewDto() {
     }
 
     public Long getId() {
@@ -74,14 +54,6 @@ public class Vehicle {
         this.color = color;
     }
 
-    public VehicleType getType() {
-        return type;
-    }
-
-    public void setType(VehicleType type) {
-        this.type = type;
-    }
-
     public String getYearOfProduction() {
         return yearOfProduction;
     }
@@ -90,11 +62,11 @@ public class Vehicle {
         this.yearOfProduction = yearOfProduction;
     }
 
-    public User getOwner() {
+    public UserViewDto getOwner() {
         return owner;
     }
 
-    public void setOwner(User owner) {
+    public void setOwner(UserViewDto owner) {
         this.owner = owner;
     }
 }
