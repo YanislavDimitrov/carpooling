@@ -26,7 +26,6 @@ import java.util.List;
 @RestController
 @RequestMapping("api/feedbacks")
 public class FeedbackRestController {
-
     public static final String NOT_AUTHORIZED = "You are not authorized to access this endpoint!";
     public static final String FEEDBACK_DELETED = "Feedback with ID %d was successfully deleted by %s";
     private final FeedbackService feedbackService;
@@ -35,7 +34,6 @@ public class FeedbackRestController {
 
     private final FeedbackMapper feedbackMapper;
     private final AuthenticationHelper authenticationHelper;
-
     @Autowired
     public FeedbackRestController(FeedbackService feedbackService, TravelService travelService, UserService userService, FeedbackMapper feedbackMapper, AuthenticationHelper authenticationHelper) {
         this.feedbackService = feedbackService;
@@ -44,7 +42,6 @@ public class FeedbackRestController {
         this.feedbackMapper = feedbackMapper;
         this.authenticationHelper = authenticationHelper;
     }
-
     @GetMapping
     public List<FeedbackViewDto> get(@RequestHeader HttpHeaders headers,
                                      @RequestParam(required = false) Short rating,
@@ -75,7 +72,6 @@ public class FeedbackRestController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, NOT_AUTHORIZED);
         }
     }
-
     @GetMapping("/{id}")
     public FeedbackViewDto get(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         try {
@@ -87,7 +83,6 @@ public class FeedbackRestController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
-
     @PostMapping("/travel/{travelId}/user/{userId}")
     public FeedbackViewDto create(@PathVariable Long travelId,
                                   @PathVariable Long userId,
@@ -107,7 +102,6 @@ public class FeedbackRestController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
-
     @PutMapping("/{id}")
     public FeedbackViewDto update(@PathVariable Long id,
                                   @RequestHeader HttpHeaders headers,
