@@ -159,21 +159,52 @@ public class TravelRestController {
         }
     }
 
+    /**
+     * @param id this parameter is used to check if a travel with this id is existing
+     * @param headers this parameter is used to authenticate the user who is trying to check the passengers
+     * @return List<UserViewDto> which is full of passengers for the certain travel if there are any , otherwise empty list
+     * @throws  EntityNotFoundException if a travel with this ID is not existing
+     * @throws AuthenticationFailureException if the user is not authenticated
+     */
     @GetMapping("/{id}/passengers")
     public List<UserViewDto> getPassengersForTravel(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         try {
-            User userToAuthenticate = authenticationHelper.tryGetUser(headers);
-            Travel travel = travelService.getById(id);
-            List<User> passengers = travel.getTravelRequests().stream()
-                    .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.ACCEPTED)
-                    .map(TravelRequest::getPassenger)
-                    .collect(Collectors.toList());
+            return getAllPassengersForTravel(id, headers);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(TRAVEL_NOT_FOUND, id));
+        } catch (AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        }
+
+    }
+    @GetMapping("/{id}/pending")
+    public List<UserViewDto> getPendingPassengersForTravel(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
+        try {
+            return getAllPassengersForTravel(id, headers);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(TRAVEL_NOT_FOUND, id));
+        } catch (AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        }
+
+    }
+
+    private List<UserViewDto> getAllPassengersForTravel(Long id, HttpHeaders headers) {
+        User userToAuthenticate = authenticationHelper.tryGetUser(headers);
+        Travel travel = travelService.getById(id);
+        List<User> passengers = convertTravelRequestToListOfUsers(travel);
 
         return passengers.stream().map(user -> {
             UserViewDto dto = this.modelMapper.map(user, UserViewDto.class);
             dto.setFullName(String.format("%s %s", user.getFirstName(), user.getLastName()));
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    @GetMapping("/{id}/rejected")
+    public List<UserViewDto> getRejectedPassengersForTravel(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
+        try {
+            return getAllPassengersForTravel(id, headers);
 
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(TRAVEL_NOT_FOUND, id));
@@ -181,6 +212,14 @@ public class TravelRestController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
 
+    }
+
+    private static List<User> convertTravelRequestToListOfUsers(Travel travel) {
+        List<User> passengers = travel.getTravelRequests().stream()
+                .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.PENDING)
+                .map(TravelRequest::getPassenger)
+                .collect(Collectors.toList());
+        return passengers;
     }
 
     @PostMapping("/{id}/apply")
@@ -196,7 +235,6 @@ public class TravelRestController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
-
     @PostMapping("/approve/{id}")
     public String approveRequest(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         try {
@@ -210,7 +248,6 @@ public class TravelRestController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
-
     @PostMapping("/reject/{id}")
     public String rejectRequest(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         try {

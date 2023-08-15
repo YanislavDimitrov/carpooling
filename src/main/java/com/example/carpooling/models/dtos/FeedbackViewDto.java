@@ -9,12 +9,22 @@ public class FeedbackViewDto {
    @NotEmpty(message = "Creator field cannot be empty!")
     private String creator;
    @NotEmpty(message = "Travel ID cannot be empty!")
-    private Long id;
+    private Long travelId;
+   @NotEmpty(message = "Recipient field cannot be empty!")
+   private String recipient;
     private String comment;
 
     private Short rating;
 
     public FeedbackViewDto() {
+    }
+
+    public String getRecipient() {
+        return recipient;
+    }
+
+    public void setRecipient(String recipient) {
+        this.recipient = recipient;
     }
 
     public String getCreator() {
@@ -25,12 +35,12 @@ public class FeedbackViewDto {
         this.creator = creator;
     }
 
-    public Long getId() {
-        return id;
+    public Long getTravelId() {
+        return travelId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setTravelId(Long travelId) {
+        this.travelId = travelId;
     }
 
     public String getComment() {

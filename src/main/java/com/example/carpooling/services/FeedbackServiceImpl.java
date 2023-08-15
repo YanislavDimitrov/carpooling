@@ -38,8 +38,8 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     @Override
-    public List<Feedback> findByCriteria(String driver, TravelStatus status, Short freeSpots, LocalDateTime departureTime, Sort sort) {
-        return null;
+    public List<Feedback> findByCriteria(Short rating, String comment, Sort sort) {
+        return feedbackRepository.findByCriteria(rating,comment,sort);
     }
 
     @Override

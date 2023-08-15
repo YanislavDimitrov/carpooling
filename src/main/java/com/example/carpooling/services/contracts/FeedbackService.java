@@ -13,10 +13,8 @@ public interface FeedbackService {
 
     Feedback getById(Long id);
 
-    List<Feedback> findByCriteria(String driver,
-                                TravelStatus status,
-                                Short freeSpots,
-                                LocalDateTime departureTime,
+    List<Feedback> findByCriteria(Short rating,
+                                String comment,
                                 Sort sort);
     List<Feedback> findAll(Sort sort);
 
