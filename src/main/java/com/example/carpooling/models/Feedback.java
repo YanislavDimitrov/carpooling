@@ -27,8 +27,18 @@ public class Feedback {
     private String comment;
     @Column(name = "rating")
     private Short rating;
+    @Column(name = "is_deleted")
+    private boolean isDeleted;
 
     public Feedback() {
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
     }
 
     public User getRecipient() {

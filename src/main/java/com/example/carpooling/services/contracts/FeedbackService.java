@@ -25,5 +25,5 @@ public interface FeedbackService {
 
     Feedback update(Feedback originalFeedback , Feedback updateFeedback , User editor);
 
-    void delete(Long id);
+    void delete(Long id,User editor);
 }

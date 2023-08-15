@@ -28,6 +28,7 @@ import java.util.List;
 public class FeedbackRestController {
 
     public static final String NOT_AUTHORIZED = "You are not authorized to access this endpoint!";
+    public static final String FEEDBACK_DELETED = "Feedback with ID %d was successfully deleted by %s";
     private final FeedbackService feedbackService;
     private final TravelService travelService;
     private final UserService userService;
@@ -118,6 +119,19 @@ public class FeedbackRestController {
            return feedbackMapper.toDtoFromFeedback(feedbackService.update(originalFeedback,feedbackUpdate,editor));
         } catch (AuthenticationFailureException | AuthorizationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        }
+    }
+    @DeleteMapping("/{id}")
+    public String delete(@PathVariable Long id , @RequestHeader HttpHeaders headers) {
+        try {
+            User editor = authenticationHelper.tryGetUser(headers);
+            Feedback feedback = feedbackService.getById(id);
+            feedbackService.delete(feedback.getId(),editor);
+            return String.format(FEEDBACK_DELETED,id,editor.getUserName());
+        } catch (AuthenticationFailureException | AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,e.getMessage());
+        }catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage());
         }
     }
 }

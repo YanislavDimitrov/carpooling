@@ -14,6 +14,8 @@ import com.example.carpooling.services.contracts.FeedbackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -99,7 +101,15 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     @Override
-    public void delete(Long id) {
-
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void delete(Long id, User editor) {
+        if (!feedbackRepository.existsById(id)) {
+            throw new EntityNotFoundException(String.format(FEEDBACK_NOT_FOUND, id));
+        }
+        Feedback feedback = getById(id);
+        if (feedback.getCreator() != editor) {
+            throw new AuthorizationException(NOT_AUTHORIZED);
+        }
+        feedbackRepository.delete(id);
     }
 }
