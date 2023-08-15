@@ -2,6 +2,7 @@ package com.example.carpooling.controllers.rest;
 
 import com.example.carpooling.exceptions.AuthenticationFailureException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
+import com.example.carpooling.exceptions.TravelNotCompletedException;
 import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.helpers.mappers.FeedbackMapper;
 import com.example.carpooling.models.Feedback;
@@ -84,20 +85,23 @@ public class FeedbackRestController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
-//    @PostMapping("/travel/{travelId}/user/{userId}")
-//    public FeedbackViewDto create(@PathVariable Long travelId,
-//                                  @PathVariable Long userId,
-//                                  @RequestHeader HttpHeaders headers,
-//                                  @RequestBody FeedbackCreateDto feedbackCreateDto) {
-//        try {
-//            Travel travel = travelService.getById(travelId);
-//            User creator = authenticationHelper.tryGetUser(headers);
-//            User recipient = userService.getById(userId);
-////            feedbackService.create();
-//        }catch (EntityNotFoundException e) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage());
-//        }catch (AuthenticationFailureException e) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,e.getMessage());
-//        }
-//    }
+    @PostMapping("/travel/{travelId}/user/{userId}")
+    public FeedbackViewDto create(@PathVariable Long travelId,
+                                  @PathVariable Long userId,
+                                  @RequestHeader HttpHeaders headers,
+                                  @RequestBody FeedbackCreateDto feedbackCreateDto) {
+        try {
+            Travel travel = travelService.getById(travelId);
+            User creator = authenticationHelper.tryGetUser(headers);
+            User recipient = userService.getById(userId);
+            Feedback feedback = feedbackMapper.fromCreationDto(feedbackCreateDto);
+         return feedbackMapper.toDtoFromFeedback(feedbackService.create(travel,creator,recipient,feedback));
+        }catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage());
+        }catch (AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,e.getMessage());
+        }catch (TravelNotCompletedException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
+        }
+    }
 }

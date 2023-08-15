@@ -2,6 +2,7 @@ package com.example.carpooling.services.contracts;
 
 import com.example.carpooling.models.Feedback;
 import com.example.carpooling.models.Travel;
+import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.TravelStatus;
 import org.springframework.data.domain.Sort;
 
@@ -20,7 +21,7 @@ public interface FeedbackService {
 
     Long count ();
 
-    void create( Long userId , Long travelId);
+    Feedback create(Travel travel , User creator , User recipient , Feedback feedback);
 
     void update(Long id);
 
