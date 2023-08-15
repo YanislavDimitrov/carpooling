@@ -23,7 +23,7 @@ public interface FeedbackService {
 
     Feedback create(Travel travel , User creator , User recipient , Feedback feedback);
 
-    void update(Long id);
+    Feedback update(Feedback originalFeedback , Feedback updateFeedback , User editor);
 
     void delete(Long id);
 }

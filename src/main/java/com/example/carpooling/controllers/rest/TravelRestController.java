@@ -159,11 +159,25 @@ public class TravelRestController {
         }
     }
 
+    @PutMapping("/{id}/complete")
+    public TravelViewDto completeTravel(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
+        try {
+            User user = authenticationHelper.tryGetUser(headers);
+            Travel travel = travelService.getById(id);
+            travelService.completeTravel(id,user);
+            return travelMapper.fromTravel(travel);
+        } catch (AuthenticationFailureException | AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
     /**
-     * @param id this parameter is used to check if a travel with this id is existing
+     * @param id      this parameter is used to check if a travel with this id is existing
      * @param headers this parameter is used to authenticate the user who is trying to check the passengers
      * @return List<UserViewDto> which is full of passengers for the certain travel if there are any , otherwise empty list
-     * @throws  EntityNotFoundException if a travel with this ID is not existing
+     * @throws EntityNotFoundException        if a travel with this ID is not existing
      * @throws AuthenticationFailureException if the user is not authenticated
      */
     @GetMapping("/{id}/passengers")
@@ -177,6 +191,7 @@ public class TravelRestController {
         }
 
     }
+
     @GetMapping("/{id}/pending")
     public List<UserViewDto> getPendingPassengersForTravel(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         try {
@@ -234,6 +249,7 @@ public class TravelRestController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
+
     @PostMapping("/approve/{id}")
     public String approveRequest(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         try {
@@ -247,6 +263,7 @@ public class TravelRestController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
+
     @PostMapping("/reject/{id}")
     public String rejectRequest(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         try {

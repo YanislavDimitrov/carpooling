@@ -43,6 +43,7 @@ public class User {
     @OneToMany(mappedBy = "passenger")
     private List<TravelRequest> travelsAsPassenger;
 
+
     public User() {
         travelsAsPassenger = new ArrayList<>();
         travelsAsDriver = new ArrayList<>();

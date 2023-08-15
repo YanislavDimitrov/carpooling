@@ -1,6 +1,7 @@
 package com.example.carpooling.controllers.rest;
 
 import com.example.carpooling.exceptions.AuthenticationFailureException;
+import com.example.carpooling.exceptions.AuthorizationException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.exceptions.TravelNotCompletedException;
 import com.example.carpooling.helpers.AuthenticationHelper;
@@ -85,6 +86,7 @@ public class FeedbackRestController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
+
     @PostMapping("/travel/{travelId}/user/{userId}")
     public FeedbackViewDto create(@PathVariable Long travelId,
                                   @PathVariable Long userId,
@@ -95,13 +97,27 @@ public class FeedbackRestController {
             User creator = authenticationHelper.tryGetUser(headers);
             User recipient = userService.getById(userId);
             Feedback feedback = feedbackMapper.fromCreationDto(feedbackCreateDto);
-         return feedbackMapper.toDtoFromFeedback(feedbackService.create(travel,creator,recipient,feedback));
-        }catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage());
-        }catch (AuthenticationFailureException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,e.getMessage());
-        }catch (TravelNotCompletedException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
+            return feedbackMapper.toDtoFromFeedback(feedbackService.create(travel, creator, recipient, feedback));
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (TravelNotCompletedException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
+    public FeedbackViewDto update(@PathVariable Long id,
+                                  @RequestHeader HttpHeaders headers,
+                                  @RequestBody FeedbackCreateDto feedbackCreateDto) {
+        try {
+            User editor = authenticationHelper.tryGetUser(headers);
+            Feedback originalFeedback = feedbackService.getById(id);
+            Feedback feedbackUpdate = feedbackMapper.fromCreationDto(feedbackCreateDto);
+           return feedbackMapper.toDtoFromFeedback(feedbackService.update(originalFeedback,feedbackUpdate,editor));
+        } catch (AuthenticationFailureException | AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
 }

@@ -1,6 +1,8 @@
 package com.example.carpooling.helpers.mappers;
 
 import com.example.carpooling.models.Feedback;
+import com.example.carpooling.models.Travel;
+import com.example.carpooling.models.User;
 import com.example.carpooling.models.dtos.FeedbackCreateDto;
 import com.example.carpooling.models.dtos.FeedbackViewDto;
 import com.example.carpooling.services.contracts.FeedbackService;
@@ -33,7 +35,7 @@ public class FeedbackMapper {
         return feedbackViewDto;
     }
 
-    public Feedback toFeedbackFromFeedbackViewDto(FeedbackViewDto feedbackViewDto , Long id) {
+    public Feedback toFeedbackFromFeedbackViewDto(FeedbackViewDto feedbackViewDto, Long id) {
         Feedback feedback = feedbackService.getById(id);
         feedback.setTravel(travelService.getById(feedbackViewDto.getTravelId()));
         feedback.setCreator(userService.getByUsername(feedbackViewDto.getCreator()));
@@ -43,9 +45,8 @@ public class FeedbackMapper {
         return feedback;
     }
 
-    public Feedback fromCreationDto( FeedbackCreateDto feedbackCreateDto) {
-        Feedback feedback = new Feedback() ;
-
+    public Feedback fromCreationDto(FeedbackCreateDto feedbackCreateDto) {
+        Feedback feedback = new Feedback();
         feedback.setComment(feedbackCreateDto.getComment());
         feedback.setRating(feedbackCreateDto.getRating());
 

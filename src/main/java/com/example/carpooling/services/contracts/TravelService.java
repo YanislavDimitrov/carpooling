@@ -31,7 +31,7 @@ public interface TravelService {
 
     void delete(Long id , User editor);
 
-    void completeTravel(Long id);
+    Travel completeTravel(Long id , User editor);
 
     void cancelTravel(Long id);
 

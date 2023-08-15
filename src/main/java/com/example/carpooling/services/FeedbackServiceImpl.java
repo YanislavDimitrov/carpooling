@@ -1,5 +1,6 @@
 package com.example.carpooling.services;
 
+import com.example.carpooling.exceptions.AuthorizationException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.exceptions.TravelNotCompletedException;
 import com.example.carpooling.models.Feedback;
@@ -19,10 +20,11 @@ import java.util.List;
 @Service
 public class FeedbackServiceImpl implements FeedbackService {
 
-    public static final String FEEDBACK_NOT_FOUND = "Feedback with ID %f was not found!";
+    public static final String FEEDBACK_NOT_FOUND = "Feedback with ID %d was not found!";
     public static final String TRAVEL_NOT_FOUND = "Travel with ID %d was not found!";
     public static final String USER_NOT_FOUND = "User with ID %d was not found";
     public static final String TRAVEL_NOT_COMPLETED = "Travel with ID %d has not been completed so you cannot leave feedback now.";
+    public static final String NOT_AUTHORIZED = "You are not authorized to update feedback because only creators of the feedback can update it!";
     private final FeedbackRepository feedbackRepository;
     private final TravelRepository travelRepository;
     private final UserRepository userRepository;
@@ -83,8 +85,17 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     @Override
-    public void update(Long id) {
-
+    public Feedback update(Feedback originalFeedback, Feedback feedbackUpdate, User editor) {
+        if (!feedbackRepository.existsById(originalFeedback.getId())) {
+            throw new EntityNotFoundException(String.format(FEEDBACK_NOT_FOUND, originalFeedback.getId()));
+        }
+        if (originalFeedback.getCreator() != editor) {
+            throw new AuthorizationException(NOT_AUTHORIZED);
+        }
+        originalFeedback.setRating(feedbackUpdate.getRating());
+        originalFeedback.setComment(feedbackUpdate.getComment());
+        feedbackRepository.save(originalFeedback);
+        return originalFeedback;
     }
 
     @Override

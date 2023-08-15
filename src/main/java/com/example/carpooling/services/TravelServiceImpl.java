@@ -146,13 +146,15 @@ public class TravelServiceImpl implements TravelService {
      *               fields so this is the new travel to be persisted in the database
      * @param editor this parameters refers to the person who is trying to update the travel
      * @return updated Travel
-     *
      * @throws AuthorizationException if the editor is not the driver of the travel.
      */
     @Override
     public Travel update(Travel travel, User editor) {
         if (travel.getDriver() != editor) {
             throw new AuthorizationException(UPDATE_CANCELLED);
+        }
+        if(!travelRepository.existsById(travel.getId())) {
+            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND,travel.getId()));
         }
         calculatingDistanceAndDuration(travel);
         travelRepository.save(travel);
@@ -172,6 +174,9 @@ public class TravelServiceImpl implements TravelService {
         if (editor.getRole() != UserRole.ADMIN && getById(id).getDriver() != editor) {
             throw new AuthorizationException(OPERATION_DENIED);
         }
+        if(!travelRepository.existsById(id)) {
+            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND,id));
+        }
 
         travelRepository.delete(id);
     }
@@ -181,9 +186,17 @@ public class TravelServiceImpl implements TravelService {
      *           This method is changing the status of a certain travel with status 'COMPLETED'
      */
     @Override
-    public void completeTravel(Long id) {
-
+    @Transactional(propagation = Propagation.REQUIRED)
+    public Travel completeTravel(Long id , User editor) {
+        if (!travelRepository.existsById(id)) {
+            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, id));
+        }
+        Travel travel = getById(id);
+        if(travel.getDriver() != editor) {
+            throw new AuthorizationException(OPERATION_DENIED);
+        }
         travelRepository.completeTravel(id);
+        return travel;
     }
 
     /**
@@ -192,6 +205,9 @@ public class TravelServiceImpl implements TravelService {
      */
     @Override
     public void cancelTravel(Long id) {
+        if(!travelRepository.existsById(id)) {
+            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND,id));
+        }
         travelRepository.delete(id);
     }
 
