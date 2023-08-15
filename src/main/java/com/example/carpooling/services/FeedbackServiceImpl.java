@@ -53,8 +53,10 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     @Override
-    public void create(Feedback feedback) {
-        feedbackRepository.save(feedback);
+    public void create( Long userId , Long travelId) {
+//
+//
+//        feedbackRepository.save(feedback);
     }
 
     @Override

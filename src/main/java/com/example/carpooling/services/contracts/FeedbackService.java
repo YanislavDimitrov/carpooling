@@ -20,7 +20,7 @@ public interface FeedbackService {
 
     Long count ();
 
-    void create(Feedback feedback);
+    void create( Long userId , Long travelId);
 
     void update(Long id);
 

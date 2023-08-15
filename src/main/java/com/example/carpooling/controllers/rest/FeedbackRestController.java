@@ -5,9 +5,13 @@ import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.helpers.mappers.FeedbackMapper;
 import com.example.carpooling.models.Feedback;
+import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.User;
+import com.example.carpooling.models.dtos.FeedbackCreateDto;
 import com.example.carpooling.models.dtos.FeedbackViewDto;
 import com.example.carpooling.services.contracts.FeedbackService;
+import com.example.carpooling.services.contracts.TravelService;
+import com.example.carpooling.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
@@ -23,13 +27,17 @@ public class FeedbackRestController {
 
     public static final String NOT_AUTHORIZED = "You are not authorized to access this endpoint!";
     private final FeedbackService feedbackService;
+    private final TravelService travelService;
+    private final UserService userService;
 
     private final FeedbackMapper feedbackMapper;
     private final AuthenticationHelper authenticationHelper;
 
     @Autowired
-    public FeedbackRestController(FeedbackService feedbackService, FeedbackMapper feedbackMapper, AuthenticationHelper authenticationHelper) {
+    public FeedbackRestController(FeedbackService feedbackService, TravelService travelService, UserService userService, FeedbackMapper feedbackMapper, AuthenticationHelper authenticationHelper) {
         this.feedbackService = feedbackService;
+        this.travelService = travelService;
+        this.userService = userService;
         this.feedbackMapper = feedbackMapper;
         this.authenticationHelper = authenticationHelper;
     }
@@ -76,4 +84,20 @@ public class FeedbackRestController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
+//    @PostMapping("/travel/{travelId}/user/{userId}")
+//    public FeedbackViewDto create(@PathVariable Long travelId,
+//                                  @PathVariable Long userId,
+//                                  @RequestHeader HttpHeaders headers,
+//                                  @RequestBody FeedbackCreateDto feedbackCreateDto) {
+//        try {
+//            Travel travel = travelService.getById(travelId);
+//            User creator = authenticationHelper.tryGetUser(headers);
+//            User recipient = userService.getById(userId);
+////            feedbackService.create();
+//        }catch (EntityNotFoundException e) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage());
+//        }catch (AuthenticationFailureException e) {
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,e.getMessage());
+//        }
+//    }
 }
