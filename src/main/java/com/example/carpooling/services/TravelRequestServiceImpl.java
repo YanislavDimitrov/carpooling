@@ -67,12 +67,13 @@ public class TravelRequestServiceImpl implements TravelRequestService {
      *           to approve the request of the user
      * @throws EntityNotFoundException if a travel request with this ID is not existing
      */
+    //ToDo add validation if the driver is approving the request
     @Override
     public void approveRequest(Long id) {
         TravelRequest request = travelRequestRepository
                 .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(TRAVEL_REQUEST_NOT_FOUND, id)));
-        request.setStatus(TravelRequestStatus.ACCEPTED);
+        request.setStatus(TravelRequestStatus.APPROVED);
         travelRequestRepository.save(request);
     }
 

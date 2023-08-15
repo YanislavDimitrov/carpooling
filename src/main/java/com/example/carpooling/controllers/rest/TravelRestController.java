@@ -164,7 +164,7 @@ public class TravelRestController {
         try {
             User user = authenticationHelper.tryGetUser(headers);
             Travel travel = travelService.getById(id);
-            travelService.completeTravel(id,user);
+            travelService.completeTravel(id, user);
             return travelMapper.fromTravel(travel);
         } catch (AuthenticationFailureException | AuthorizationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
@@ -195,7 +195,17 @@ public class TravelRestController {
     @GetMapping("/{id}/pending")
     public List<UserViewDto> getPendingPassengersForTravel(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         try {
-            return getAllPassengersForTravel(id, headers);
+            User userToAuthenticate = authenticationHelper.tryGetUser(headers);
+            Travel travel = travelService.getById(id);
+            List<User> passengers = travel.getTravelRequests().stream()
+                    .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.PENDING)
+                    .map(TravelRequest::getPassenger)
+                    .collect(Collectors.toList());
+
+            return passengers.stream().map(user -> {
+                UserViewDto dto = this.modelMapper.map(user, UserViewDto.class);
+                return dto;
+            }).collect(Collectors.toList());
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(TRAVEL_NOT_FOUND, id));
         } catch (AuthenticationFailureException e) {
@@ -207,7 +217,10 @@ public class TravelRestController {
     private List<UserViewDto> getAllPassengersForTravel(Long id, HttpHeaders headers) {
         User userToAuthenticate = authenticationHelper.tryGetUser(headers);
         Travel travel = travelService.getById(id);
-        List<User> passengers = convertTravelRequestToListOfUsers(travel);
+        List<User> passengers = travel.getTravelRequests().stream()
+                .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.APPROVED)
+                .map(TravelRequest::getPassenger)
+                .collect(Collectors.toList());
 
         return passengers.stream().map(user -> {
             UserViewDto dto = this.modelMapper.map(user, UserViewDto.class);
@@ -218,7 +231,17 @@ public class TravelRestController {
     @GetMapping("/{id}/rejected")
     public List<UserViewDto> getRejectedPassengersForTravel(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         try {
-            return getAllPassengersForTravel(id, headers);
+            User userToAuthenticate = authenticationHelper.tryGetUser(headers);
+            Travel travel = travelService.getById(id);
+            List<User> passengers = travel.getTravelRequests().stream()
+                    .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.REJECTED)
+                    .map(TravelRequest::getPassenger)
+                    .collect(Collectors.toList());
+
+            return passengers.stream().map(user -> {
+                UserViewDto dto = this.modelMapper.map(user, UserViewDto.class);
+                return dto;
+            }).collect(Collectors.toList());
 
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(TRAVEL_NOT_FOUND, id));
@@ -228,7 +251,7 @@ public class TravelRestController {
 
     }
 
-    private static List<User> convertTravelRequestToListOfUsers(Travel travel) {
+    private static List<User> convertTravelRequestToListOfPendingUsers(Travel travel) {
         List<User> passengers = travel.getTravelRequests().stream()
                 .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.PENDING)
                 .map(TravelRequest::getPassenger)
