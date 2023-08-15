@@ -196,7 +196,6 @@ public class TravelRestController {
 
         return passengers.stream().map(user -> {
             UserViewDto dto = this.modelMapper.map(user, UserViewDto.class);
-            dto.setFullName(String.format("%s %s", user.getFirstName(), user.getLastName()));
             return dto;
         }).collect(Collectors.toList());
     }
