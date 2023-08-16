@@ -11,11 +11,11 @@ public class TravelRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User passenger;
    @JsonIgnore
-   @ManyToOne(fetch = FetchType.LAZY)
+   @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "travel_id")
     private Travel travel;
     @Enumerated(EnumType.STRING)
@@ -23,6 +23,7 @@ public class TravelRequest {
 
 
     public TravelRequest() {
+        status = TravelRequestStatus.PENDING;
     }
 
     public Long getId() {

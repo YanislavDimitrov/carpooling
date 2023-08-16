@@ -9,10 +9,10 @@ import java.util.List;
 public interface TravelRequestService {
     List<TravelRequest> get();
     TravelRequest get(Long id);
-    TravelRequest createRequest(Travel travel, User user);
+    String createRequest(Travel travel, User user);
     void update(TravelRequest travelRequest, User editor);
     void delete(Long id,User editor);
-    void approveRequest(Long id);
-    void rejectRequest(Long id);
+    void approveRequest(Long id , User editor);
+    void rejectRequest(Long id , User editor);
 
 }

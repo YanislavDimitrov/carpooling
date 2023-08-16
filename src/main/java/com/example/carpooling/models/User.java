@@ -42,11 +42,22 @@ public class User {
     @JsonIgnore
     @OneToMany(mappedBy = "passenger")
     private List<TravelRequest> travelsAsPassenger;
-
+    @JsonIgnore
+    @OneToMany(mappedBy = "recipient")
+    private List<Feedback> feedbacks;
 
     public User() {
         travelsAsPassenger = new ArrayList<>();
         travelsAsDriver = new ArrayList<>();
+        feedbacks = new ArrayList<>();
+    }
+
+    public List<Feedback> getFeedbacks() {
+        return feedbacks;
+    }
+
+    public void setFeedbacks(List<Feedback> feedbacks) {
+        this.feedbacks = feedbacks;
     }
 
     public List<Travel> getTravelsAsDriver() {

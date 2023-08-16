@@ -31,6 +31,7 @@ public class Feedback {
     private boolean isDeleted;
 
     public Feedback() {
+        isDeleted = false;
     }
 
     public boolean isDeleted() {

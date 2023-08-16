@@ -2,6 +2,7 @@ package com.example.carpooling.services;
 
 import com.example.carpooling.exceptions.AuthorizationException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
+import com.example.carpooling.exceptions.InvalidFeedbackException;
 import com.example.carpooling.exceptions.TravelNotCompletedException;
 import com.example.carpooling.models.Feedback;
 import com.example.carpooling.models.Travel;
@@ -27,6 +28,8 @@ public class FeedbackServiceImpl implements FeedbackService {
     public static final String USER_NOT_FOUND = "User with ID %d was not found";
     public static final String TRAVEL_NOT_COMPLETED = "Travel with ID %d has not been completed so you cannot leave feedback now.";
     public static final String NOT_AUTHORIZED = "You are not authorized to update feedback because only creators of the feedback can update it!";
+    public static final String INVALID_FEEDBACK = "You cannot give feedback for this person if he was not part of this travel!";
+    public static final String NOT_PART_OF_TRAVEL = "You were not a part of this travel so you cannot leave feedback!";
     private final FeedbackRepository feedbackRepository;
     private final TravelRepository travelRepository;
     private final UserRepository userRepository;
@@ -78,6 +81,12 @@ public class FeedbackServiceImpl implements FeedbackService {
         }
         if (travel.getStatus() != TravelStatus.COMPLETED) {
             throw new TravelNotCompletedException(String.format(TRAVEL_NOT_COMPLETED, travel.getId()));
+        }
+        if(!recipient.getTravelsAsDriver().contains(travel) || !recipient.getTravelsAsPassenger().contains(travel)) {
+            throw new InvalidFeedbackException(INVALID_FEEDBACK);
+        }
+        if(!creator.getTravelsAsDriver().contains(travel) || !creator.getTravelsAsPassenger().contains(travel)) {
+            throw new InvalidFeedbackException(NOT_PART_OF_TRAVEL);
         }
         feedback.setCreator(creator);
         feedback.setRecipient(recipient);

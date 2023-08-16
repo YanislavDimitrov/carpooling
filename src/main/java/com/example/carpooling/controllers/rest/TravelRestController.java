@@ -1,8 +1,6 @@
 package com.example.carpooling.controllers.rest;
 
-import com.example.carpooling.exceptions.AuthenticationFailureException;
-import com.example.carpooling.exceptions.AuthorizationException;
-import com.example.carpooling.exceptions.EntityNotFoundException;
+import com.example.carpooling.exceptions.*;
 import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.helpers.mappers.TravelMapper;
 import com.example.carpooling.models.Travel;
@@ -37,14 +35,13 @@ public class TravelRestController {
     public static final String REQUEST_CREATED_SUCCESSFULLY = "Your request has been made successfully!You will receive answer from the driver soon!Thank you for choosing us!";
     public static final String DELETED_SUCCESSFULLY = "Travel with ID %d was deleted successfully!";
     public static final String NOT_AUTHORIZED = "You are not authorized to delete this travel!";
+    public static final String TRAVEL_COMPLETED = "Travel with ID %d was completed!";
     private final TravelService travelService;
     private final TravelRequestService travelRequestService;
     private final TravelMapper travelMapper;
     private final ModelMapper modelMapper;
     private final AuthenticationHelper authenticationHelper;
-
     private final BingMapsService bingMapsService;
-
 
     @Autowired
     public TravelRestController(TravelService travelService, TravelRequestService travelRequestService, TravelMapper travelMapper, ModelMapper modelMapper, AuthenticationHelper authenticationHelper, BingMapsService bingMapsService) {
@@ -104,6 +101,69 @@ public class TravelRestController {
         }
     }
 
+    /**
+     * @param id      this parameter is used to check if a travel with this id is existing
+     * @param headers this parameter is used to authenticate the user who is trying to check the passengers
+     * @return List<UserViewDto> which is full of passengers for the certain travel if there are any , otherwise empty list
+     * @throws EntityNotFoundException        if a travel with this ID is not existing
+     * @throws AuthenticationFailureException if the user is not authenticated
+     */
+    @GetMapping("/{id}/passengers")
+    public List<UserViewDto> getPassengersForTravel(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
+        try {
+            return getAllPassengersForTravel(id, headers);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(TRAVEL_NOT_FOUND, id));
+        } catch (AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        }
+
+    }
+
+    @GetMapping("/{id}/pending")
+    public List<UserViewDto> getPendingPassengersForTravel(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
+        try {
+            User userToAuthenticate = authenticationHelper.tryGetUser(headers);
+            Travel travel = travelService.getById(id);
+            List<User> passengers = travel.getTravelRequests().stream()
+                    .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.PENDING)
+                    .map(TravelRequest::getPassenger)
+                    .toList();
+
+            return passengers.stream().map(user -> {
+                return this.modelMapper.map(user, UserViewDto.class);
+            }).collect(Collectors.toList());
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(TRAVEL_NOT_FOUND, id));
+        } catch (AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        }
+
+    }
+
+    @GetMapping("/{id}/rejected")
+    public List<UserViewDto> getRejectedPassengersForTravel(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
+        try {
+            User userToAuthenticate = authenticationHelper.tryGetUser(headers);
+            Travel travel = travelService.getById(id);
+            List<User> passengers = travel.getTravelRequests().stream()
+                    .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.REJECTED)
+                    .map(TravelRequest::getPassenger)
+                    .toList();
+
+            return passengers.stream().map(user -> {
+                UserViewDto dto = this.modelMapper.map(user, UserViewDto.class);
+                return dto;
+            }).collect(Collectors.toList());
+
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(TRAVEL_NOT_FOUND, id));
+        } catch (AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        }
+
+    }
+
     @GetMapping("/travel-distance")
     public String getTravelDistance(@RequestParam String origin, @RequestParam String destination) {
         return bingMapsService.getTravelDistance(origin, destination);
@@ -160,12 +220,12 @@ public class TravelRestController {
     }
 
     @PutMapping("/{id}/complete")
-    public TravelViewDto completeTravel(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
+    public String completeTravel(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
             Travel travel = travelService.getById(id);
             travelService.completeTravel(id, user);
-            return travelMapper.fromTravel(travel);
+            return String.format(TRAVEL_COMPLETED, id);
         } catch (AuthenticationFailureException | AuthorizationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         } catch (EntityNotFoundException e) {
@@ -173,45 +233,57 @@ public class TravelRestController {
         }
     }
 
-    /**
-     * @param id      this parameter is used to check if a travel with this id is existing
-     * @param headers this parameter is used to authenticate the user who is trying to check the passengers
-     * @return List<UserViewDto> which is full of passengers for the certain travel if there are any , otherwise empty list
-     * @throws EntityNotFoundException        if a travel with this ID is not existing
-     * @throws AuthenticationFailureException if the user is not authenticated
-     */
-    @GetMapping("/{id}/passengers")
-    public List<UserViewDto> getPassengersForTravel(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
+    @PostMapping("/{id}/apply")
+    public String applyForTravel(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         try {
-            return getAllPassengersForTravel(id, headers);
+            User user = authenticationHelper.tryGetUser(headers);
+            Travel travel = travelService.getById(id);
+            travelRequestService.createRequest(travel, user);
+            return REQUEST_CREATED_SUCCESSFULLY;
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(TRAVEL_NOT_FOUND, id));
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthenticationFailureException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (VehicleIsFullException | DuplicateEntityException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
-
     }
 
-    @GetMapping("/{id}/pending")
-    public List<UserViewDto> getPendingPassengersForTravel(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
+    // ToDo - to ask whether I should add the ID of the request as path variable or with body/parameter to add the username of the passenger
+    @PostMapping("/approve/{id}")
+    public String approveRequest(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         try {
-            User userToAuthenticate = authenticationHelper.tryGetUser(headers);
-            Travel travel = travelService.getById(id);
-            List<User> passengers = travel.getTravelRequests().stream()
-                    .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.PENDING)
-                    .map(TravelRequest::getPassenger)
-                    .collect(Collectors.toList());
-
-            return passengers.stream().map(user -> {
-                UserViewDto dto = this.modelMapper.map(user, UserViewDto.class);
-                return dto;
-            }).collect(Collectors.toList());
+            TravelRequest travelRequest = travelRequestService.get(id);
+            User user = authenticationHelper.tryGetUser(headers);
+            travelRequestService.approveRequest(travelRequest.getId(), user);
+            return "Your request for travel was approved!";
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(TRAVEL_NOT_FOUND, id));
-        } catch (AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (AuthenticationFailureException | AuthorizationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
+    }
 
+    @PostMapping("/reject/{id}")
+    public String rejectRequest(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
+        try {
+            TravelRequest travelRequest = travelRequestService.get(id);
+            User user = authenticationHelper.tryGetUser(headers);
+            travelRequestService.rejectRequest(id, user);
+            return "Your request for travel was rejected by the driver!";
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (AuthenticationFailureException | AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        }
+    }
+
+    private static List<User> convertTravelRequestToListOfPendingUsers(Travel travel) {
+        List<User> passengers = travel.getTravelRequests().stream()
+                .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.PENDING)
+                .map(TravelRequest::getPassenger)
+                .collect(Collectors.toList());
+        return passengers;
     }
 
     private List<UserViewDto> getAllPassengersForTravel(Long id, HttpHeaders headers) {
@@ -226,79 +298,6 @@ public class TravelRestController {
             UserViewDto dto = this.modelMapper.map(user, UserViewDto.class);
             return dto;
         }).collect(Collectors.toList());
-    }
-
-    @GetMapping("/{id}/rejected")
-    public List<UserViewDto> getRejectedPassengersForTravel(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
-        try {
-            User userToAuthenticate = authenticationHelper.tryGetUser(headers);
-            Travel travel = travelService.getById(id);
-            List<User> passengers = travel.getTravelRequests().stream()
-                    .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.REJECTED)
-                    .map(TravelRequest::getPassenger)
-                    .collect(Collectors.toList());
-
-            return passengers.stream().map(user -> {
-                UserViewDto dto = this.modelMapper.map(user, UserViewDto.class);
-                return dto;
-            }).collect(Collectors.toList());
-
-        } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(TRAVEL_NOT_FOUND, id));
-        } catch (AuthenticationFailureException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        }
-
-    }
-
-    private static List<User> convertTravelRequestToListOfPendingUsers(Travel travel) {
-        List<User> passengers = travel.getTravelRequests().stream()
-                .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.PENDING)
-                .map(TravelRequest::getPassenger)
-                .collect(Collectors.toList());
-        return passengers;
-    }
-
-    @PostMapping("/{id}/apply")
-    public String applyForTravel(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
-        try {
-            User user = authenticationHelper.tryGetUser(headers);
-            Travel travel = travelService.getById(id);
-            travelRequestService.createRequest(travel, user);
-            return REQUEST_CREATED_SUCCESSFULLY;
-        } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (AuthenticationFailureException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        }
-    }
-
-    @PostMapping("/approve/{id}")
-    public String approveRequest(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
-        try {
-            TravelRequest travelRequest = travelRequestService.get(id);
-            User user = authenticationHelper.tryGetUser(headers);
-            travelRequestService.approveRequest(travelRequest.getId());
-            return "Your request for travel was approved!";
-        } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (AuthenticationFailureException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        }
-    }
-
-    @PostMapping("/reject/{id}")
-    public String rejectRequest(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
-        try {
-            TravelRequest travelRequest = travelRequestService.get(id);
-            User user = authenticationHelper.tryGetUser(headers);
-            travelRequestService.rejectRequest(id);
-            return "Your request for travel was rejected by the driver!";
-        } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (AuthenticationFailureException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        }
     }
 
 }

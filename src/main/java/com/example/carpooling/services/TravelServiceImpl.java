@@ -204,9 +204,13 @@ public class TravelServiceImpl implements TravelService {
      *           This method is used to change the status of a certain travel with status 'DELETED'
      */
     @Override
-    public void cancelTravel(Long id) {
+    public void cancelTravel(Long id , User editor) {
         if(!travelRepository.existsById(id)) {
             throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND,id));
+        }
+        Travel travel = getById(id);
+        if(travel.getDriver() != editor) {
+            throw new AuthorizationException(OPERATION_DENIED);
         }
         travelRepository.delete(id);
     }

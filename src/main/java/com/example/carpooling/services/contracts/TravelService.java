@@ -33,7 +33,7 @@ public interface TravelService {
 
     Travel completeTravel(Long id , User editor);
 
-    void cancelTravel(Long id);
+    void cancelTravel(Long id , User editor);
 
 
 

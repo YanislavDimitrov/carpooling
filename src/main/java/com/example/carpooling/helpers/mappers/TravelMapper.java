@@ -4,6 +4,7 @@ import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.dtos.TravelCreationOrUpdateDto;
 import com.example.carpooling.models.dtos.TravelUpdateDto;
 import com.example.carpooling.models.dtos.TravelViewDto;
+import com.example.carpooling.models.enums.TravelRequestStatus;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.services.contracts.TravelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,11 +52,17 @@ public class TravelMapper {
         }
         travelViewDto.setArrivalTime(travel.getEstimatedTimeOfArrival());
 
-        travelViewDto.setRequests(travel.
-                getTravelRequests()
+//        travelViewDto.setRequests(travel.
+//                getTravelRequests()
+//                .stream()
+//                .map(travelRequestMapper::toDto)
+//                .collect(Collectors.toList()));
+        travelViewDto.setPassengers(travel
+                .getTravelRequests()
                 .stream()
+                .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.APPROVED)
                 .map(travelRequestMapper::toDto)
-                .collect(Collectors.toList()));
+                .toList());
         return travelViewDto;
     }
 

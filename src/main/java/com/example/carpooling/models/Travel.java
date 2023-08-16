@@ -55,6 +55,7 @@ public class Travel {
 
     public Travel() {
         travelRequests = new ArrayList<>();
+        status = TravelStatus.ACTIVE;
     }
 
     public LocalDateTime getEstimatedTimeOfArrival() {

@@ -1,6 +1,6 @@
 package com.example.carpooling.models.dtos;
 
-import com.example.carpooling.models.TravelRequest;
+import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.TravelStatus;
 import jakarta.validation.constraints.NotEmpty;
 
@@ -27,9 +27,18 @@ public class TravelViewDto {
     private String comment;
 
     private TravelStatus status;
-    private List<TravelRequestDto> requests;
+//    private List<TravelRequestDto> requests;
+    private List<TravelRequestDto> passengers;
 
     public TravelViewDto() {
+    }
+
+    public List<TravelRequestDto> getPassengers() {
+        return passengers;
+    }
+
+    public void setPassengers(List<TravelRequestDto> passengers) {
+        this.passengers = passengers;
     }
 
     public LocalDateTime getArrivalTime() {
@@ -56,13 +65,13 @@ public class TravelViewDto {
         this.distance = distance;
     }
 
-    public List<TravelRequestDto> getRequests() {
-        return requests;
-    }
-
-    public void setRequests(List<TravelRequestDto> requests) {
-        this.requests = requests;
-    }
+//    public List<TravelRequestDto> getRequests() {
+//        return requests;
+//    }
+//
+//    public void setRequests(List<TravelRequestDto> requests) {
+//        this.requests = requests;
+//    }
 
     public String getDeparturePoint() {
         return departurePoint;
