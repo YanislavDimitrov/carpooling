@@ -33,6 +33,8 @@ public class Vehicle {
     @Column(name = "is_deleted")
     private boolean isDeleted;
 
+    //ToDo add sth unique as A VIN
+
     public Vehicle() {
     }
 

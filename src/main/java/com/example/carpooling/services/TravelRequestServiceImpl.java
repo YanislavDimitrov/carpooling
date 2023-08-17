@@ -1,9 +1,6 @@
 package com.example.carpooling.services;
 
-import com.example.carpooling.exceptions.AuthorizationException;
-import com.example.carpooling.exceptions.DuplicateEntityException;
-import com.example.carpooling.exceptions.EntityNotFoundException;
-import com.example.carpooling.exceptions.VehicleIsFullException;
+import com.example.carpooling.exceptions.*;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
@@ -28,6 +25,8 @@ public class TravelRequestServiceImpl implements TravelRequestService {
     public static final String USER_NOT_FOUND = "User with ID %d was not found!";
     public static final String SUCCESSFULL_REQUEST = "Your request for travel from %s to %s on %s was created successfully!";
     public static final String REQUEST_ALREADY_SENT = "You have already sent a request to participate in this travel!";
+    public static final String TRAVEL_NOT_FOUND = "Travel with ID %d was not found!";
+    public static final String DRIVER_APPLYING_RESTRICTION = "You cannot apply to be passenger for your own travel!";
     private final TravelRequestRepository travelRequestRepository;
     private final TravelRepository travelRepository;
     private final UserRepository userRepository;
@@ -48,6 +47,18 @@ public class TravelRequestServiceImpl implements TravelRequestService {
         return travelRequestRepository.findAll();
     }
 
+    @Override
+    public List<TravelRequest> getPending() {
+        return travelRequestRepository.findAllByStatusIs(TravelRequestStatus.PENDING);
+    }
+
+    @Override
+    public List<TravelRequest> getByTravel(Travel travel) {
+        if(!travelRepository.existsById(travel.getId())) {
+            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND,travel.getId()));
+        }
+        return travelRequestRepository.findByTravelIs(travel);
+    }
     /**
      * @param id this parameter is used to identify if there is a travel reques with this id and if there is
      *           to return its value
@@ -78,10 +89,13 @@ public class TravelRequestServiceImpl implements TravelRequestService {
         if(!userRepository.existsById(user.getId())) {
             throw new EntityNotFoundException(String.format(USER_NOT_FOUND,user.getId()));
         }
+        if(travel.getDriver() == user) {
+            throw new InvalidOperationException(DRIVER_APPLYING_RESTRICTION);
+        }
         Optional<TravelRequest> travelRequestOptional = travel
                 .getTravelRequests()
                 .stream()
-                .filter(travelRequest1 -> travelRequest1.getPassenger().equals(user))
+                .filter(travelRequest1 -> travelRequest1.getPassenger().equals(user) && travelRequest1.getStatus()==TravelRequestStatus.PENDING || travelRequest1.getStatus() == TravelRequestStatus.APPROVED)
                 .findFirst();
         if(travelRequestOptional.isPresent()) {
             throw new DuplicateEntityException(REQUEST_ALREADY_SENT);
@@ -95,7 +109,6 @@ public class TravelRequestServiceImpl implements TravelRequestService {
                     travel.getArrivalPoint(),
                     travel.getDepartureTime());
         }
-
     }
 
     /**

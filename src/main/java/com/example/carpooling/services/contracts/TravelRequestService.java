@@ -9,6 +9,8 @@ import java.util.List;
 public interface TravelRequestService {
     List<TravelRequest> get();
     TravelRequest get(Long id);
+    List<TravelRequest> getPending();
+    List<TravelRequest> getByTravel(Travel travel);
     String createRequest(Travel travel, User user);
     void update(TravelRequest travelRequest, User editor);
     void delete(Long id,User editor);
