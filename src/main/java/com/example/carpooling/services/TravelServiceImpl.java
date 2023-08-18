@@ -33,6 +33,7 @@ public class TravelServiceImpl implements TravelService {
     public static final String OPERATION_DENIED = "You are not authorized to complete this operation!";
     public static final String DELETE_TRAVEL_ERROR = "You cannot complete deleted travel!";
     public static final String COMPLETED_OR_DELETED_TRAVEL_ERROR = "You cannot cancel travel which is either completed or deleted!";
+    public static final String ALREADY_STARTED_TRAVEL = "You cannot cancel your travel because it has already started!";
     private final TravelRepository travelRepository;
     private final TravelRequestRepository travelRequestRepository;
     private final UserRepository userRepository;
@@ -215,6 +216,9 @@ public class TravelServiceImpl implements TravelService {
             throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND,id));
         }
         Travel travel = getById(id);
+        if(LocalDateTime.now().isAfter(travel.getDepartureTime())) {
+            throw new InvalidOperationException(ALREADY_STARTED_TRAVEL);
+        }
         if(travel.getDriver() != editor) {
             throw new AuthorizationException(OPERATION_DENIED);
         }

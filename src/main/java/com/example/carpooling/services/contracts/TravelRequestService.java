@@ -17,4 +17,6 @@ public interface TravelRequestService {
     void approveRequest(Long id , User editor);
     void rejectRequest(Long id , User editor);
 
+    void rejectWhenAlreadyPassenger(Long id , User editor , Travel travel);
+
 }

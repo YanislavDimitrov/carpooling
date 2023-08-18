@@ -6,7 +6,6 @@ import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.TravelRequestStatus;
 import com.example.carpooling.models.enums.TravelStatus;
-import com.example.carpooling.repositories.contracts.FeedbackRepository;
 import com.example.carpooling.repositories.contracts.TravelRepository;
 import com.example.carpooling.repositories.contracts.TravelRequestRepository;
 import com.example.carpooling.repositories.contracts.UserRepository;
@@ -18,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TravelRequestServiceImpl implements TravelRequestService {
@@ -186,5 +186,37 @@ public class TravelRequestServiceImpl implements TravelRequestService {
             throw new AuthorizationException(NOT_AUTHORIZED);
         }
         travelRequestRepository.delete(get(id));
+    }
+
+    @Override
+    public void rejectWhenAlreadyPassenger(Long id, User editor, Travel travel) {
+        if(!userRepository.existsById(id)) {
+            throw new EntityNotFoundException(String.format(USER_NOT_FOUND,id));
+        }
+        if(!userRepository.existsById(editor.getId())) {
+            throw new EntityNotFoundException(String.format(USER_NOT_FOUND, editor.getId()));
+        }
+        if(!travelRepository.existsById(travel.getId())) {
+            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND,travel.getId()));
+        }
+        Optional<User> user =   userRepository.findById(id);
+        if(haveTravelInTheList(user.get(),travel) && travel.getDriver().equals(editor)) {
+            TravelRequest travelRequest =  travelRequestRepository.findByTravelIs(travel).stream().filter(travelRequest1 -> travelRequest1.getPassenger().equals(user)).findFirst().get();
+            travelRequest.setStatus(TravelRequestStatus.REJECTED);
+        } else {
+            throw new InvalidOperationException("Invalid operation!You cannot reject travel request if you are not the driver!");
+        }
+
+
+    }
+
+    public boolean haveTravelInTheList(User user , Travel travel) {
+        for(TravelRequest travelRequest : user.getTravelsAsPassenger()) {
+            if(travelRequest.getTravel().equals(travel) && travelRequest.getStatus() ==TravelRequestStatus.APPROVED) {
+                return true ;
+            }
+        }
+        return false;
+
     }
 }
