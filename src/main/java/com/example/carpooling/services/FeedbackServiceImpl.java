@@ -97,7 +97,6 @@ public class FeedbackServiceImpl implements FeedbackService {
         if(feedbackOptional.isPresent()) {
             throw new InvalidOperationException(FEEDBACK_REPETITION);
         } else {
-
             if (haveTravelledTogether(travel.getId(), creator, recipient)) {
                 feedback.setCreator(creator);
                 feedback.setRecipient(recipient);

@@ -135,12 +135,12 @@ public class TravelRequestServiceImpl implements TravelRequestService {
         if (request.getTravel().getDriver() != editor) {
             throw new AuthorizationException(OPERATION_DENIED);
         }
-        request.setStatus(TravelRequestStatus.APPROVED);
-        short freeSpots = (short) (request.getTravel().getFreeSpots() - 1);
-        request.getTravel().setFreeSpots(freeSpots);
         if(request.getTravel().getFreeSpots() == 0 ) {
             throw new VehicleIsFullException(VEHICLE_IS_FULL);
         }
+        request.setStatus(TravelRequestStatus.APPROVED);
+        short freeSpots = (short) (request.getTravel().getFreeSpots() - 1);
+        request.getTravel().setFreeSpots(freeSpots);
         travelRequestRepository.save(request);
     }
 
