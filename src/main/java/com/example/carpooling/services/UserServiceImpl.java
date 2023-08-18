@@ -279,15 +279,19 @@ public class UserServiceImpl implements UserService {
 
     private void deleteUserTravels(User targetUser) {
         for (Travel travel : targetUser.getTravelsAsDriver()) {
+
             if (travel.getStatus().equals(TravelStatus.ACTIVE)) {
-                if (LocalDateTime.now().isAfter(travel.getDepartureTime())) {
-                    throw new InvalidOperationException(ACTIVE_TRAVEL_EXCEPTION_MSG);
-                }
+                throw new InvalidOperationException(ACTIVE_TRAVEL_EXCEPTION_MSG);
+            }
+
+            if (travel.getStatus().equals(TravelStatus.PLANNED)) {
                 travel.setStatus(TravelStatus.CANCELED);
             }
+
             travel.setDeleted(true);
         }
     }
+
 
     private void recoverUserTravels(User targetUser) {
         for (Travel travel : targetUser.getTravelsAsDriver()) {
