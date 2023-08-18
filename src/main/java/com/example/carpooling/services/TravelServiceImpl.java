@@ -199,7 +199,7 @@ public class TravelServiceImpl implements TravelService {
         if(travel.getDriver() != editor) {
             throw new AuthorizationException(OPERATION_DENIED);
         }
-        if(travel.getStatus() == TravelStatus.DELETED) {
+        if(travel.isDeleted()) {
             throw new InvalidOperationException(DELETE_TRAVEL_ERROR);
         }
         travelRepository.completeTravel(id);
@@ -222,7 +222,7 @@ public class TravelServiceImpl implements TravelService {
         if(travel.getDriver() != editor) {
             throw new AuthorizationException(OPERATION_DENIED);
         }
-        if(travel.getStatus() == TravelStatus.COMPLETED || travel.getStatus() == TravelStatus.DELETED) {
+        if(travel.getStatus() == TravelStatus.COMPLETED || travel.isDeleted()) {
             throw new InvalidOperationException(COMPLETED_OR_DELETED_TRAVEL_ERROR);
         }
         travelRepository.delete(id);

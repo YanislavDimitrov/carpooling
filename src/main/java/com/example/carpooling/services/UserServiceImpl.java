@@ -168,7 +168,7 @@ public class UserServiceImpl implements UserService {
 
     private static void deleteUsersTravels(User optionalUserToBlock) {
         for (Travel travel : optionalUserToBlock.getTravelsAsDriver()) {
-            travel.setStatus(TravelStatus.DELETED);
+            travel.setDeleted(true);
         }
     }
 
