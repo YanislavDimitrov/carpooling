@@ -15,6 +15,7 @@ import com.example.carpooling.repositories.contracts.TravelRequestRepository;
 import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.services.contracts.TravelService;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TravelServiceImpl implements TravelService {
@@ -104,7 +106,7 @@ public class TravelServiceImpl implements TravelService {
     @Override
     public void create(Travel travel, User driver) {
         calculatingDistanceAndDuration(travel);
-        travel.setStatus(TravelStatus.ACTIVE);
+        travel.setStatus(TravelStatus.PLANNED);
         travel.setDriver(driver);
         travelRepository.save(travel);
     }
@@ -229,4 +231,24 @@ public class TravelServiceImpl implements TravelService {
         travel.setStatus(TravelStatus.CANCELED);
         travelRepository.save(travel);
     }
-}
+
+    @Override
+    public List<Travel> findPlannedTravelsWithPastDepartureTime() {
+        return travelRepository.findByStatusAndDepartureTimeBefore(TravelStatus.PLANNED,LocalDateTime.now());
+    }
+
+    @Override
+    @Scheduled(fixedRate = 60000)
+    public void updateTravelStatus() {
+
+            List<Travel> plannedTravels = findPlannedTravelsWithPastDepartureTime();
+
+            for (Travel travel : plannedTravels) {
+                if (travel.getDepartureTime().isBefore(LocalDateTime.now())) {
+                    travel.setStatus(TravelStatus.ACTIVE);
+                    travelRepository.save(travel);
+                }
+            }
+        }
+    }
+

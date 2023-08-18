@@ -4,6 +4,7 @@ import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.TravelStatus;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -37,5 +38,7 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
             @Param("departureTime") LocalDateTime departureTime,
             Sort sort
     );
+
+    List<Travel> findByStatusAndDepartureTimeBefore(TravelStatus status , LocalDateTime departureTime);
 
 }

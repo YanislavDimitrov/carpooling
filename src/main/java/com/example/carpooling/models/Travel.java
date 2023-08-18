@@ -57,7 +57,7 @@ public class Travel {
 
     public Travel() {
         travelRequests = new ArrayList<>();
-        status = TravelStatus.ACTIVE;
+        status = TravelStatus.PLANNED;
     }
 
     public boolean isDeleted() {

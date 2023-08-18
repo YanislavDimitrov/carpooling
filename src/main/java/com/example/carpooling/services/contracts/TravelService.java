@@ -35,6 +35,9 @@ public interface TravelService {
 
     void cancelTravel(Long id , User editor);
 
+   List<Travel> findPlannedTravelsWithPastDepartureTime();
+   void updateTravelStatus();
+
 
 
 
