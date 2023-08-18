@@ -194,6 +194,20 @@ public class TravelRestController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, NOT_AUTHORIZED);
         }
     }
+    @PutMapping("/{id}/cancel")
+    public String cancelTravel(@PathVariable Long id , @RequestHeader HttpHeaders headers) {
+        try {
+            User user = authenticationHelper.tryGetUser(headers);
+            travelService.cancelTravel(id,user);
+            return "Canceled successfully";
+        } catch (AuthenticationFailureException | AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,e.getMessage());
+        } catch (InvalidOperationException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
+        }catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage());
+        }
+    }
     @PutMapping("/{id}/complete")
     public String completeTravel(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         try {

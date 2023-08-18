@@ -46,6 +46,8 @@ public class Travel {
     @JsonIgnore
     @OneToMany(mappedBy = "travel", fetch = FetchType.EAGER)
     private List<TravelRequest> travelRequests;
+    @Column(name = "is_deleted")
+    private boolean isDeleted;
 
 //    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
 //    @JoinTable(name = "users_travels",
@@ -56,6 +58,14 @@ public class Travel {
     public Travel() {
         travelRequests = new ArrayList<>();
         status = TravelStatus.ACTIVE;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
     }
 
     public LocalDateTime getEstimatedTimeOfArrival() {
