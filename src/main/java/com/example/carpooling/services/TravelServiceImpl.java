@@ -211,6 +211,7 @@ public class TravelServiceImpl implements TravelService {
      *           This method is used to change the status of a certain travel with status 'DELETED'
      */
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
     public void cancelTravel(Long id , User editor) {
         if(!travelRepository.existsById(id)) {
             throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND,id));
@@ -225,6 +226,7 @@ public class TravelServiceImpl implements TravelService {
         if(travel.getStatus() == TravelStatus.COMPLETED || travel.isDeleted()) {
             throw new InvalidOperationException(COMPLETED_OR_DELETED_TRAVEL_ERROR);
         }
-        travelRepository.delete(id);
+        travel.setStatus(TravelStatus.CANCELED);
+        travelRepository.save(travel);
     }
 }
