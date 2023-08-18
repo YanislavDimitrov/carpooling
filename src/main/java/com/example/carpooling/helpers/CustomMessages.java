@@ -8,5 +8,5 @@ public class CustomMessages {
     public static final String CREATE_VEHICLE_AUTHORIZATION_MESSAGE = "User with username %s not authorized to create vehicle in user with id %d";
     public static final String GET_VEHICLES_AUTHORIZATION_MESSAGE = "User with username %s not authorized to see vehicles in user with id %d";
     public static final String DELETE_VEHICLE_AUTHORIZATION_MESSAGE = "User with username %s not authorized to delete vehicle with id %d";
-
+    public static final String ACTIVE_TRAVEL_EXCEPTION_MSG = "Active travel(s) prevent operation to complete successfully.";
 }

@@ -1,8 +1,6 @@
 package com.example.carpooling.services;
 
-import com.example.carpooling.exceptions.AuthorizationException;
-import com.example.carpooling.exceptions.DuplicateEntityException;
-import com.example.carpooling.exceptions.EntityNotFoundException;
+import com.example.carpooling.exceptions.*;
 import com.example.carpooling.models.Feedback;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.User;
@@ -12,6 +10,7 @@ import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.repositories.contracts.VehicleRepository;
+import com.example.carpooling.services.contracts.FeedbackService;
 import com.example.carpooling.services.contracts.TravelService;
 import com.example.carpooling.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,12 +30,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final VehicleRepository vehicleRepository;
     private final TravelService travelService;
+    private final FeedbackService feedbackService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, VehicleRepository vehicleRepository, TravelService travelService) {
+    public UserServiceImpl(UserRepository userRepository, VehicleRepository vehicleRepository, TravelService travelService, FeedbackService feedbackService) {
         this.userRepository = userRepository;
         this.vehicleRepository = vehicleRepository;
         this.travelService = travelService;
+        this.feedbackService = feedbackService;
     }
 
     @Override
@@ -110,8 +112,11 @@ public class UserServiceImpl implements UserService {
             throw new EntityNotFoundException("User", id);
         }
 
-        if (isAdmin(loggedUser) || isSameUser(loggedUser, optionalUserToDelete.get())) {
+        User userToDelete = optionalUserToDelete.get();
+        if (isAdmin(loggedUser) || isSameUser(loggedUser, userToDelete)) {
             this.userRepository.delete(id);
+            deleteUserFeedbacks(userToDelete);
+            deleteUserTravels(userToDelete);
         } else {
             throw new AuthorizationException(
                     String.format(DELETE_USER_AUTHORIZATION_MESSAGE
@@ -149,12 +154,11 @@ public class UserServiceImpl implements UserService {
         }
 
         User userToBlock = optionalUserToBlock.get();
-        deleteUsersTravels(userToBlock, loggedUser);
-        deleteUsersFeedbacks(userToBlock);
-
 
         if (isAdmin(loggedUser) && !isSameUser(loggedUser, userToBlock)) {
             this.userRepository.block(id);
+            deleteUserFeedbacks(userToBlock);
+            deleteUserTravels(userToBlock);
         } else {
             throw new AuthorizationException(
                     String.format(BLOCK_USER_AUTHORIZATION_MESSAGE
@@ -173,8 +177,12 @@ public class UserServiceImpl implements UserService {
             throw new EntityNotFoundException("User", id);
         }
 
+        User userToUnlock = optionalUserToUnblock.get();
+
         if (isAdmin(loggedUser)) {
             this.userRepository.restore(id);
+            recoverUserFeedbacks(userToUnlock);
+            recoverUserTravels(userToUnlock);
         } else {
             throw new AuthorizationException(
                     String.format(UNBLOCK_USER_AUTHORIZATION_MESSAGE
@@ -182,6 +190,7 @@ public class UserServiceImpl implements UserService {
                             , id));
         }
     }
+
 
     @Override
     public List<Vehicle> getVehiclesByUserId(Long id, User loggedUser) {
@@ -200,7 +209,6 @@ public class UserServiceImpl implements UserService {
                             , id));
         }
     }
-
 
     @Override
     public Vehicle addVehicle(Long id, Vehicle payloadVehicle, User loggedUser) {
@@ -257,18 +265,36 @@ public class UserServiceImpl implements UserService {
         return targetUser.getUserName().equals(loggedUser.getUserName());
     }
 
-    private void deleteUsersFeedbacks(User userToBlock) {
-        for (Feedback feedback : userToBlock.getFeedbacks()) {
+    private void deleteUserFeedbacks(User targetUser) {
+        for (Feedback feedback : targetUser.getFeedbacks()) {
             feedback.setDeleted(true);
         }
     }
 
-    private void deleteUsersTravels(User userToBlock, User loggedUser) {
-        for (Travel travel : userToBlock.getTravelsAsDriver()) {
+    private void recoverUserFeedbacks(User targetUser) {
+        for (Feedback feedback : targetUser.getFeedbacks()) {
+            feedback.setDeleted(false);
+        }
+    }
+
+    private void deleteUserTravels(User targetUser) {
+        for (Travel travel : targetUser.getTravelsAsDriver()) {
             if (travel.getStatus().equals(TravelStatus.ACTIVE)) {
-                this.travelService.cancelTravel(travel.getId(), loggedUser);
+                if (LocalDateTime.now().isAfter(travel.getDepartureTime())) {
+                    throw new InvalidOperationException(ACTIVE_TRAVEL_EXCEPTION_MSG);
+                }
+                travel.setStatus(TravelStatus.CANCELED);
             }
             travel.setDeleted(true);
         }
     }
+
+    private void recoverUserTravels(User targetUser) {
+        for (Travel travel : targetUser.getTravelsAsDriver()) {
+            travel.setDeleted(false);
+        }
+
+    }
+
+
 }
