@@ -12,6 +12,7 @@ import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.repositories.contracts.VehicleRepository;
+import com.example.carpooling.services.contracts.TravelService;
 import com.example.carpooling.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -28,11 +29,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final VehicleRepository vehicleRepository;
+    private final TravelService travelService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, VehicleRepository vehicleRepository) {
+    public UserServiceImpl(UserRepository userRepository, VehicleRepository vehicleRepository, TravelService travelService) {
         this.userRepository = userRepository;
         this.vehicleRepository = vehicleRepository;
+        this.travelService = travelService;
     }
 
     @Override
@@ -146,7 +149,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User userToBlock = optionalUserToBlock.get();
-        deleteUsersTravels(userToBlock);
+        deleteUsersTravels(userToBlock, loggedUser);
         deleteUsersFeedbacks(userToBlock);
 
 
@@ -160,17 +163,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private static void deleteUsersFeedbacks(User userToBlock) {
-        for (Feedback feedback : userToBlock.getFeedbacks()) {
-            feedback.setDeleted(true);
-        }
-    }
-
-    private static void deleteUsersTravels(User optionalUserToBlock) {
-        for (Travel travel : optionalUserToBlock.getTravelsAsDriver()) {
-            travel.setDeleted(true);
-        }
-    }
 
     @Transactional
     @Override
@@ -261,8 +253,22 @@ public class UserServiceImpl implements UserService {
         return loggedUser.getRole().equals(UserRole.ADMIN);
     }
 
-    private static boolean isSameUser(User loggedUser, User targetUser) {
+    private boolean isSameUser(User loggedUser, User targetUser) {
         return targetUser.getUserName().equals(loggedUser.getUserName());
     }
 
+    private void deleteUsersFeedbacks(User userToBlock) {
+        for (Feedback feedback : userToBlock.getFeedbacks()) {
+            feedback.setDeleted(true);
+        }
+    }
+
+    private void deleteUsersTravels(User userToBlock, User loggedUser) {
+        for (Travel travel : userToBlock.getTravelsAsDriver()) {
+            if (travel.getStatus().equals(TravelStatus.ACTIVE)) {
+                this.travelService.cancelTravel(travel.getId(), loggedUser);
+            }
+            travel.setDeleted(true);
+        }
+    }
 }
