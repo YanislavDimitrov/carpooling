@@ -18,7 +18,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,15 +28,11 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final VehicleRepository vehicleRepository;
-    private final TravelService travelService;
-    private final FeedbackService feedbackService;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, VehicleRepository vehicleRepository, TravelService travelService, FeedbackService feedbackService) {
+    public UserServiceImpl(UserRepository userRepository, VehicleRepository vehicleRepository) {
         this.userRepository = userRepository;
         this.vehicleRepository = vehicleRepository;
-        this.travelService = travelService;
-        this.feedbackService = feedbackService;
     }
 
     @Override
@@ -83,7 +78,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User targetUser = optionalTargetUser.get();
-        if (isAdmin(loggedUser) || isSameUser(loggedUser, targetUser)) {
+        if (isAdmin(loggedUser) || areSameUser(loggedUser, targetUser)) {
 
             targetUser.setFirstName(payloadUser.getFirstName());
             targetUser.setLastName(payloadUser.getLastName());
@@ -113,7 +108,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User userToDelete = optionalUserToDelete.get();
-        if (isAdmin(loggedUser) || isSameUser(loggedUser, userToDelete)) {
+        if (areSameUser(loggedUser, userToDelete)) {
             this.userRepository.delete(id);
             deleteUserFeedbacks(userToDelete);
             deleteUserTravels(userToDelete);
@@ -134,7 +129,7 @@ public class UserServiceImpl implements UserService {
             throw new EntityNotFoundException("User", id);
         }
 
-        if (isAdmin(loggedUser) || isSameUser(loggedUser, optionalUserToRestore.get())) {
+        if (areSameUser(loggedUser, optionalUserToRestore.get())) {
             this.userRepository.restore(id);
         } else {
             throw new AuthorizationException(
@@ -155,7 +150,7 @@ public class UserServiceImpl implements UserService {
 
         User userToBlock = optionalUserToBlock.get();
 
-        if (isAdmin(loggedUser) && !isSameUser(loggedUser, userToBlock)) {
+        if (isAdmin(loggedUser) && !areSameUser(loggedUser, userToBlock)) {
             this.userRepository.block(id);
             deleteUserFeedbacks(userToBlock);
             deleteUserTravels(userToBlock);
@@ -200,7 +195,7 @@ public class UserServiceImpl implements UserService {
             throw new EntityNotFoundException("User", id);
         }
 
-        if (isAdmin(loggedUser) || isSameUser(loggedUser, optionalTargetUser.get())) {
+        if (isAdmin(loggedUser) || areSameUser(loggedUser, optionalTargetUser.get())) {
             return this.vehicleRepository.findAllByOwnerId(id);
         } else {
             throw new AuthorizationException(
@@ -218,7 +213,7 @@ public class UserServiceImpl implements UserService {
             throw new EntityNotFoundException("User", id);
         }
         User targetUser = optionalTargetUser.get();
-        if (isAdmin(loggedUser) || isSameUser(loggedUser, targetUser)) {
+        if (isAdmin(loggedUser) || areSameUser(loggedUser, targetUser)) {
             payloadVehicle.setOwner(targetUser);
             return this.vehicleRepository.save(payloadVehicle);
         } else {
@@ -261,7 +256,7 @@ public class UserServiceImpl implements UserService {
         return loggedUser.getRole().equals(UserRole.ADMIN);
     }
 
-    private boolean isSameUser(User loggedUser, User targetUser) {
+    private boolean areSameUser(User loggedUser, User targetUser) {
         return targetUser.getUserName().equals(loggedUser.getUserName());
     }
 

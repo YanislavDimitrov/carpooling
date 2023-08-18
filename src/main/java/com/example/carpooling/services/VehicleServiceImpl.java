@@ -4,6 +4,7 @@ import com.example.carpooling.exceptions.AuthorizationException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.Vehicle;
+import com.example.carpooling.models.dtos.VehicleUpdateDto;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.repositories.contracts.VehicleRepository;
@@ -14,8 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static com.example.carpooling.helpers.CustomMessages.DELETE_USER_AUTHORIZATION_MESSAGE;
-import static com.example.carpooling.helpers.CustomMessages.DELETE_VEHICLE_AUTHORIZATION_MESSAGE;
+import static com.example.carpooling.helpers.CustomMessages.*;
 
 @Service
 public class VehicleServiceImpl implements VehicleService {
@@ -37,7 +37,7 @@ public class VehicleServiceImpl implements VehicleService {
             throw new EntityNotFoundException("Vehicle", id);
         }
 
-        if (isAdmin(loggedUser) || isSameUser(loggedUser, optionalVehicle.get().getOwner())) {
+        if (isAdmin(loggedUser) || areSameUser(loggedUser, optionalVehicle.get().getOwner())) {
             this.vehicleRepository.delete(id);
         } else {
             throw new AuthorizationException(
@@ -47,11 +47,38 @@ public class VehicleServiceImpl implements VehicleService {
         }
     }
 
+    @Override
+    public Vehicle update(Long id, VehicleUpdateDto payloadVehicle, User loggedUser) {
+        Optional<Vehicle> optionalTargetVehicle = this.vehicleRepository.findById(id);
+
+        if (optionalTargetVehicle.isEmpty()) {
+            throw new EntityNotFoundException("Vehicle", id);
+        }
+
+        Vehicle targetVehicle = optionalTargetVehicle.get();
+        User owner = targetVehicle.getOwner();
+        if (areSameUser(loggedUser, owner)) {
+
+            targetVehicle.setMake(payloadVehicle.getMake());
+            targetVehicle.setModel(payloadVehicle.getModel());
+            targetVehicle.setLicencePlateNumber(payloadVehicle.getLicencePlateNumber());
+            targetVehicle.setColor(payloadVehicle.getColor());
+            targetVehicle.setYearOfProduction(payloadVehicle.getYearOfProduction());
+
+            return this.vehicleRepository.save(targetVehicle);
+        } else {
+            throw new AuthorizationException(
+                    String.format(UPDATE_USER_AUTHORIZATION_MESSAGE
+                            , loggedUser.getUserName()
+                            , id));
+        }
+    }
+
     private boolean isAdmin(User loggedUser) {
         return loggedUser.getRole().equals(UserRole.ADMIN);
     }
 
-    private static boolean isSameUser(User loggedUser, User targetUser) {
+    private static boolean areSameUser(User loggedUser, User targetUser) {
         return targetUser.getUserName().equals(loggedUser.getUserName());
     }
 }
