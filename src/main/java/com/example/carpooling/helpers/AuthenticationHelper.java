@@ -14,6 +14,8 @@ public class AuthenticationHelper {
 
     private static final String AUTHORIZATION_HEADER_NAME = "Authorization";
     private static final String INVALID_AUTHENTICATION_ERROR = "Invalid authentication.";
+    public static final String CURRENT_USER_ATTRIBUTE_NAME = "currentUser";
+    public static final String NO_USER_LOGGED_IN_MSG = "No user logged in!";
 
     private final UserService userService;
 
@@ -32,9 +34,17 @@ public class AuthenticationHelper {
         String password = getPassword(userInfo);
         return verifyAuthentication(username, password);
     }
+    public User tryGetUser(HttpSession session) {
+        String currentUser = (String) session.getAttribute(CURRENT_USER_ATTRIBUTE_NAME);
+
+        if (currentUser == null) {
+            throw new AuthenticationFailureException(NO_USER_LOGGED_IN_MSG);
+        }
+        return userService.getByUsername(currentUser);
+    }
 
     public User tryGetCurrentUser(HttpSession session) {
-        String currentUsername = (String) session.getAttribute("currentUser");
+        String currentUsername = (String) session.getAttribute(CURRENT_USER_ATTRIBUTE_NAME);
 
         if (currentUsername == null) {
             throw new AuthenticationFailureException(INVALID_AUTHENTICATION_ERROR);

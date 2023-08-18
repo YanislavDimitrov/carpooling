@@ -3,9 +3,12 @@ package com.example.carpooling.services;
 import com.example.carpooling.exceptions.AuthorizationException;
 import com.example.carpooling.exceptions.DuplicateEntityException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
+import com.example.carpooling.models.Feedback;
+import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.Vehicle;
 import com.example.carpooling.models.dtos.UserUpdateDto;
+import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.repositories.contracts.VehicleRepository;
@@ -133,6 +136,61 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Transactional
+    @Override
+    public void block(Long id, User loggedUser) {
+        Optional<User> optionalUserToBlock = this.userRepository.findById(id);
+
+        if (optionalUserToBlock.isEmpty()) {
+            throw new EntityNotFoundException("User", id);
+        }
+
+        User userToBlock = optionalUserToBlock.get();
+        deleteUsersTravels(userToBlock);
+        deleteUsersFeedbacks(userToBlock);
+
+
+        if (isAdmin(loggedUser) && !isSameUser(loggedUser, userToBlock)) {
+            this.userRepository.block(id);
+        } else {
+            throw new AuthorizationException(
+                    String.format(BLOCK_USER_AUTHORIZATION_MESSAGE
+                            , loggedUser.getUserName()
+                            , id));
+        }
+    }
+
+    private static void deleteUsersFeedbacks(User userToBlock) {
+        for (Feedback feedback : userToBlock.getFeedbacks()) {
+            feedback.setDeleted(true);
+        }
+    }
+
+    private static void deleteUsersTravels(User optionalUserToBlock) {
+        for (Travel travel : optionalUserToBlock.getTravelsAsDriver()) {
+            travel.setStatus(TravelStatus.DELETED);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void unblock(Long id, User loggedUser) {
+        Optional<User> optionalUserToUnblock = this.userRepository.findById(id);
+
+        if (optionalUserToUnblock.isEmpty()) {
+            throw new EntityNotFoundException("User", id);
+        }
+
+        if (isAdmin(loggedUser)) {
+            this.userRepository.restore(id);
+        } else {
+            throw new AuthorizationException(
+                    String.format(UNBLOCK_USER_AUTHORIZATION_MESSAGE
+                            , loggedUser.getUserName()
+                            , id));
+        }
+    }
+
     @Override
     public List<Vehicle> getVehiclesByUserId(Long id, User loggedUser) {
         Optional<User> optionalTargetUser = this.userRepository.findById(id);
@@ -150,6 +208,7 @@ public class UserServiceImpl implements UserService {
                             , id));
         }
     }
+
 
     @Override
     public Vehicle addVehicle(Long id, Vehicle payloadVehicle, User loggedUser) {

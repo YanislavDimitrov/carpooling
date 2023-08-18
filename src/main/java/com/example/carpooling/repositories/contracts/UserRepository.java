@@ -34,9 +34,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Modifying
     @Query("UPDATE User AS u SET u.status='DELETED' WHERE u.id = :id")
-    void delete(@Param("id") Long id);
+    void delete(Long id);
 
     @Modifying
     @Query("UPDATE User AS u SET u.status='ACTIVE' WHERE u.id = :id")
-    void restore(@Param("id") Long id);
+    void restore(Long id);
+    @Modifying
+    @Query("UPDATE User AS u SET u.status='BLOCKED' WHERE u.id = :id")
+    void block(Long id);
 }

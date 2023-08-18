@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
+  <link rel="stylesheet" href="../static/login.css" th:href="@{/login.css}">
+  <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
+  <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">
+</head>
+<body>
+<section class="main">
+  <!--CONTENT-->
+  <div class="text">
+    LOGIN
+  </div>
+  <div class="login-form">
+
+
+    <form action="#" th:action="@{/auth/login}" th:object="${login}" method="post">
+      <label class="input" th:text="Username">Username</label>
+      <div class="field">
+        <input type="text" id="username" th:field="*{userName}" placeholder="username">
+        <label class="error" th:errors="*{userName}">Username error placeholder</label>
+      </div>
+      <label class="input" th:text="Password">Password</label>
+      <div class="field">
+
+        <br>
+        <input type="password" th:field="*{password}" placeholder="password">
+        <label class="error" th:errors="*{password}">Password error placeholder</label>
+      </div>
+      <input class="button" type="submit" value="Login">
+      <div class="link">
+        Not a member?
+        <a href="#" th:href="@{/auth/register}">Signup now</a>
+      </div>
+    </form>
+  </div>
+</section>
+</body>
+</html>

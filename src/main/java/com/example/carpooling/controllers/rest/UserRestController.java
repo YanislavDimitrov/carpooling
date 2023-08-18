@@ -183,14 +183,14 @@ public class UserRestController {
     }
 
     /**
-     * Logically restoring a user.
+     * Logically restoring a user after deleting account.
      * Changing the UserStatus property to "ACTIVE". Only the user itself and admin can restore a user.
      *
      * @param id      The id of the user to restore
      * @param headers Autorization key holding Username and Password
      * @throws AuthenticationFailureException if username or/and password are not recognized
      * @throws EntityNotFoundException        If user with specified id does not exist
-     * @throws AuthorizationException         If user is not authorized to perform delete operation on user with specified id
+     * @throws AuthorizationException         If user is not authorized to perform restore operation on user with specified id
      */
     @PutMapping("/{id}/restore")
     public void restoreUser(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
@@ -205,10 +205,54 @@ public class UserRestController {
     }
 
     /**
+     * Logically blocking a user.
+     * Changing the UserStatus property to "BLOCKED". Only an admin can block a user. User cannot block itself.
+     *
+     * @param id      The id of the user to block
+     * @param headers Autorization key holding Username and Password
+     * @throws AuthenticationFailureException if username or/and password are not recognized
+     * @throws EntityNotFoundException        If user with specified id does not exist
+     * @throws AuthorizationException         If user is not authorized to perform block operation on user with specified id
+     */
+    @PutMapping("/{id}/block")
+    public void blockUser(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(headers);
+            this.userService.block(id, loggedUser);
+        } catch (AuthenticationFailureException | AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    /**
+     * Logically unblocking a user after being blocked by Admin.
+     * Changing the UserStatus property to "ACTIVE". Only an admin can restore a user.
+     *
+     * @param id      The id of the user to unblock
+     * @param headers Autorization key holding Username and Password
+     * @throws AuthenticationFailureException if username or/and password are not recognized
+     * @throws EntityNotFoundException        If user with specified id does not exist
+     * @throws AuthorizationException         If user is not authorized to perform unblock operation on user with specified id
+     */
+    @PutMapping("/{id}/unblock")
+    public void unblockUser(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(headers);
+            this.userService.unblock(id, loggedUser);
+        } catch (AuthenticationFailureException | AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    /**
      * Get a collection of all vehicles associated to a user.
      *
-     * @param id             The id of the potential vehicle(s) owner.
-     * @param headers        Autorization key holding Username and Password
+     * @param id      The id of the potential vehicle(s) owner.
+     * @param headers Autorization key holding Username and Password
      * @return Collection of vehicles in the specified user vehicle list
      * @throws AuthenticationFailureException if username or/and password are not recognized
      * @throws EntityNotFoundException        If user with specified id does not exist

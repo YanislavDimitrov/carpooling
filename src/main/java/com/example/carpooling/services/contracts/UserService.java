@@ -30,4 +30,8 @@ public interface UserService {
     Vehicle addVehicle(Long id, Vehicle payloadVehicle, User loggedUser);
 
     List<Vehicle> getVehiclesByUserId(Long id, User loggedUser);
+
+    void block(Long id, User loggedUser);
+
+    void unblock(Long id, User loggedUser);
 }
