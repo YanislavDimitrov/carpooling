@@ -5,6 +5,7 @@ import com.example.carpooling.models.Feedback;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
+import com.example.carpooling.models.enums.TravelRequestStatus;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.repositories.contracts.FeedbackRepository;
 import com.example.carpooling.repositories.contracts.TravelRepository;
@@ -31,6 +32,7 @@ public class FeedbackServiceImpl implements FeedbackService {
     public static final String INVALID_FEEDBACK = "You cannot give feedback for this person if he was not part of this travel!";
     public static final String NOT_PART_OF_TRAVEL = "You were not a part of this travel so you cannot leave feedback!";
     public static final String FEEDBACK_REPETITION = "You cannot give feedback again for the same person for this travel,if you want to edit your feedback , please go to the edit button!";
+    public static final String CANNOT_GIVE_YOURSELF_A_FEEDBACK = "You cannot give yourself a feedback!";
     private final FeedbackRepository feedbackRepository;
     private final TravelRepository travelRepository;
     private final UserRepository userRepository;
@@ -87,6 +89,9 @@ public class FeedbackServiceImpl implements FeedbackService {
         if (travel.getStatus() != TravelStatus.COMPLETED) {
             throw new TravelNotCompletedException(String.format(TRAVEL_NOT_COMPLETED, travel.getId()));
         }
+        if(creator.equals(recipient)) {
+            throw new InvalidFeedbackException(CANNOT_GIVE_YOURSELF_A_FEEDBACK);
+        }
         Optional<Feedback> feedbackOptional = feedbackRepository.findAll()
                 .stream()
                 .filter(feedback1 -> feedback1.getCreator().equals(creator)
@@ -104,7 +109,6 @@ public class FeedbackServiceImpl implements FeedbackService {
                 feedbackRepository.save(feedback);
                 return feedback;
             } else {
-
                 throw new InvalidFeedbackException(INVALID_FEEDBACK);
             }
         }
@@ -136,22 +140,21 @@ public class FeedbackServiceImpl implements FeedbackService {
         }
         feedbackRepository.delete(id);
     }
-
     private boolean haveTravelledTogether (Long travelId , User driver , User recipient) {
       Travel travel  = travelService.getById(travelId);
       if(travel.getDriver().equals(driver)) {
           for(TravelRequest travelToCheck : recipient.getTravelsAsPassenger()) {
-              if(travelToCheck.getTravel().equals(travel)) {
+              if(travelToCheck.getTravel().equals(travel) && travelToCheck.getStatus() == TravelRequestStatus.APPROVED) {
                   return true;
               }
           }
-      }  else {
+      } else if (travel.getDriver().equals(recipient)) {
           for(TravelRequest travelRequest : driver.getTravelsAsPassenger()) {
-              if(travelRequest.getTravel().equals(travel)) {
+              if(travelRequest.getTravel().equals(travel) && travelRequest.getStatus() == TravelRequestStatus.APPROVED) {
                   return true;
               }
           }
       }
-      return false;
+      return false ;
     }
 }
