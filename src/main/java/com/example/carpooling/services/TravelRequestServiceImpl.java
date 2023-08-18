@@ -209,7 +209,6 @@ public class TravelRequestServiceImpl implements TravelRequestService {
 
 
     }
-
     public boolean haveTravelInTheList(User user , Travel travel) {
         for(TravelRequest travelRequest : user.getTravelsAsPassenger()) {
             if(travelRequest.getTravel().equals(travel) && travelRequest.getStatus() ==TravelRequestStatus.APPROVED) {
