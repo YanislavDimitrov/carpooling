@@ -1,17 +1,16 @@
 package com.example.carpooling.services;
 
-import com.example.carpooling.exceptions.AuthorizationException;
-import com.example.carpooling.exceptions.EntityNotFoundException;
-import com.example.carpooling.exceptions.InvalidFeedbackException;
-import com.example.carpooling.exceptions.TravelNotCompletedException;
+import com.example.carpooling.exceptions.*;
 import com.example.carpooling.models.Feedback;
 import com.example.carpooling.models.Travel;
+import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.repositories.contracts.FeedbackRepository;
 import com.example.carpooling.repositories.contracts.TravelRepository;
 import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.services.contracts.FeedbackService;
+import com.example.carpooling.services.contracts.TravelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -19,6 +18,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FeedbackServiceImpl implements FeedbackService {
@@ -30,15 +30,18 @@ public class FeedbackServiceImpl implements FeedbackService {
     public static final String NOT_AUTHORIZED = "You are not authorized to update feedback because only creators of the feedback can update it!";
     public static final String INVALID_FEEDBACK = "You cannot give feedback for this person if he was not part of this travel!";
     public static final String NOT_PART_OF_TRAVEL = "You were not a part of this travel so you cannot leave feedback!";
+    public static final String FEEDBACK_REPETITION = "You cannot give feedback again for the same person for this travel,if you want to edit your feedback , please go to the edit button!";
     private final FeedbackRepository feedbackRepository;
     private final TravelRepository travelRepository;
     private final UserRepository userRepository;
+    private final TravelService travelService;
 
     @Autowired
-    public FeedbackServiceImpl(FeedbackRepository feedbackRepository, TravelRepository travelRepository, UserRepository userRepository) {
+    public FeedbackServiceImpl(FeedbackRepository feedbackRepository, TravelRepository travelRepository, UserRepository userRepository, TravelService travelService) {
         this.feedbackRepository = feedbackRepository;
         this.travelRepository = travelRepository;
         this.userRepository = userRepository;
+        this.travelService = travelService;
     }
 
     @Override
@@ -54,23 +57,25 @@ public class FeedbackServiceImpl implements FeedbackService {
                         () -> new EntityNotFoundException(String.format(FEEDBACK_NOT_FOUND, id))
                 );
     }
-
+    @Override
+    public List<Feedback> getByRecipientIs(User user) {
+            if(!userRepository.existsById(user.getId())) {
+                throw new EntityNotFoundException(String.format(USER_NOT_FOUND,user.getId()));
+            }
+           return user.getFeedbacks();
+    }
     @Override
     public List<Feedback> findByCriteria(Short rating, String comment, Sort sort) {
         return feedbackRepository.findByCriteria(rating, comment, sort);
     }
-
     @Override
     public List<Feedback> findAll(Sort sort) {
         return feedbackRepository.findAll();
     }
-
     @Override
     public Long count() {
         return feedbackRepository.count();
     }
-
-
     @Override
     public Feedback create(Travel travel, User creator, User recipient, Feedback feedback) {
         if (!travelRepository.existsById(travel.getId())) {
@@ -82,17 +87,28 @@ public class FeedbackServiceImpl implements FeedbackService {
         if (travel.getStatus() != TravelStatus.COMPLETED) {
             throw new TravelNotCompletedException(String.format(TRAVEL_NOT_COMPLETED, travel.getId()));
         }
-        if(!recipient.getTravelsAsDriver().contains(travel) || !recipient.getTravelsAsPassenger().contains(travel)) {
-            throw new InvalidFeedbackException(INVALID_FEEDBACK);
+        Optional<Feedback> feedbackOptional = feedbackRepository.findAll()
+                .stream()
+                .filter(feedback1 -> feedback1.getCreator().equals(creator)
+                        && feedback1.getRecipient().equals(recipient)
+                        && feedback1.getTravel().equals(travel))
+                .findFirst();
+
+        if(feedbackOptional.isPresent()) {
+            throw new InvalidOperationException(FEEDBACK_REPETITION);
+        } else {
+
+            if (haveTravelledTogether(travel.getId(), creator, recipient)) {
+                feedback.setCreator(creator);
+                feedback.setRecipient(recipient);
+                feedback.setTravel(travel);
+                feedbackRepository.save(feedback);
+                return feedback;
+            } else {
+
+                throw new InvalidFeedbackException(INVALID_FEEDBACK);
+            }
         }
-        if(!creator.getTravelsAsDriver().contains(travel) || !creator.getTravelsAsPassenger().contains(travel)) {
-            throw new InvalidFeedbackException(NOT_PART_OF_TRAVEL);
-        }
-        feedback.setCreator(creator);
-        feedback.setRecipient(recipient);
-        feedback.setTravel(travel);
-        feedbackRepository.save(feedback);
-        return feedback;
     }
 
     @Override
@@ -120,5 +136,23 @@ public class FeedbackServiceImpl implements FeedbackService {
             throw new AuthorizationException(NOT_AUTHORIZED);
         }
         feedbackRepository.delete(id);
+    }
+
+    private boolean haveTravelledTogether (Long travelId , User driver , User recipient) {
+      Travel travel  = travelService.getById(travelId);
+      if(travel.getDriver().equals(driver)) {
+          for(TravelRequest travelToCheck : recipient.getTravelsAsPassenger()) {
+              if(travelToCheck.getTravel().equals(travel)) {
+                  return true;
+              }
+          }
+      }  else {
+          for(TravelRequest travelRequest : driver.getTravelsAsPassenger()) {
+              if(travelRequest.getTravel().equals(travel)) {
+                  return true;
+              }
+          }
+      }
+      return false;
     }
 }

@@ -1,9 +1,6 @@
 package com.example.carpooling.controllers.rest;
 
-import com.example.carpooling.exceptions.AuthenticationFailureException;
-import com.example.carpooling.exceptions.AuthorizationException;
-import com.example.carpooling.exceptions.EntityNotFoundException;
-import com.example.carpooling.exceptions.TravelNotCompletedException;
+import com.example.carpooling.exceptions.*;
 import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.helpers.mappers.FeedbackMapper;
 import com.example.carpooling.models.Feedback;
@@ -83,6 +80,22 @@ public class FeedbackRestController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
+    @GetMapping("/user/{id}")
+    public List<FeedbackViewDto> getByUser(@PathVariable Long id , @RequestHeader HttpHeaders headers) {
+        try {
+            User user = authenticationHelper.tryGetUser(headers);
+      User userToCheck = userService.getById(id);
+          return  feedbackService.getByRecipientIs(userToCheck)
+                  .stream()
+                  .filter(feedback -> !feedback.isDeleted())
+                  .map(feedbackMapper::toDtoFromFeedback)
+                  .toList();
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage());
+        } catch (AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,e.getMessage());
+        }
+    }
     @PostMapping("/travel/{travelId}/user/{userId}")
     public FeedbackViewDto create(@PathVariable Long travelId,
                                   @PathVariable Long userId,
@@ -98,7 +111,7 @@ public class FeedbackRestController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthenticationFailureException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        } catch (TravelNotCompletedException e) {
+        } catch ( TravelNotCompletedException | InvalidFeedbackException | InvalidOperationException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }

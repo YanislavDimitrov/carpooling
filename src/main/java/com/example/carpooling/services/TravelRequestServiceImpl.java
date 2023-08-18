@@ -5,6 +5,8 @@ import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.TravelRequestStatus;
+import com.example.carpooling.models.enums.TravelStatus;
+import com.example.carpooling.repositories.contracts.FeedbackRepository;
 import com.example.carpooling.repositories.contracts.TravelRepository;
 import com.example.carpooling.repositories.contracts.TravelRequestRepository;
 import com.example.carpooling.repositories.contracts.UserRepository;
@@ -27,9 +29,11 @@ public class TravelRequestServiceImpl implements TravelRequestService {
     public static final String REQUEST_ALREADY_SENT = "You have already sent a request to participate in this travel!";
     public static final String TRAVEL_NOT_FOUND = "Travel with ID %d was not found!";
     public static final String DRIVER_APPLYING_RESTRICTION = "You cannot apply to be passenger for your own travel!";
+    public static final String TRAVEL_NOT_ACTIVE = "You cannot apply for travel which is not active!";
     private final TravelRequestRepository travelRequestRepository;
     private final TravelRepository travelRepository;
     private final UserRepository userRepository;
+
     public static final String TRAVEL_REQUEST_NOT_FOUND = "Travel request with ID %d was not found!";
 
     @Autowired
@@ -37,6 +41,7 @@ public class TravelRequestServiceImpl implements TravelRequestService {
         this.travelRequestRepository = travelRequestRepository;
         this.travelRepository = travelRepository;
         this.userRepository = userRepository;
+
     }
 
     /**
@@ -77,6 +82,7 @@ public class TravelRequestServiceImpl implements TravelRequestService {
      * @param user   this parameter is used to identify who is making the request for the travel
      * @return TravelRequest entity if the parameters are valid.
      */
+    // ToDo add validation which checks whether a feedback for this user and for this travel already exists and throw exception if yes
     @Override
     public String createRequest(Travel travel, User user) {
         TravelRequest travelRequest = new TravelRequest();
@@ -92,11 +98,15 @@ public class TravelRequestServiceImpl implements TravelRequestService {
         if(travel.getDriver() == user) {
             throw new InvalidOperationException(DRIVER_APPLYING_RESTRICTION);
         }
+        if(travel.getStatus()!= TravelStatus.ACTIVE) {
+            throw new InvalidOperationException(TRAVEL_NOT_ACTIVE);
+        }
         Optional<TravelRequest> travelRequestOptional = travel
                 .getTravelRequests()
                 .stream()
-                .filter(travelRequest1 -> travelRequest1.getPassenger().equals(user) && travelRequest1.getStatus()==TravelRequestStatus.PENDING || travelRequest1.getStatus() == TravelRequestStatus.APPROVED)
+                .filter(travelRequest1 -> travelRequest1.getPassenger().equals(user) && travelRequest1.getStatus()==TravelRequestStatus.PENDING || travelRequest1.getPassenger().equals(user) && travelRequest1.getStatus() == TravelRequestStatus.APPROVED)
                 .findFirst();
+
         if(travelRequestOptional.isPresent()) {
             throw new DuplicateEntityException(REQUEST_ALREADY_SENT);
         } else {

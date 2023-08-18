@@ -14,6 +14,8 @@ public interface FeedbackService {
 
     Feedback getById(Long id);
 
+     List <Feedback> getByRecipientIs(User user);
+
     List<Feedback> findByCriteria(Short rating,
                                 String comment,
                                 Sort sort);

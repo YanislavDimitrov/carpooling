@@ -3,6 +3,7 @@ package com.example.carpooling.repositories.contracts;
 import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.models.Feedback;
 import com.example.carpooling.models.Travel;
+import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.TravelStatus;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,4 +31,6 @@ public interface FeedbackRepository extends JpaRepository<Feedback,Long> {
     @Modifying
     @Query("UPDATE Feedback AS f SET f.isDeleted=true WHERE f.id = :id")
     void delete(@Param("id") Long id) throws EntityNotFoundException;
+
+   List<Feedback> findByRecipientIs(User user);
 }

@@ -1,6 +1,3 @@
-alter table feedbacks
-    add column recipient_id INT NOT NULL,
-    ADD CONSTRAINT `fk_feedbacks_users` FOREIGN KEY (`recipient_id`) REFERENCES `users` (`id`);
 
 create table travel_requests
 (

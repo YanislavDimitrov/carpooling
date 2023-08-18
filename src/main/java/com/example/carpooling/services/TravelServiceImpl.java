@@ -2,6 +2,7 @@ package com.example.carpooling.services;
 
 import com.example.carpooling.exceptions.AuthorizationException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
+import com.example.carpooling.exceptions.InvalidOperationException;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
@@ -30,6 +31,8 @@ public class TravelServiceImpl implements TravelService {
 
     public static final String UPDATE_CANCELLED = "You cannot update this travel!";
     public static final String OPERATION_DENIED = "You are not authorized to complete this operation!";
+    public static final String DELETE_TRAVEL_ERROR = "You cannot complete deleted travel!";
+    public static final String COMPLETED_OR_DELETED_TRAVEL_ERROR = "You cannot cancel travel which is either completed or deleted!";
     private final TravelRepository travelRepository;
     private final TravelRequestRepository travelRequestRepository;
     private final UserRepository userRepository;
@@ -195,6 +198,9 @@ public class TravelServiceImpl implements TravelService {
         if(travel.getDriver() != editor) {
             throw new AuthorizationException(OPERATION_DENIED);
         }
+        if(travel.getStatus() == TravelStatus.DELETED) {
+            throw new InvalidOperationException(DELETE_TRAVEL_ERROR);
+        }
         travelRepository.completeTravel(id);
         return travel;
     }
@@ -212,7 +218,9 @@ public class TravelServiceImpl implements TravelService {
         if(travel.getDriver() != editor) {
             throw new AuthorizationException(OPERATION_DENIED);
         }
+        if(travel.getStatus() == TravelStatus.COMPLETED || travel.getStatus() == TravelStatus.DELETED) {
+            throw new InvalidOperationException(COMPLETED_OR_DELETED_TRAVEL_ERROR);
+        }
         travelRepository.delete(id);
     }
-
 }
