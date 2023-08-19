@@ -68,7 +68,7 @@ public class VehicleServiceImpl implements VehicleService {
             return this.vehicleRepository.save(targetVehicle);
         } else {
             throw new AuthorizationException(
-                    String.format(UPDATE_USER_AUTHORIZATION_MESSAGE
+                    String.format(UPDATE_VEHICLE_AUTHORIZATION_MESSAGE
                             , loggedUser.getUserName()
                             , id));
         }

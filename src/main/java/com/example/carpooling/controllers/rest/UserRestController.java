@@ -302,4 +302,50 @@ public class UserRestController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
+
+    /**
+     * Upgrade user to Admin role.
+     * Changing the UserRole property to "ADMIN". Only an admin can upgrade a user.
+     *
+     * @param id      The id of the user to upgrade
+     * @param headers Autorization key holding Username and Password
+     * @throws AuthenticationFailureException if username or/and password are not recognized
+     * @throws EntityNotFoundException        If user with specified id does not exist
+     * @throws AuthorizationException         If user is not authorized to perform upgrade operation on user with specified id
+     */
+    @PutMapping("/{id}/upgrade")
+    public void upgradeUser(@PathVariable Long id,
+                            @RequestHeader HttpHeaders headers) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(headers);
+            this.userService.upgrade(id, loggedUser);
+        } catch (AuthorizationException | AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    /**
+     * Downgrade user to User role.
+     * Changing the UserRole property to "USER". Only an admin can downgrade a user.
+     *
+     * @param id      The id of the user to downgrade
+     * @param headers Autorization key holding Username and Password
+     * @throws AuthenticationFailureException if username or/and password are not recognized
+     * @throws EntityNotFoundException        If user with specified id does not exist
+     * @throws AuthorizationException         If user is not authorized to perform downgrade operation on user with specified id
+     */
+    @PutMapping("/{id}/downgrade")
+    public void downgradeUser(@PathVariable Long id,
+                              @RequestHeader HttpHeaders headers) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(headers);
+            this.userService.downgrade(id, loggedUser);
+        } catch (AuthorizationException | AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
 }

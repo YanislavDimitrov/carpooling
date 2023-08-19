@@ -34,4 +34,8 @@ public interface UserService {
     void block(Long id, User loggedUser);
 
     void unblock(Long id, User loggedUser);
+
+    void upgrade(Long id, User loggedUser);
+
+    void downgrade(Long id, User loggedUser);
 }

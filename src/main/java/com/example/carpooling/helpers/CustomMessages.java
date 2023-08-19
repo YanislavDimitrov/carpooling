@@ -10,4 +10,6 @@ public class CustomMessages {
     public static final String DELETE_VEHICLE_AUTHORIZATION_MESSAGE = "User with username %s not authorized to delete vehicle with id %d";
     public static final String ACTIVE_TRAVEL_EXCEPTION_MSG = "Active travel(s) prevent operation to complete successfully.";
     public static final String UPDATE_VEHICLE_AUTHORIZATION_MESSAGE = "User with username %s not authorized to update vehicle with id %d";
+    public static final String UPGRADE_USER_AUTHORIZATION_MESSAGE = "User with username %s not authorized to upgrade user with id %d";
+    public static final String DOWNGRADE_USER_AUTHORIZATION_MESSAGE = "User with username %s not authorized to downgrade user with id %d";
 }

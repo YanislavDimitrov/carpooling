@@ -186,6 +186,39 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    @Transactional
+    public void upgrade(Long id, User loggedUser) {
+        if (!loggedUser.getRole().equals(UserRole.ADMIN)) {
+            throw new AuthorizationException(String.format(UPGRADE_USER_AUTHORIZATION_MESSAGE,
+                    loggedUser.getUserName(),
+                    id));
+        }
+        Optional<User> optionalTargetUser = this.userRepository.findById(id);
+
+        if (optionalTargetUser.isEmpty()) {
+            throw new EntityNotFoundException("User", id);
+        }
+
+        this.userRepository.upgrade(id);
+    }
+
+    @Override
+    @Transactional
+    public void downgrade(Long id, User loggedUser) {
+        if (!loggedUser.getRole().equals(UserRole.ADMIN)) {
+            throw new AuthorizationException(String.format(DOWNGRADE_USER_AUTHORIZATION_MESSAGE,
+                    loggedUser.getUserName(),
+                    id));
+        }
+        Optional<User> optionalTargetUser = this.userRepository.findById(id);
+
+        if (optionalTargetUser.isEmpty()) {
+            throw new EntityNotFoundException("User", id);
+        }
+        this.userRepository.downgrade(id);
+    }
+
 
     @Override
     public List<Vehicle> getVehiclesByUserId(Long id, User loggedUser) {

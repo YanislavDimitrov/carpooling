@@ -33,13 +33,21 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User findByUserName(String username);
 
     @Modifying
-    @Query("UPDATE User AS u SET u.status='DELETED' WHERE u.id = :id")
+    @Query("UPDATE User AS u SET u.status = 'DELETED' WHERE u.id = :id")
     void delete(Long id);
 
     @Modifying
-    @Query("UPDATE User AS u SET u.status='ACTIVE' WHERE u.id = :id")
+    @Query("UPDATE User AS u SET u.status = 'ACTIVE' WHERE u.id = :id")
     void restore(Long id);
+
     @Modifying
-    @Query("UPDATE User AS u SET u.status='BLOCKED' WHERE u.id = :id")
+    @Query("UPDATE User AS u SET u.status = 'BLOCKED' WHERE u.id = :id")
     void block(Long id);
+
+    @Modifying
+    @Query("UPDATE User AS u SET u.role = 'ADMIN' WHERE  u.id = :id")
+    void upgrade(Long id);
+    @Modifying
+    @Query("UPDATE User AS u SET u.role = 'USER' WHERE  u.id = :id")
+    void downgrade(Long id);
 }
