@@ -85,4 +85,16 @@ public class TravelMapper {
         travel.setFreeSpots(travelUpdateDto.getFreeSpots());
         return travel;
     }
+
+    public TravelCreationOrUpdateDto fromTravel(Long id) {
+        TravelCreationOrUpdateDto travelCreationOrUpdateDto = new TravelCreationOrUpdateDto();
+        Travel travel =  travelService.getById(id);
+        travelCreationOrUpdateDto.setArrivalPoint(travel.getArrivalPoint());
+        travelCreationOrUpdateDto.setComment(travel.getComment());
+        travelCreationOrUpdateDto.setDeparturePoint(travel.getDeparturePoint());
+        travelCreationOrUpdateDto.setFreeSpots(travel.getFreeSpots());
+        travelCreationOrUpdateDto.setDepartureTime(travel.getDepartureTime());
+        return travelCreationOrUpdateDto;
+
+    }
 }

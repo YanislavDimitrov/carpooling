@@ -1,6 +1,9 @@
 package com.example.carpooling.models.dtos;
 
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
@@ -9,9 +12,10 @@ public class TravelCreationOrUpdateDto {
     private String departurePoint;
     @NotEmpty(message = "Arrival point field cannot be empty!")
     private String arrivalPoint;
-    @NotEmpty(message = "Free spots field cannot be empty!")
+    @NotNull (message = "Free spots cannot be null")
+    @Min(value = 0, message = "Free spots cannot be negative")
     private Short freeSpots;
-    @NotEmpty(message = "Departure Point  field cannot be empty!")
+  @FutureOrPresent(message = "The date should be valid!")
     private LocalDateTime departureTime;
     private String comment;
 

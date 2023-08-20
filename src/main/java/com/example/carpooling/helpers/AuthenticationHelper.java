@@ -42,17 +42,6 @@ public class AuthenticationHelper {
         }
         return userService.getByUsername(currentUser);
     }
-
-    public User tryGetCurrentUser(HttpSession session) {
-        String currentUsername = (String) session.getAttribute(CURRENT_USER_ATTRIBUTE_NAME);
-
-        if (currentUsername == null) {
-            throw new AuthenticationFailureException(INVALID_AUTHENTICATION_ERROR);
-        }
-
-        return userService.getByUsername(currentUsername);
-    }
-
     public User verifyAuthentication(String username, String password) {
         try {
             User user = userService.getByUsername(username);

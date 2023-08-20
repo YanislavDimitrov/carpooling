@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Travel Details</title>
+</head>
+<body>
+<h1>Travel Details</h1>
+
+<table>
+  <tr>
+    <th>ID</th>
+    <td th:text="${travel.id}"></td>
+  </tr>
+  <tr>
+    <th>Departure Point</th>
+    <td th:text="${travel.departurePoint}"></td>
+  </tr>
+  <tr>
+    <th>Arrival Point</th>
+    <td th:text="${travel.arrivalPoint}"></td>
+  </tr>
+  <tr>
+    <th>Free Spots</th>
+    <td th:text="${travel.freeSpots}"></td>
+  </tr>
+  <tr>
+    <th>Departure Time</th>
+    <td th:text="${#temporals.format(travel.departureTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+  </tr>
+  <tr>
+    <th>Comment</th>
+    <td th:text="${travel.comment}"></td>
+  </tr>
+  <tr>
+    <th>Driver</th>
+    <td th:text="${travel.driver.username}"></td>
+  </tr>
+  <tr>
+    <th>Vehicle</th>
+    <td th:text="${travel.vehicle.name}"></td>
+  </tr>
+  <tr>
+    <th>Status</th>
+    <td th:text="${travel.status}"></td>
+  </tr>
+  <tr>
+    <th>Distance</th>
+    <td th:text="${travel.distance}"></td>
+  </tr>
+  <tr>
+    <th>Travel Duration</th>
+    <td th:text="${travel.travelDuration}"></td>
+  </tr>
+  <tr>
+    <th>Estimated Time of Arrival</th>
+    <td th:text="${#temporals.format(travel.estimatedTimeOfArrival, 'yyyy-MM-dd HH:mm:ss')}"></td>
+  </tr>
+</table>
+</body>
+</html>

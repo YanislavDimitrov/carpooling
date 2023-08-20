@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="../static/index.css" th:href="@{/index.css}">
 </head>
 <body>
-<header class="header">
+<header th:fragment="header"   class="header">
     <div class="logo">
         <img th:src="@{/images/carpool_logo.png}" src="../static/images/carpool_logo.png">
     </div>
@@ -15,9 +15,11 @@
         <button class="search-btn-container">
             <i class="fa-solid fa-magnifying-glass"></i>Search
         </button>
-        <button class="create-btn-container">
+        <a href="#" th:href="@{/travels/new}">
+        <button class="create-btn-container" >
             <i class="fa-solid fa-circle-plus"></i>Publish a ride
         </button>
+        </a>
         <button class="avatar-img-container">
             <i class="fa-solid fa-circle-user"></i>
             <i class="fa-solid fa-chevron-down"></i>
@@ -72,7 +74,7 @@
         </p>
     </div>
 </section>
-<footer class="footer">
+<footer   th:fragment="footer" class="footer">
     <div class="links-container">
         <a class="terms-and-conditions">Terms and Conditions</a>
         <a class="faqs">FAQs</a>
