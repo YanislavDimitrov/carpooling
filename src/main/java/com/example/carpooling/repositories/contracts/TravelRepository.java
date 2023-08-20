@@ -40,5 +40,10 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
     );
 
     List<Travel> findByStatusAndDepartureTimeBefore(TravelStatus status , LocalDateTime departureTime);
+  @Query("select t from Travel t where  t.isDeleted=false")
+    List<Travel> getAll();
 
+  List<Travel> getAllByStatusIs(TravelStatus status);
+
+  Long countAllByStatusIs(TravelStatus status);
 }

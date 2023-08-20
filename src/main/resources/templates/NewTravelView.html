@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Create Travel</title>
+    <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
+    <link rel="stylesheet" href="../static/index.css" th:href="@{/index.css}">
 </head>
 <body>
 <section class="main">
@@ -23,7 +25,7 @@
             </div>
                <div class="field-container">
                    <label th:text="#{travel.label.free-spots}">Free Spots</label>
-                   <input type="text" th:field="*{freeSpots}" placeholder="Free Spots">
+                   <input type="number" th:field="*{freeSpots}" placeholder="Free Spots">
                    <label class="error" th:errors="*{freeSpots}">Free spots field cannot be empty!</label>
                </div>
             <div class="field-container">
@@ -34,7 +36,6 @@
             <div class="field-container">
                 <label th:text="#{travel.label.comment}">Comment</label>
                 <input type="text" th:field="*{comment}" placeholder="Comment">
-                <label class="errors" th:errors="*{comment}"></label>
             </div>
             <input type="submit" value="Create Travel">
         </form>

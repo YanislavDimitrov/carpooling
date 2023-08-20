@@ -53,7 +53,12 @@ public class TravelServiceImpl implements TravelService {
      * @return Returns all travels which are in the database using JPA Repository findAll method
      */
     public List<Travel> get() {
-        return travelRepository.findAll();
+        return travelRepository.getAll();
+    }
+
+    @Override
+    public List<Travel> getAllCompleted() {
+        return travelRepository.getAllByStatusIs(TravelStatus.COMPLETED);
     }
 
     /**
@@ -235,6 +240,11 @@ public class TravelServiceImpl implements TravelService {
     @Override
     public List<Travel> findPlannedTravelsWithPastDepartureTime() {
         return travelRepository.findByStatusAndDepartureTimeBefore(TravelStatus.PLANNED,LocalDateTime.now());
+    }
+
+    @Override
+    public Long countCompleted() {
+        return travelRepository.countAllByStatusIs(TravelStatus.COMPLETED);
     }
 
     @Override

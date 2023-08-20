@@ -8,6 +8,8 @@ import com.example.carpooling.helpers.mappers.TravelMapper;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.dtos.TravelCreationOrUpdateDto;
+import com.example.carpooling.models.dtos.TravelFrontEndView;
+import com.example.carpooling.models.dtos.TravelViewDto;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.services.contracts.TravelService;
 import jakarta.servlet.http.HttpSession;
@@ -40,9 +42,38 @@ public class TravelMvcController {
             return "redirect:/auth/login";
         }
 
-        List<Travel> travels = travelService.get();
+        List<TravelFrontEndView> travels = travelService.get()
+                .stream()
+                .map(travelMapper::fromTravelToFrontEnd)
+                .toList();
         model.addAttribute("travels", travels);
         return "TravelsView";
+    }
+
+    @GetMapping("/completed")
+    public String viewCompletedTravels(Model model , HttpSession session) {
+        try {
+            authenticationHelper.tryGetUser(session);
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        }
+        List<TravelFrontEndView> travels = travelService.getAllCompleted()
+                .stream()
+                .map(travelMapper::fromTravelToFrontEnd)
+                .toList();
+        return "TravelsView";
+    }
+
+    @GetMapping("/{id}")
+    public String viewTravel(@PathVariable Long id , Model model , HttpSession session) {
+        try {
+            authenticationHelper.tryGetUser(session);
+        }catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        }
+        TravelFrontEndView travelFrontEndView =  travelMapper.fromTravelToFrontEnd(travelService.getById(id));
+        model.addAttribute("travel",travelFrontEndView);
+        return "TravelView";
     }
     @GetMapping("/new")
     public String showNewTravelPage(Model model, HttpSession session) {
@@ -124,7 +155,7 @@ TravelCreationOrUpdateDto travelCreationOrUpdateDto = travelMapper.fromTravel(id
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         }
-        return "redirect:/posts";
+        return "redirect:/travels";
     }
     @ModelAttribute("isAdmin")
     public boolean populateIsAdmin(HttpSession session) {
@@ -134,5 +165,9 @@ TravelCreationOrUpdateDto travelCreationOrUpdateDto = travelMapper.fromTravel(id
         } catch (AuthenticationFailureException e) {
             return false;
         }
+    }
+    @ModelAttribute("isAuthenticated")
+    public boolean populateIsAuthenticated(HttpSession session) {
+        return session.getAttribute("currentUser") != null;
     }
 }

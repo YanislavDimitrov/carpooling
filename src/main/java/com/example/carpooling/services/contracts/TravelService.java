@@ -13,6 +13,8 @@ public interface TravelService {
 
     List<Travel> get();
 
+    List<Travel> getAllCompleted();
+
     Travel getById(Long id);
 
     List<Travel> findByCriteria(String driver,
@@ -24,6 +26,8 @@ public interface TravelService {
     List<Travel> findAll(Sort sort);
 
     Long count();
+
+    Long countCompleted();
 
     void create(Travel travel,User driver);
 

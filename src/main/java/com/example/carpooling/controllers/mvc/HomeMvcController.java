@@ -4,9 +4,10 @@ import com.example.carpooling.exceptions.AuthenticationFailureException;
 import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.UserRole;
-import com.example.carpooling.services.contracts.UserService;
+import com.example.carpooling.services.contracts.TravelService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,13 +16,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/")
 public class HomeMvcController {
     private final AuthenticationHelper authenticationHelper;
+    private final TravelService travelService;
 
-    public HomeMvcController(AuthenticationHelper authenticationHelper) {
+    public HomeMvcController(AuthenticationHelper authenticationHelper, TravelService travelService) {
         this.authenticationHelper = authenticationHelper;
+        this.travelService = travelService;
     }
 
     @GetMapping
-    public String viewHomePage() {
+    public String viewHomePage(Model model) {
+        long completedTravels = travelService.countCompleted();
+        model.addAttribute("completedTravels",completedTravels);
         return "index";
     }
 
