@@ -3,25 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <title>Home Page</title>
+    <link rel="website icon" th:type="png" th:href="@{/images/carpool_simplelogo.png}">
     <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
     <link rel="stylesheet" href="../static/index.css" th:href="@{/index.css}">
 </head>
 <body>
-<header class="header">
+<header th:fragment="header" class="header">
+    <div th:if="${!isAuthenticated}" class="dropdown">
+        <nav>
+            <ul class="links" role="list">
+                <li class="link">
+                    <a class="btn" th:href="@{/auth/login}">
+                        <div>
+                            <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                            <span class="btn-content">Log in</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="link">
+                    <a class="btn">
+                        <div>
+                            <i class="fa-solid fa-user-plus"></i>
+                            <span class="btn-content">Sigh up</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <div th:unless="${!isAuthenticated}" class="dropdown">
+        <nav>
+            <ul class="links" role="list">
+                <li class="link">
+                    <a class="btn" th:href="@{/auth/login}">
+                        <div>
+                            <i class="fa-solid fa-user"></i>
+                            <span class="btn-content">Profile</span>
+                        </div>
+
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="link">
+                    <a class="btn">
+                        <div>
+                            <i class="fa-solid fa-car-side"></i>
+                            <span class="btn-content">Your rides</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="link">
+                    <a class="btn" th:href="@{/auth/logout}">
+                        <div>
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                            <span class="btn-content">Log out</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
     <div class="logo">
         <img th:src="@{/images/carpool_logo.png}" src="../static/images/carpool_logo.png">
     </div>
     <div class="btns">
-        <button class="search-btn-container">
+        <a th:if="${isAdmin}" class="admin-btn-container">
+            <i class="fa-solid fa-gear"></i>Admin
+        </a>
+        <a class="search-btn-container">
             <i class="fa-solid fa-magnifying-glass"></i>Search
-        </button>
-        <button class="create-btn-container">
+        </a>
+        <a class="create-btn-container">
             <i class="fa-solid fa-circle-plus"></i>Publish a ride
-        </button>
-        <button class="avatar-img-container">
-            <i class="fa-solid fa-circle-user"></i>
-            <i class="fa-solid fa-chevron-down"></i>
-        </button>
+        </a>
+        <a id="avatar">
+            <span class="avatar avatar-content-container">
+                <i class="avatar fa-solid fa-circle-user"></i>
+                <span class="avatar" th:text="${session.currentUser}" th:if="${isAuthenticated}"></span>
+                <i class="avatar fa-solid fa-chevron-down"></i>
+            </span>
+        </a>
     </div>
 </header>
 <section class="hero">
@@ -83,5 +148,6 @@
     </div>
 
 </footer>
+<script type="text/javascript" src="../static/js/showDropdown.js" th:src="@{/js/showDropdown.js}"></script>
 </body>
 </html>

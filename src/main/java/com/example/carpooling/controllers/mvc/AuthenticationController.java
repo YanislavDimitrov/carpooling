@@ -5,6 +5,7 @@ import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.dtos.LoginDto;
+import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.models.enums.UserStatus;
 import com.example.carpooling.services.contracts.UserService;
 import jakarta.servlet.http.HttpSession;
@@ -35,6 +36,11 @@ public class AuthenticationController {
         model.addAttribute("login", new LoginDto());
         return "LoginView";
         //Todo LoginView
+    }
+    @GetMapping("/logout")
+    public String handleLogout(HttpSession session) {
+        session.removeAttribute("currentUser");
+        return "redirect:/";
     }
 
     @PostMapping("/login")
