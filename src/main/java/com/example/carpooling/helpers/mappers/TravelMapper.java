@@ -2,6 +2,7 @@ package com.example.carpooling.helpers.mappers;
 
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.dtos.TravelCreationOrUpdateDto;
+import com.example.carpooling.models.dtos.TravelFrontEndView;
 import com.example.carpooling.models.dtos.TravelUpdateDto;
 import com.example.carpooling.models.dtos.TravelViewDto;
 import com.example.carpooling.models.enums.TravelRequestStatus;
@@ -26,7 +27,6 @@ public class TravelMapper {
 
     public TravelViewDto fromTravel(Travel travel) {
         TravelViewDto travelViewDto = new TravelViewDto();
-//        travelViewDto.setVehicle(String.format("%s %s", travel.getVehicle().getMake(), travel.getVehicle().getModel()));
         travelViewDto.setComment(travel.getComment());
         travelViewDto.setStatus(travel.getStatus());
         travelViewDto.setDriverName(
@@ -39,24 +39,23 @@ public class TravelMapper {
         travelViewDto.setDistance(travel.getDistance());
         int wholeNumberIndex = travel.getTravelDuration().indexOf(" ");
         double durationAsDouble = Double.parseDouble(travel.getTravelDuration().substring(0, wholeNumberIndex));
-        int hours = (int) (durationAsDouble / 60);
-        double minutes = durationAsDouble - hours * 60;
-        if (hours > 0 && minutes > 0) {
-            travelViewDto.setDuration(String.format("%d hours and %.2f minutes", hours, minutes));
+        int hours ;
+        if(durationAsDouble >= 60) {
+            hours = (int) (durationAsDouble / 60);
+            double minutes = durationAsDouble - hours * 60;
+            if (hours > 0 && minutes > 0) {
+                travelViewDto.setDuration(String.format("%d hours %.0f minutes", hours, minutes));
+            }
+            if (hours > 0 && minutes == 0) {
+                travelViewDto.setDuration(String.format("%d hours", hours));
+            }
+        } else {
+            hours = 0;
+            double minutes = durationAsDouble;
+            if (minutes > 0) {
+                travelViewDto.setDuration(String.format("%.0f minutes", minutes));
+            }
         }
-        if (hours > 0 && minutes == 0) {
-            travelViewDto.setDuration(String.format("%d hours", hours));
-        }
-        if (hours < 0 && minutes > 0) {
-            travelViewDto.setDuration(String.format("%.2f minutes", minutes));
-        }
-        travelViewDto.setArrivalTime(travel.getEstimatedTimeOfArrival());
-
-//        travelViewDto.setRequests(travel.
-//                getTravelRequests()
-//                .stream()
-//                .map(travelRequestMapper::toDto)
-//                .collect(Collectors.toList()));
         travelViewDto.setPassengers(travel
                 .getTravelRequests()
                 .stream()
@@ -84,5 +83,51 @@ public class TravelMapper {
         travel.setDepartureTime(travelUpdateDto.getDepartureTime());
         travel.setFreeSpots(travelUpdateDto.getFreeSpots());
         return travel;
+    }
+
+    public TravelCreationOrUpdateDto fromTravel(Long id) {
+        TravelCreationOrUpdateDto travelCreationOrUpdateDto = new TravelCreationOrUpdateDto();
+        Travel travel =  travelService.getById(id);
+        travelCreationOrUpdateDto.setArrivalPoint(travel.getArrivalPoint());
+        travelCreationOrUpdateDto.setComment(travel.getComment());
+        travelCreationOrUpdateDto.setDeparturePoint(travel.getDeparturePoint());
+        travelCreationOrUpdateDto.setFreeSpots(travel.getFreeSpots());
+        travelCreationOrUpdateDto.setDepartureTime(travel.getDepartureTime());
+        return travelCreationOrUpdateDto;
+    }
+    public TravelFrontEndView fromTravelToFrontEnd(Travel travel) {
+        TravelFrontEndView travelFrontEndView = new TravelFrontEndView();
+        travelFrontEndView.setId(travel.getId());
+        travelFrontEndView.setArrivalPoint(travel.getArrivalPoint());
+        travelFrontEndView.setArrivalTime(travel.getEstimatedTimeOfArrival());
+        travelFrontEndView.setComment(travel.getComment());
+        travelFrontEndView.setDistance(travel.getDistance());
+
+        int wholeNumberIndex = travel.getTravelDuration().indexOf(" ");
+        double durationAsDouble = Double.parseDouble(travel.getTravelDuration().substring(0, wholeNumberIndex));
+        int hours ;
+        if(durationAsDouble >= 60) {
+            hours = (int) (durationAsDouble / 60);
+            double minutes = durationAsDouble - hours * 60;
+            if (hours > 0 && minutes > 0) {
+                travelFrontEndView.setDuration(String.format("%d hours %.0f minutes", hours, minutes));
+            }
+            if (hours > 0 && minutes == 0) {
+                travelFrontEndView.setDuration(String.format("%d hours", hours));
+            }
+
+        } else {
+            hours = 0;
+            double minutes = durationAsDouble;
+            if (minutes > 0) {
+                travelFrontEndView.setDuration(String.format("%.0f minutes", minutes));
+            }
+        }
+        travelFrontEndView.setDeparturePoint(travel.getDeparturePoint());
+        travelFrontEndView.setStatus(travel.getStatus());
+        travelFrontEndView.setFreeSpots(travel.getFreeSpots());
+        travelFrontEndView.setDepartureTime(travel.getDepartureTime());
+        travelFrontEndView.setDriverName(travel.getDriver().getUserName());
+        return travelFrontEndView;
     }
 }

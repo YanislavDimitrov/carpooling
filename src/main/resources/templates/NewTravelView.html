@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Travel</title>
+    <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
+    <link rel="stylesheet" href="../static/index.css" th:href="@{/index.css}">
+</head>
+<body>
+<section class="main">
+    <!--HEADER-->
+    <header th:replace="index.html :: header"></header>
+    <div id="content">
+        <h1 class="form-title">Create New Travel</h1>
+        <form class="form" th:action="@{/travels/new}" th:object="${travel}" action="#" method="post">
+            <div class="field-container">
+                <label th:text="#{travel.label.departure-point}">Departure Point</label>
+                <input type="text" th:field="*{departurePoint}" placeholder="Departure Point">
+                <label class="error" th:errors="*{departurePoint}">Departure point field cannot be empty!</label>
+            </div>
+            <div class="field-container">
+                <label th:text="#{travel.label.arrival-point}">Arrival Point</label>
+                <input type="text" th:field="*{arrivalPoint}" placeholder="Arrival Point">
+                <label class="error" th:errors="*{arrivalPoint}">Arrival point field cannot be empty!</label>
+            </div>
+               <div class="field-container">
+                   <label th:text="#{travel.label.free-spots}">Free Spots</label>
+                   <input type="number" th:field="*{freeSpots}" placeholder="Free Spots">
+                   <label class="error" th:errors="*{freeSpots}">Free spots field cannot be empty!</label>
+               </div>
+            <div class="field-container">
+                <label th:text="#{travel.label.departure-time}">Departure Time</label>
+                <input type="datetime-local" th:field="*{departureTime}" placeholder="Departure Time">
+                <label class="errors" th:errors="*{departureTime}">Departure time field cannot be empty!</label>
+            </div>
+            <div class="field-container">
+                <label th:text="#{travel.label.comment}">Comment</label>
+                <input type="text" th:field="*{comment}" placeholder="Comment">
+            </div>
+            <input type="submit" value="Create Travel">
+        </form>
+    </div>
+    <!--FOOTER-->
+    <footer th:replace="index.html :: footer"></footer>
+</section>
+</body>
+</html>
