@@ -74,10 +74,10 @@
         <a th:if="${isAdmin}" class="admin-btn-container">
             <i class="fa-solid fa-gear"></i>Admin
         </a>
-        <a class="search-btn-container">
+        <a class="search-btn-container" th:href="@{/travels}">
             <i class="fa-solid fa-magnifying-glass"></i>Search
         </a>
-        <a class="create-btn-container">
+        <a class="create-btn-container" th:href="@{/travels/new}">
             <i class="fa-solid fa-circle-plus"></i>Publish a ride
         </a>
         <a id="avatar">
@@ -90,7 +90,7 @@
     </div>
 </header>
 <section class="hero">
-    <form id="search-form" class="form" method="get" action="#" th:action="@{/auth/login}">
+    <form id="search-form" class="form" method="get" action="#" th:action="@{/travels}">
         <div class="from-container">
             <i class="fa-solid fa-circle-dot"></i>
             <input type="text" placeholder="Leaving from...">
@@ -107,7 +107,9 @@
             <i class="fa-solid fa-user"></i>
             <input type="number" id="passengers" value="1">
         </div>
-        <button type="submit" id="search">Search</button>
+
+        <button type="submit" id="search" >Search</button>
+
     </form>
     <h1 class="title">Your pick of rides at low prices</h1>
     <img th:src="@{/images/CoverPicture.svg}" src="../static/images/CoverPicture.svg">
@@ -138,7 +140,7 @@
     </div>
 </section>
 
-<section class="additional-info">
+<section class=" additional-info">
     <div class="info-container">
         <i class="fa-solid fa-car fa-flip"></i>
         <h2 class="info-title">All directories</h2>
