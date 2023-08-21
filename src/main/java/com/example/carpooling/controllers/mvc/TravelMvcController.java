@@ -3,6 +3,7 @@ package com.example.carpooling.controllers.mvc;
 import com.example.carpooling.exceptions.AuthenticationFailureException;
 import com.example.carpooling.exceptions.AuthorizationException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
+import com.example.carpooling.exceptions.InvalidOperationException;
 import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.helpers.mappers.TravelMapper;
 import com.example.carpooling.models.Travel;
@@ -13,6 +14,7 @@ import com.example.carpooling.models.dtos.TravelViewDto;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.services.contracts.TravelService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -130,12 +132,16 @@ public class TravelMvcController {
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         }
-
         if (errors.hasErrors()) {
             return "NewTravelView";
         }
         Travel newTravel = travelMapper.toTravelFromTravelCreationDto(travel);
-        travelService.create(newTravel, driver);
+        try {
+            travelService.create(newTravel, driver);
+        } catch (InvalidOperationException e) {
+        errors.rejectValue("departureTime","creation_error",e.getMessage());
+        return "NewTravelView";
+        }
         return "redirect:/travels";
     }
 
