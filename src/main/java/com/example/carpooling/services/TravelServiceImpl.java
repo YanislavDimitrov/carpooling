@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,6 +32,10 @@ public class TravelServiceImpl implements TravelService {
     public static final String DELETE_TRAVEL_ERROR = "You cannot complete deleted travel!";
     public static final String COMPLETED_OR_DELETED_TRAVEL_ERROR = "You cannot cancel travel which is either completed or deleted!";
     public static final String ALREADY_STARTED_TRAVEL = "You cannot cancel your travel because it has already started!";
+    public static final String TRAVEL_CREATION_FAILED = "You cannot create a travel during the period of other existing one!";
+    public static final String EXISTING_TRAVEL = "If you want to create a travel within this time frame you should  cancel your planned travel from %s to %s  which is planned on %s,first";
+    public static final String TRAVEL_AT_THIS_TIME = "You already have planned travel for %s , if you want to proceed you should cancel it first!";
+    public static final String TRAVEL_AS_PASSENGER = "You have approved request for being passenger on travel from %s to %s , so if you want to create a Travel you should cancel your request for participating in your passenger travel!";
     private final TravelRepository travelRepository;
 
     private final BingMapsService bingMapsService;
@@ -105,6 +110,37 @@ public class TravelServiceImpl implements TravelService {
      */
     @Override
     public void create(Travel travel, User driver) {
+       for(Travel travelToCheck : driver.getTravelsAsDriver()) {
+           if(travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime())
+                   && travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival())
+                   && travelToCheck.getStatus() == TravelStatus.ACTIVE
+                   ) {
+               throw new InvalidOperationException(TRAVEL_CREATION_FAILED);
+           }
+           if(travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime())
+                   && travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival()) && travelToCheck.getStatus() == TravelStatus.PLANNED) {
+               throw new InvalidOperationException(String.format(EXISTING_TRAVEL,travelToCheck.getDeparturePoint(),travelToCheck.getArrivalPoint(),travelToCheck.getDepartureTime()));
+           }
+           if(travel.getDepartureTime().isEqual(travelToCheck.getDepartureTime())) {
+               throw new InvalidOperationException(String.format(TRAVEL_AT_THIS_TIME,travelToCheck.getDepartureTime()));
+           }
+       }
+       List<TravelRequest> travelRequestOfTheDriverAsPassenger = driver.getTravelsAsPassenger()
+               .stream()
+               .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.APPROVED)
+               .toList();
+       List<Travel> travelsOfUserAsPassenger = new ArrayList<>();
+        for (TravelRequest travelRequest : travelRequestOfTheDriverAsPassenger) {
+            travelsOfUserAsPassenger.add(travelRequest.getTravel());
+        }
+        for(Travel travelToCheckAsPassenger : travelsOfUserAsPassenger) {
+            if(travel.getDepartureTime().isAfter(travelToCheckAsPassenger.getDepartureTime())
+                    && travel.getDepartureTime().isBefore(travelToCheckAsPassenger.getEstimatedTimeOfArrival()) && travelToCheckAsPassenger.getStatus() == TravelStatus.ACTIVE) {
+                throw new InvalidOperationException(String.format(TRAVEL_AS_PASSENGER,
+                        travelToCheckAsPassenger.getDeparturePoint(),
+                        travelToCheckAsPassenger.getArrivalPoint()));
+            }
+        }
         calculatingDistanceAndDuration(travel);
         travel.setStatus(TravelStatus.PLANNED);
         travel.setDriver(driver);
