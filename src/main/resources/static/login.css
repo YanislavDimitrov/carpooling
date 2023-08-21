@@ -27,6 +27,7 @@ html {
 
 .error {
     color: darkred;
+    padding: 0.5rem 1rem;
 }
 
 .login-title {

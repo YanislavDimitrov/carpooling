@@ -23,16 +23,17 @@
                     <i class="fa-solid fa-user"></i>
                     <input type="text" th:field="*{userName}" placeholder="Username">
                 </div>
-                <label class="error" th:errors="*{userName}">Username error placeholder</label>
             </div>
             <div class="input-container">
                 <div>
                     <i class="fa-solid fa-lock"></i>
                     <input id="password" type="password" th:field="*{password}" placeholder="Password">
                 </div>
-                <label class="error" th:errors="*{password}">Password error placeholder</label>
             </div>
         </div>
+        <label class="error" th:errors="*{password}">Password error placeholder</label>
+        <label class="error" th:errors="*{userName}">Username error placeholder</label>
+
         <button type="submit" id="search">Login</button>
     </form>
 

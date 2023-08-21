@@ -38,6 +38,7 @@ public class AuthenticationController {
         this.authenticationHelper = authenticationHelper;
         this.modelMapper = modelMapper;
     }
+
     @ModelAttribute("isAuthenticated")
     public boolean populateIsAuthenticated(HttpSession session) {
         return session.getAttribute("currentUser") != null;
@@ -65,27 +66,27 @@ public class AuthenticationController {
                               BindingResult bindingResult,
                               HttpSession session) {
 
+        if (bindingResult.hasErrors()) {
+            return "LoginView";
+        }
+
         try {
             User user = userService.getByUsername(dto.getUserName());
             if (user.getStatus() == UserStatus.BLOCKED) {
                 return "BlockedUserView";
                 //Todo BlockedUserView
             }
-            authenticationHelper.verifyAuthentication(user.getUserName(), user.getPassword());
+            authenticationHelper.verifyAuthentication(user.getUserName(), dto.getPassword());
             if (user.getStatus() == UserStatus.DELETED) {
                 userService.restore(user.getId(), user);
             }
             session.setAttribute("currentUser", dto.getUserName());
             session.setAttribute("id", user.getId());
 
-            if (bindingResult.hasErrors()) {
-                return "LoginView";
-            }
-
             return "redirect:/";
 
         } catch (EntityNotFoundException | AuthenticationFailureException e) {
-            bindingResult.rejectValue("userName", "auth_error", e.getMessage());
+            bindingResult.rejectValue("userName", "auth_error", "Username/password not correct");
             return "LoginView";
         }
     }

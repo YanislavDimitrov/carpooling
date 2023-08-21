@@ -1,7 +1,11 @@
 package com.example.carpooling.models.dtos;
 
+import jakarta.validation.constraints.NotEmpty;
+
 public class LoginDto {
+    @NotEmpty(message = "Username cannot be empty!")
     private String userName;
+    @NotEmpty(message = "Password cannot be empty!")
     private String password;
 
     public LoginDto() {
