@@ -1,22 +1,24 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
-  <title>Travel Details</title>
-    <link rel="website icon"  type="png" href="../static/images/carpool_simplelogo.png"
-          th:type="png" th:href="@{/images/carpool_simplelogo.png}">
-    <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
-    <link rel="stylesheet" href="../static/index.css" th:href="@{/index.css}">
+    <meta charset="UTF-8">
+    <title>Top Travels</title>
+  <link rel="website icon"  type="png" href="../static/images/carpool_simplelogo.png"
+        th:type="png" th:href="@{/images/carpool_simplelogo.png}">
+  <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
+  <link rel="stylesheet" href="../static/index.css" th:href="@{/index.css}">
 </head>
 <body>
-<h1>Travel Details</h1>
-
 <section class="main">
   <!--HEADER-->
   <header th:replace="index.html :: header"></header>
 
   <!--    CONTENT-->
   <div id="content">
-    <table>
+    <div class="no-travels" th:if="${travels.isEmpty()}">
+      <h2 th:text="#{travel.label.no-travels}">No travels to show</h2>
+    </div>
+    <table th:unless="${travels.isEmpty()}" class="table custom-table">
       <thead>
       <tr>
         <th scope="col" th:text="#{travel.label.driver}">Driver</th>
@@ -30,9 +32,12 @@
         <th scope="col" th:text="#{travel.label.status}">Status</th>
       </tr>
       </thead>
-      <tbody>
+      <tbody th:each="travel : ${travels}">
       <tr>
-       <td th:text="${travel.getDriverName()}">Driver</td>
+        <td>
+          <p class="post-title"  th:href="@{/travels/{id}(id=${travel.getId()})}"
+             th:text="${travel.getDriverName()}">Driver</p>
+        </td>
         <td th:text="${travel.getDeparturePoint()}">Burgas</td>
         <td th:text="${travel.getArrivalPoint()}">Sofia</td>
         <td th:text ="${travel.getFreeSpots()}">Free Spots</td>
@@ -64,15 +69,10 @@
                   class="fa-solid fa-eye fa-beat"></i></a>
         </td>
       </tr>
-      <form  th:if="${travel.status == T(com.example.carpooling.models.enums.TravelStatus).COMPLETED}" th:action="@{/travels/{travelId}/rate(travelId=${travel.id})}" method="post">
-          <label >Rate this travel:</label>
-          <input type="number" name="rating" min="1" max="5" required>
-          <button type="submit">Submit Rating</button>
-      </form>
       </tbody>
     </table>
   </div>
   <footer th:replace="index.html :: footer"></footer>
-</section>
+
 </body>
 </html>

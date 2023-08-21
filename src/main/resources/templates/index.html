@@ -137,6 +137,29 @@
         </p>
     </div>
 </section>
+
+<section class="additional-info">
+    <div class="info-container">
+        <i class="fa-solid fa-car fa-flip"></i>
+        <h2 class="info-title">All directories</h2>
+        <a  class="destination"  href="#" th:href="@{/travels}">
+        <p class="destination">All carpool routes</p>
+        </a>
+    </div>
+    <div class="info-container">
+        <i class="fa-solid fa-star-half-stroke"></i>
+        <h2 class="info-title">Top Destinations</h2>
+        <ul>
+            <li th:each="travel : ${popularTravels}">
+                <div class="travel-route">
+                    <a class="destination" th:href="@{/travels/{id}(id=${travel.id})}" th:text="${travel.departurePoint}"></a>
+                    <div class="arrow"></div>
+                    <a class="destination" th:href="@{/travels/{id}(id=${travel.id})}" th:text="${travel.arrivalPoint}"></a>
+                </div>
+            </li>
+        </ul>
+    </div>
+</section>
 <footer class="footer">
     <div class="links-container">
         <a class="terms-and-conditions">Terms and Conditions</a>

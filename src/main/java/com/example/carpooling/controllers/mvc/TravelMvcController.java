@@ -19,6 +19,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 import java.util.List;
 @Controller
 @RequestMapping("/travels")
@@ -46,8 +48,33 @@ public class TravelMvcController {
                 .stream()
                 .map(travelMapper::fromTravelToFrontEnd)
                 .toList();
+
+
         model.addAttribute("travels", travels);
         return "TravelsView";
+    }
+    @GetMapping("/user/{id}")
+    public String viewAllTravelsForUser(@PathVariable Long id , HttpSession session , Model model) {
+       User user ;
+        try {
+        user =     authenticationHelper.tryGetUser(session);
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        }
+
+        List<TravelFrontEndView> travels = new ArrayList<>(travelService.findTravelByUser(user)
+                .stream()
+                .map(travelMapper::fromTravelToFrontEnd)
+                .toList());
+
+        List<TravelFrontEndView> travelsAsPassenger = travelService.findTravelsAsPassengerByUser(user)
+                .stream()
+                .map(travelMapper::fromTravelRequest)
+                .map(travelMapper::fromTravelToFrontEnd)
+                .toList();
+        travels.addAll(travelsAsPassenger);
+        //ToDo View
+        return "";
     }
 
     @GetMapping("/completed")
@@ -144,6 +171,19 @@ TravelCreationOrUpdateDto travelCreationOrUpdateDto = travelMapper.fromTravel(id
             return "NotFoundView";
         }
         return String.format("redirect:/travels/%d", id);
+    }
+
+    @PostMapping("/{travelId}/rate")
+    public String submitRating(@PathVariable Long travelId, @RequestParam int rating) {
+        travelService.submitRating(travelId, rating);
+        return "redirect:/travels/" + travelId;
+    }
+
+    @GetMapping("/top-rated")
+    public String getTopRatedTravels(Model model) {
+        List<Travel> topRatedTravels = travelService.getTopRatedTravels();
+        model.addAttribute("topRatedTravels", topRatedTravels);
+        return "top_rated_travels";
     }
     @GetMapping("/{id}/delete")
     public String deleteTravel(@PathVariable Long id, HttpSession session) {

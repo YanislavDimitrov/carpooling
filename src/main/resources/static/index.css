@@ -247,5 +247,27 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     color: rgb(65, 89, 96);
     text-decoration: none;
 }
+.travel-route {
+    display: flex;
+    align-items: center;
+}
+
+.destination {
+    margin: 2px;
+    text-decoration: none;
+    color: #333;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: .9rem;
+}
+
+.arrow {
+    content: '';
+    display: block;
+    width: 30px;
+    height: 2px;
+    background-color: black;
+    margin: 0 10px;
+}
 
 
