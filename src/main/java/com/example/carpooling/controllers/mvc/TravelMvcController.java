@@ -139,8 +139,8 @@ public class TravelMvcController {
         try {
             travelService.create(newTravel, driver);
         } catch (InvalidOperationException e) {
-        errors.rejectValue("departureTime","creation_error",e.getMessage());
-        return "NewTravelView";
+            errors.rejectValue("departureTime", "creation_error", e.getMessage());
+            return "NewTravelView";
         }
         return "redirect:/travels";
     }
@@ -188,17 +188,26 @@ public class TravelMvcController {
         return String.format("redirect:/travels/%d", id);
     }
 
-    @PostMapping("/{travelId}/rate")
-    public String submitRating(@PathVariable Long travelId, @RequestParam int rating) {
-        travelService.submitRating(travelId, rating);
-        return "redirect:/travels/" + travelId;
-    }
-
     @GetMapping("/top-rated")
     public String getTopRatedTravels(Model model) {
         List<Travel> topRatedTravels = travelService.getTopRatedTravels();
         model.addAttribute("topRatedTravels", topRatedTravels);
-        return "top_rated_travels";
+        //ToDo View
+        return "";
+    }
+
+    @PostMapping("/{travelId}/rate")
+    public String rateTravel(@PathVariable Long travelId, @RequestParam int rating, HttpSession session) {
+        User currentUser;
+        try {
+            currentUser = authenticationHelper.tryGetUser(session);
+            travelService.submitRating(travelId, rating, currentUser);
+            return "redirect:/travels/" + travelId;
+        } catch (InvalidOperationException e) {
+            return "redirect:/travels";
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        }
     }
 
     @GetMapping("/{id}/delete")
