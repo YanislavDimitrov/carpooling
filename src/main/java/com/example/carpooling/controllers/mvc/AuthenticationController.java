@@ -85,7 +85,7 @@ public class AuthenticationController {
             return "redirect:/";
 
         } catch (EntityNotFoundException | AuthenticationFailureException e) {
-            bindingResult.rejectValue("username", "auth_error", e.getMessage());
+            bindingResult.rejectValue("userName", "auth_error", e.getMessage());
             return "LoginView";
         }
     }

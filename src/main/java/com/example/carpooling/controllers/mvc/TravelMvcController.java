@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
 @Controller
 @RequestMapping("/travels")
 @Validated
@@ -29,13 +30,15 @@ public class TravelMvcController {
     private final TravelService travelService;
     private final TravelMapper travelMapper;
     private final AuthenticationHelper authenticationHelper;
+
     public TravelMvcController(TravelService travelService,
-                                TravelMapper travelMapper,
-                                AuthenticationHelper authenticationHelper) {
+                               TravelMapper travelMapper,
+                               AuthenticationHelper authenticationHelper) {
         this.travelService = travelService;
         this.travelMapper = travelMapper;
         this.authenticationHelper = authenticationHelper;
     }
+
     @GetMapping
     public String viewAllTravels(Model model, HttpSession session) {
         try {
@@ -53,11 +56,12 @@ public class TravelMvcController {
         model.addAttribute("travels", travels);
         return "TravelsView";
     }
-    @GetMapping("/user/{id}")
-    public String viewAllTravelsForUser(@PathVariable Long id , HttpSession session , Model model) {
-       User user ;
+
+    @GetMapping("/user")
+    public String viewAllTravelsForUser(HttpSession session, Model model) {
+        User user;
         try {
-        user =     authenticationHelper.tryGetUser(session);
+            user = authenticationHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         }
@@ -73,12 +77,13 @@ public class TravelMvcController {
                 .map(travelMapper::fromTravelToFrontEnd)
                 .toList();
         travels.addAll(travelsAsPassenger);
+        model.addAttribute("travels", travels);
         //ToDo View
         return "";
     }
 
     @GetMapping("/completed")
-    public String viewCompletedTravels(Model model , HttpSession session) {
+    public String viewCompletedTravels(Model model, HttpSession session) {
         try {
             authenticationHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
@@ -92,16 +97,17 @@ public class TravelMvcController {
     }
 
     @GetMapping("/{id}")
-    public String viewTravel(@PathVariable Long id , Model model , HttpSession session) {
+    public String viewTravel(@PathVariable Long id, Model model, HttpSession session) {
         try {
             authenticationHelper.tryGetUser(session);
-        }catch (AuthenticationFailureException e) {
+        } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         }
-        TravelFrontEndView travelFrontEndView =  travelMapper.fromTravelToFrontEnd(travelService.getById(id));
-        model.addAttribute("travel",travelFrontEndView);
+        TravelFrontEndView travelFrontEndView = travelMapper.fromTravelToFrontEnd(travelService.getById(id));
+        model.addAttribute("travel", travelFrontEndView);
         return "TravelView";
     }
+
     @GetMapping("/new")
     public String showNewTravelPage(Model model, HttpSession session) {
         try {
@@ -113,10 +119,11 @@ public class TravelMvcController {
         //ToDo the view
         return "NewTravelView";
     }
+
     @PostMapping("/new")
-    public String createTravel(@Valid @ModelAttribute("travel")TravelCreationOrUpdateDto travel,
-                             BindingResult errors,
-                             HttpSession session) {
+    public String createTravel(@Valid @ModelAttribute("travel") TravelCreationOrUpdateDto travel,
+                               BindingResult errors,
+                               HttpSession session) {
         User driver;
         try {
             driver = authenticationHelper.tryGetUser(session);
@@ -128,12 +135,13 @@ public class TravelMvcController {
             return "NewTravelView";
         }
         Travel newTravel = travelMapper.toTravelFromTravelCreationDto(travel);
-        travelService.create(newTravel,driver);
+        travelService.create(newTravel, driver);
         return "redirect:/travels";
     }
+
     @GetMapping("/{id}/update")
     public String showUpdateTravelPage(@PathVariable Long id, HttpSession session, Model model) {
-      Travel travel;
+        Travel travel;
         try {
             User loggedUser = this.authenticationHelper.tryGetUser(session);
             travel = travelService.getById(id);
@@ -145,11 +153,12 @@ public class TravelMvcController {
         } catch (EntityNotFoundException e) {
             return "NotFoundView";
         }
-TravelCreationOrUpdateDto travelCreationOrUpdateDto = travelMapper.fromTravel(id);
+        TravelCreationOrUpdateDto travelCreationOrUpdateDto = travelMapper.fromTravel(id);
         model.addAttribute("updateTravel", travelCreationOrUpdateDto);
 
         return "UpdateTravelView";
     }
+
     @PostMapping("/{id}/update")
     public String updateTravel(@Valid
                                @ModelAttribute("updateTravel") TravelCreationOrUpdateDto travelUpdateDto,
@@ -185,11 +194,12 @@ TravelCreationOrUpdateDto travelCreationOrUpdateDto = travelMapper.fromTravel(id
         model.addAttribute("topRatedTravels", topRatedTravels);
         return "top_rated_travels";
     }
+
     @GetMapping("/{id}/delete")
     public String deleteTravel(@PathVariable Long id, HttpSession session) {
         try {
             User loggedUser = this.authenticationHelper.tryGetUser(session);
-            travelService.delete(id,loggedUser);
+            travelService.delete(id, loggedUser);
         } catch (EntityNotFoundException | AuthorizationException e) {
             return "AccessDeniedView";
         } catch (AuthenticationFailureException e) {
@@ -197,6 +207,7 @@ TravelCreationOrUpdateDto travelCreationOrUpdateDto = travelMapper.fromTravel(id
         }
         return "redirect:/travels";
     }
+
     @ModelAttribute("isAdmin")
     public boolean populateIsAdmin(HttpSession session) {
         try {
@@ -206,6 +217,7 @@ TravelCreationOrUpdateDto travelCreationOrUpdateDto = travelMapper.fromTravel(id
             return false;
         }
     }
+
     @ModelAttribute("isAuthenticated")
     public boolean populateIsAuthenticated(HttpSession session) {
         return session.getAttribute("currentUser") != null;

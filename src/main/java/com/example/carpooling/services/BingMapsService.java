@@ -25,7 +25,7 @@ public class BingMapsService {
         String url = "https://dev.virtualearth.net/REST/v1/Routes/DistanceMatrix?origins=" +
                 origin + "&destinations=" + destination +
                 "&travelMode=driving&key=" + API_KEY;
-
+//ToDo to insert it in try with resources
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
             connection.setRequestMethod("GET");
@@ -65,10 +65,8 @@ public class BingMapsService {
                 .getAsJsonObject().getAsJsonArray("results").get(0)
                 .getAsJsonObject().get("travelDuration").getAsDouble();
 
-        return  travelDistance + " km" + travelDuration + " minutes";
+        return travelDistance + " km" + travelDuration + " minutes";
     }
-
-
 
 
     public String getLocationJson(String address) {
@@ -109,6 +107,7 @@ public class BingMapsService {
             throw new RuntimeException("Error encoding URI component: " + e.getMessage());
         }
     }
+
     public double[] parseCoordinates(String json) {
         JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
         JsonObject point = jsonObject
