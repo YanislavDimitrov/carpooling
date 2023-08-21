@@ -48,6 +48,10 @@ public class Travel {
     private List<TravelRequest> travelRequests;
     @Column(name = "is_deleted")
     private boolean isDeleted;
+@Column(name="rating")
+    private int rating;
+@Column(name="average_rating")
+private double averageRating;
 
 //    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
 //    @JoinTable(name = "users_travels",
@@ -58,6 +62,22 @@ public class Travel {
     public Travel() {
         travelRequests = new ArrayList<>();
         status = TravelStatus.PLANNED;
+    }
+
+    public double getAverageRating() {
+        return averageRating;
+    }
+
+    public void setAverageRating(double averageRating) {
+        this.averageRating = averageRating;
+    }
+
+    public int getRating() {
+        return rating;
+    }
+
+    public void setRating(int rating) {
+        this.rating = rating;
     }
 
     public boolean isDeleted() {

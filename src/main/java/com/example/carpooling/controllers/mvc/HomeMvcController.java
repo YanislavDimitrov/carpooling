@@ -2,6 +2,7 @@ package com.example.carpooling.controllers.mvc;
 
 import com.example.carpooling.exceptions.AuthenticationFailureException;
 import com.example.carpooling.helpers.AuthenticationHelper;
+import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.services.contracts.TravelService;
@@ -11,6 +12,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/")
@@ -43,5 +46,9 @@ public class HomeMvcController {
         } catch (AuthenticationFailureException e) {
             return false;
         }
+    }
+    @ModelAttribute("popularTravels")
+    public List<Travel> populateMostPopularTravels() {
+        return travelService.getTopRatedTravels();
     }
 }

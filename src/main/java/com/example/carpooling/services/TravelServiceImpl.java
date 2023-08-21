@@ -3,10 +3,10 @@ package com.example.carpooling.services;
 import com.example.carpooling.exceptions.AuthorizationException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.exceptions.InvalidOperationException;
+import com.example.carpooling.helpers.mappers.TravelMapper;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
-import com.example.carpooling.models.dtos.TravelViewDto;
 import com.example.carpooling.models.enums.TravelRequestStatus;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.models.enums.UserRole;
@@ -21,41 +21,31 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TravelServiceImpl implements TravelService {
-
     public static final String TRAVEL_NOT_FOUND = "Travel with ID %d is not existing!";
-    public static final String USER_NOT_FOUND = "User with ID %d does not exist!";
-
     public static final String UPDATE_CANCELLED = "You cannot update this travel!";
     public static final String OPERATION_DENIED = "You are not authorized to complete this operation!";
     public static final String DELETE_TRAVEL_ERROR = "You cannot complete deleted travel!";
     public static final String COMPLETED_OR_DELETED_TRAVEL_ERROR = "You cannot cancel travel which is either completed or deleted!";
     public static final String ALREADY_STARTED_TRAVEL = "You cannot cancel your travel because it has already started!";
     private final TravelRepository travelRepository;
-    private final TravelRequestRepository travelRequestRepository;
-    private final UserRepository userRepository;
+
     private final BingMapsService bingMapsService;
 
-    public TravelServiceImpl(TravelRepository travelRepository, TravelRequestRepository travelRequestRepository, UserRepository userRepository, BingMapsService bingMapsService) {
+    public TravelServiceImpl(TravelRepository travelRepository,
+                              BingMapsService bingMapsService) {
         this.travelRepository = travelRepository;
-        this.travelRequestRepository = travelRequestRepository;
-        this.userRepository = userRepository;
         this.bingMapsService = bingMapsService;
     }
-
-
     /**
      * @return Returns all travels which are in the database using JPA Repository findAll method
      */
     public List<Travel> get() {
         return travelRepository.getAll();
     }
-
     @Override
     public List<Travel> getAllCompleted() {
         return travelRepository.getAllByStatusIs(TravelStatus.COMPLETED);
@@ -85,6 +75,11 @@ public class TravelServiceImpl implements TravelService {
     @Override
     public List<Travel> findByCriteria(String driver, TravelStatus status, Short freeSpots, LocalDateTime departureTime, Sort sort) {
         return travelRepository.findByCriteria(driver, status, freeSpots, departureTime, sort);
+    }
+
+    @Override
+    public List<Travel> findBySearchCriteria(String departurePoint, String arrivalPoint, LocalDateTime departureTime, Short freeSpots,Sort sort) {
+        return travelRepository.findBySearchFilter(departurePoint,arrivalPoint,departureTime,freeSpots,sort);
     }
 
     /**
@@ -247,12 +242,35 @@ public class TravelServiceImpl implements TravelService {
         return travelRepository.countAllByStatusIs(TravelStatus.COMPLETED);
     }
 
+
+    public List<Travel> findTravelByUser(User user) {
+        return user.getTravelsAsDriver();
+    }
+    public List<TravelRequest> findTravelsAsPassengerByUser(User user) {
+        return user.getTravelsAsPassenger()
+                .stream()
+                .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.APPROVED)
+                .toList();
+    }
+    @Transactional
+    public void submitRating(Long travelId, int rating) {
+        Travel travel = travelRepository.findById(travelId).orElse(null);
+        if (travel != null) {
+            double newAverageRating = ((travel.getAverageRating() * travel.getRating()) + rating) / (travel.getRating() + 1);
+            travel.setAverageRating(newAverageRating);
+            travel.setRating(travel.getRating() + 1);
+            travelRepository.save(travel);
+        }
+    }
+    public List<Travel> getTopRatedTravels() {
+        return travelRepository.findTop5ByOrderByAverageRatingDesc();
+    }
+
+
     @Override
     @Scheduled(fixedRate = 60000)
     public void updateTravelStatus() {
-
             List<Travel> plannedTravels = findPlannedTravelsWithPastDepartureTime();
-
             for (Travel travel : plannedTravels) {
                 if (travel.getDepartureTime().isBefore(LocalDateTime.now())) {
                     travel.setStatus(TravelStatus.ACTIVE);

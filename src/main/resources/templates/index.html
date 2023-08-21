@@ -74,10 +74,10 @@
         <a th:if="${isAdmin}" class="admin-btn-container">
             <i class="fa-solid fa-gear"></i>Admin
         </a>
-        <a class="search-btn-container">
+        <a class="search-btn-container" th:href="@{/travels}">
             <i class="fa-solid fa-magnifying-glass"></i>Search
         </a>
-        <a class="create-btn-container">
+        <a class="create-btn-container" th:href="@{/travels/new}">
             <i class="fa-solid fa-circle-plus"></i>Publish a ride
         </a>
         <a id="avatar">
@@ -90,7 +90,7 @@
     </div>
 </header>
 <section class="hero">
-    <form id="search-form" class="form" method="get" action="#" th:action="@{/auth/login}">
+    <form id="search-form" class="form" method="get" action="#" th:action="@{/travels}">
         <div class="from-container">
             <i class="fa-solid fa-circle-dot"></i>
             <input type="text" placeholder="Leaving from...">
@@ -107,7 +107,9 @@
             <i class="fa-solid fa-user"></i>
             <input type="number" id="passengers" value="1">
         </div>
-        <button type="submit" id="search">Search</button>
+
+        <button type="submit" id="search" >Search</button>
+
     </form>
     <h1 class="title">Your pick of rides at low prices</h1>
     <img th:src="@{/images/CoverPicture.svg}" src="../static/images/CoverPicture.svg">
@@ -135,6 +137,29 @@
             Booking a ride has never been easier! Thanks to our simple app powered by great technology, you can book a
             ride close to you in just minutes.
         </p>
+    </div>
+</section>
+
+<section class=" additional-info">
+    <div class="info-container">
+        <i class="fa-solid fa-car fa-flip"></i>
+        <h2 class="info-title">All directories</h2>
+        <a  class="destination"  href="#" th:href="@{/travels}">
+        <p class="destination">All carpool routes</p>
+        </a>
+    </div>
+    <div class="info-container">
+        <i class="fa-solid fa-star-half-stroke"></i>
+        <h2 class="info-title">Top Destinations</h2>
+        <ul>
+            <li th:each="travel : ${popularTravels}">
+                <div class="travel-route">
+                    <a class="destination" th:href="@{/travels/{id}(id=${travel.id})}" th:text="${travel.departurePoint}"></a>
+                    <div class="arrow"></div>
+                    <a class="destination" th:href="@{/travels/{id}(id=${travel.id})}" th:text="${travel.arrivalPoint}"></a>
+                </div>
+            </li>
+        </ul>
     </div>
 </section>
 <footer class="footer">

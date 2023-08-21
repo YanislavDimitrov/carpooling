@@ -23,26 +23,39 @@ public interface TravelService {
                                 LocalDateTime departureTime,
                                 Sort sort);
 
+    List<Travel> findBySearchCriteria(String departurePoint,
+                                      String arrivalPoint,
+                                      LocalDateTime departureTime,
+                                      Short freeSpots,
+                                      Sort sort);
+
     List<Travel> findAll(Sort sort);
+
+    List<Travel> findTravelByUser(User user);
+
+    List<TravelRequest> findTravelsAsPassengerByUser(User user);
+
+    void submitRating(Long travelId, int rating);
+
+    List<Travel> getTopRatedTravels();
 
     Long count();
 
     Long countCompleted();
 
-    void create(Travel travel,User driver);
+    void create(Travel travel, User driver);
 
-    Travel update(Travel travel  , User editor);
+    Travel update(Travel travel, User editor);
 
-    void delete(Long id , User editor);
+    void delete(Long id, User editor);
 
-    Travel completeTravel(Long id , User editor);
+    Travel completeTravel(Long id, User editor);
 
-    void cancelTravel(Long id , User editor);
+    void cancelTravel(Long id, User editor);
 
-   List<Travel> findPlannedTravelsWithPastDepartureTime();
-   void updateTravelStatus();
+    List<Travel> findPlannedTravelsWithPastDepartureTime();
 
-
+    void updateTravelStatus();
 
 
 }

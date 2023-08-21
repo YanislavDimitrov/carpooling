@@ -1,6 +1,7 @@
 package com.example.carpooling.helpers.mappers;
 
 import com.example.carpooling.models.Travel;
+import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.dtos.TravelCreationOrUpdateDto;
 import com.example.carpooling.models.dtos.TravelFrontEndView;
 import com.example.carpooling.models.dtos.TravelUpdateDto;
@@ -129,5 +130,11 @@ public class TravelMapper {
         travelFrontEndView.setDepartureTime(travel.getDepartureTime());
         travelFrontEndView.setDriverName(travel.getDriver().getUserName());
         return travelFrontEndView;
+    }
+
+    public Travel fromTravelRequest(TravelRequest travelRequest) {
+        Travel travel = new Travel();
+        travel = travelRequest.getTravel();
+        return travel;
     }
 }
