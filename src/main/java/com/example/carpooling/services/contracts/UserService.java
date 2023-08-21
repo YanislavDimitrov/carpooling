@@ -39,4 +39,6 @@ public interface UserService {
     void upgrade(Long id, User loggedUser);
 
     void downgrade(Long id, User loggedUser);
+
+    void validate(Long id);
 }

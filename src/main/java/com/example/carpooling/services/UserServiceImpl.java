@@ -20,6 +20,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -79,8 +80,7 @@ public class UserServiceImpl implements UserService {
 
         VerificationToken verificationToken = new VerificationToken(user);
         tokenRepository.save(verificationToken);
-
-        String verificationLink = "https://localhost:8080/verify?token=" + verificationToken.getToken();
+        String verificationLink = "http://localhost:8080/verify?token=" + verificationToken.getToken();
         String emailContent = "Click the link to verify your email: " + verificationLink;
         sendVerificationEmail(user.getEmail(), emailContent);
         return user;
@@ -244,6 +244,12 @@ public class UserServiceImpl implements UserService {
             throw new EntityNotFoundException("User", id);
         }
         this.userRepository.downgrade(id);
+    }
+
+    @Override
+    @Transactional
+    public void validate(Long id) {
+        this.userRepository.validate(id);
     }
 
 
