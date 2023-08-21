@@ -89,7 +89,7 @@ public class UserServiceImpl implements UserService {
     private void sendVerificationEmail(String emailAddress, String content) throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);
-        helper.setFrom("qniivon@gmail.com");
+        helper.setFrom("carpoolingalpha@gmail.com");
         helper.setTo(emailAddress);
         helper.setSubject("Carpool Email Verification");
         helper.setText(content);
