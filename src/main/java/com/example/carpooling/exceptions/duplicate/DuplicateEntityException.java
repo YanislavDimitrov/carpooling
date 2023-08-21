@@ -1,4 +1,4 @@
-package com.example.carpooling.exceptions;
+package com.example.carpooling.exceptions.duplicate;
 
 public class DuplicateEntityException extends RuntimeException {
     public DuplicateEntityException(String type, String attribute, String value) {

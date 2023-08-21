@@ -1,6 +1,7 @@
 package com.example.carpooling.services;
 
 import com.example.carpooling.exceptions.*;
+import com.example.carpooling.exceptions.duplicate.DuplicateEntityException;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
@@ -17,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class TravelRequestServiceImpl implements TravelRequestService {

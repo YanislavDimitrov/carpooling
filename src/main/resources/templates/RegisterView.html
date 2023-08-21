@@ -2,21 +2,37 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Register</title>
     <link rel="website icon" th:type="png" th:href="@{/images/carpool_simplelogo.png}">
     <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
     <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
-    <link rel="stylesheet" href="../static/login.css" th:href="@{/login.css}">
+    <link rel="stylesheet" href="../static/register.css" th:href="@{/register.css}">
 </head>
 <body>
 <!--HEADER-->
 <header th:replace="index.html :: header"></header>
-<section class="main">
-    <h1 class="login-title">Login</h1>
-    <form id="search-form" class="form" th:action="@{/auth/login}" th:object="${login}" method="post">
+<section class="main"><h1 class="login-title">Register</h1>
+
+    <form id="search-form" class="form" th:action="@{/auth/login}" th:object="${register}" method="post">
         <a class="show-password">
             <i class="fa-solid fa-eye"></i>
         </a>
+        <div>
+            <div class="input-container">
+                <div>
+                    <input type="text" th:field="*{firstName}" placeholder="First name">
+                </div>
+                <label class="error" th:errors="*{firstName}">First name error placeholder</label>
+            </div>
+            <div class="input-container">
+                <div>
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="text" th:field="*{lastName}" placeholder="Last name">
+                </div>
+                <label class="error" th:errors="*{lastName}">Last name error placeholder</label>
+            </div>
+        </div>
+        <br>
         <div>
             <div class="input-container">
                 <div>
@@ -35,13 +51,6 @@
         </div>
         <button type="submit" id="search">Login</button>
     </form>
-
-    <div class="sign-up">
-        <p>
-            Not a member yet?
-            <a th:href="@{/auth/register}"> Sign up</a>
-        </p>
-    </div>
 </section>
 <script type="text/javascript" src="../static/js/showHidePass.js" th:src="@{/js/showHidePass.js}"></script>
 <script type="text/javascript" src="../static/js/showDropdown.js" th:src="@{/js/showDropdown.js}"></script>

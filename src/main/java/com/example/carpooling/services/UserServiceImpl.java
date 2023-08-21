@@ -1,6 +1,10 @@
 package com.example.carpooling.services;
 
 import com.example.carpooling.exceptions.*;
+import com.example.carpooling.exceptions.duplicate.DuplicateEmailException;
+import com.example.carpooling.exceptions.duplicate.DuplicateEntityException;
+import com.example.carpooling.exceptions.duplicate.DuplicatePhoneNumberException;
+import com.example.carpooling.exceptions.duplicate.DuplicateUsernameException;
 import com.example.carpooling.models.Feedback;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.User;
@@ -10,8 +14,6 @@ import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.repositories.contracts.VehicleRepository;
-import com.example.carpooling.services.contracts.FeedbackService;
-import com.example.carpooling.services.contracts.TravelService;
 import com.example.carpooling.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -266,21 +268,21 @@ public class UserServiceImpl implements UserService {
                 this.findAll(null, null, user.getUserName(), null, null, null);
         if (!userWithUserName.isEmpty()) {
             if (!userWithUserName.get(0).getId().equals(user.getId())) {
-                throw new DuplicateEntityException("User", "username", user.getUserName());
+                throw new DuplicateUsernameException("User", user.getUserName());
             }
         }
         List<User> userWithEmail =
                 this.findAll(null, null, null, user.getEmail(), null, null);
         if (!userWithEmail.isEmpty()) {
             if (!userWithEmail.get(0).getId().equals(user.getId())) {
-                throw new DuplicateEntityException("User", "email", user.getEmail());
+                throw new DuplicateEmailException("User", user.getEmail());
             }
         }
         List<User> userWithPhoneNumber =
                 this.findAll(null, null, null, null, user.getPhoneNumber(), null);
         if (!userWithPhoneNumber.isEmpty()) {
             if (!userWithPhoneNumber.get(0).getId().equals(user.getId())) {
-                throw new DuplicateEntityException("User", "phone number", user.getPhoneNumber());
+                throw new DuplicatePhoneNumberException("User", user.getPhoneNumber());
             }
         }
     }

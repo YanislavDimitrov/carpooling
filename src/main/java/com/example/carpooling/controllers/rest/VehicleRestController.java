@@ -2,12 +2,9 @@ package com.example.carpooling.controllers.rest;
 
 import com.example.carpooling.exceptions.AuthenticationFailureException;
 import com.example.carpooling.exceptions.AuthorizationException;
-import com.example.carpooling.exceptions.DuplicateEntityException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.models.User;
-import com.example.carpooling.models.dtos.UserUpdateDto;
-import com.example.carpooling.models.dtos.UserViewDto;
 import com.example.carpooling.models.dtos.VehicleUpdateDto;
 import com.example.carpooling.models.dtos.VehicleViewDto;
 import com.example.carpooling.services.contracts.VehicleService;

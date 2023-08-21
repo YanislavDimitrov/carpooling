@@ -5,6 +5,7 @@
     <title>Home Page</title>
     <link rel="website icon" th:type="png" th:href="@{/images/carpool_simplelogo.png}">
     <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
+    <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
     <link rel="stylesheet" href="../static/index.css" th:href="@{/index.css}">
 </head>
 <body>
@@ -22,7 +23,7 @@
                     </a>
                 </li>
                 <li class="link">
-                    <a class="btn">
+                    <a class="btn" th:href="@{/auth/register}">
                         <div>
                             <i class="fa-solid fa-user-plus"></i>
                             <span class="btn-content">Sigh up</span>
@@ -67,9 +68,9 @@
             </ul>
         </nav>
     </div>
-    <div class="logo">
+    <a class="logo" th:href="@{/}">
         <img th:src="@{/images/carpool_logo.png}" src="../static/images/carpool_logo.png">
-    </div>
+    </a>
     <div class="btns">
         <a th:if="${isAdmin}" class="admin-btn-container">
             <i class="fa-solid fa-gear"></i>Admin

@@ -1,6 +1,7 @@
 package com.example.carpooling.controllers.rest;
 
 import com.example.carpooling.exceptions.*;
+import com.example.carpooling.exceptions.duplicate.DuplicateEntityException;
 import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.helpers.mappers.TravelRequestMapper;
 import com.example.carpooling.models.Travel;
