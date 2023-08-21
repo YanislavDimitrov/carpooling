@@ -57,8 +57,17 @@ html {
 
 .form > * {
     display: flex;
-    gap: .4rem;
     align-items: center;
+}
+
+.forum div{
+    width: 100%;
+}
+.form .inputs-container{
+    width: 100%;
+}
+.form .inputs-container div{
+    width: 50%;
 }
 
 .form .input-container {
