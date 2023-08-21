@@ -47,7 +47,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying
     @Query("UPDATE User AS u SET u.role = 'ADMIN' WHERE  u.id = :id")
     void upgrade(Long id);
+
     @Modifying
     @Query("UPDATE User AS u SET u.role = 'USER' WHERE  u.id = :id")
     void downgrade(Long id);
+
+    @Modifying
+    @Query("UPDATE User AS u SET u.isValidated = true WHERE  u.id = :id")
+    void validate(Long id);
 }

@@ -37,6 +37,9 @@ dependencies {
 //    implementation group: 'io.github.openfeign', name: 'feign-core', version: '12.4'
     implementation group: 'org.json', name: 'json', version: '20230227'
     implementation 'com.google.code.gson:gson:2.8.9'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.7.1'
+    implementation group: 'com.sun.mail', name: 'jakarta.mail', version: '2.0.1'
+
 
 }
 

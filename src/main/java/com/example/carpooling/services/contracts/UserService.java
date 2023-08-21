@@ -4,6 +4,7 @@ import com.example.carpooling.models.User;
 import com.example.carpooling.models.Vehicle;
 import com.example.carpooling.models.dtos.UserUpdateDto;
 import com.example.carpooling.models.dtos.VehicleViewDto;
+import jakarta.mail.MessagingException;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public interface UserService {
 
     User getByUsername(String username);
 
-    User create(User user);
+    User create(User user) throws MessagingException;
 
     void delete(Long id, User loggedUser);
 

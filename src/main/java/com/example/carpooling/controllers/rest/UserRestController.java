@@ -7,6 +7,7 @@ import com.example.carpooling.models.User;
 import com.example.carpooling.models.Vehicle;
 import com.example.carpooling.models.dtos.*;
 import com.example.carpooling.services.contracts.UserService;
+import jakarta.mail.MessagingException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -120,7 +121,7 @@ public class UserRestController {
      * @throws DuplicateEntityException if either username, email or phoneNumber already exist in DataBase
      */
     @PostMapping()
-    public UserViewDto createUser(@RequestBody UserCreateDto payloadUser) {
+    public UserViewDto createUser(@RequestBody UserCreateDto payloadUser) throws MessagingException {
         try {
             User user = this.modelMapper.map(payloadUser, User.class);
             return this.modelMapper.map(this.userService.create(user), UserViewDto.class);

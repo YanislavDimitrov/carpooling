@@ -2,21 +2,23 @@ package com.example.carpooling.services;
 
 import com.example.carpooling.exceptions.*;
 import com.example.carpooling.exceptions.duplicate.DuplicateEmailException;
-import com.example.carpooling.exceptions.duplicate.DuplicateEntityException;
 import com.example.carpooling.exceptions.duplicate.DuplicatePhoneNumberException;
 import com.example.carpooling.exceptions.duplicate.DuplicateUsernameException;
-import com.example.carpooling.models.Feedback;
-import com.example.carpooling.models.Travel;
-import com.example.carpooling.models.User;
-import com.example.carpooling.models.Vehicle;
+import com.example.carpooling.models.*;
 import com.example.carpooling.models.dtos.UserUpdateDto;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.models.enums.UserRole;
+import com.example.carpooling.repositories.contracts.TokenRepository;
 import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.repositories.contracts.VehicleRepository;
 import com.example.carpooling.services.contracts.UserService;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,11 +32,16 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final VehicleRepository vehicleRepository;
+    private final TokenRepository tokenRepository;
+    private final JavaMailSender javaMailSender;
+
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, VehicleRepository vehicleRepository) {
+    public UserServiceImpl(UserRepository userRepository, VehicleRepository vehicleRepository, TokenRepository tokenRepository, JavaMailSender javaMailSender) {
         this.userRepository = userRepository;
         this.vehicleRepository = vehicleRepository;
+        this.tokenRepository = tokenRepository;
+        this.javaMailSender = javaMailSender;
     }
 
     @Override
@@ -66,9 +73,27 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public User create(User user) {
+    public User create(User user) throws MessagingException {
         checkForDuplicateUser(user);
-        return this.userRepository.save(user);
+        this.userRepository.save(user);
+
+        VerificationToken verificationToken = new VerificationToken(user);
+        tokenRepository.save(verificationToken);
+
+        String verificationLink = "https://localhost:8080/verify?token=" + verificationToken.getToken();
+        String emailContent = "Click the link to verify your email: " + verificationLink;
+        sendVerificationEmail(user.getEmail(), emailContent);
+        return user;
+    }
+
+    private void sendVerificationEmail(String emailAddress, String content) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+        helper.setFrom("qniivon@gmail.com");
+        helper.setTo(emailAddress);
+        helper.setSubject("Carpool Email Verification");
+        helper.setText(content);
+        javaMailSender.send(message);
     }
 
     @Override

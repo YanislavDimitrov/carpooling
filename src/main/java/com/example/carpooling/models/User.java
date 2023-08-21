@@ -36,6 +36,8 @@ public class User {
     private UserRole role;
     @Enumerated(EnumType.STRING)
     private UserStatus status;
+    @Column(name = "is_validated")
+    private boolean isValidated;
     @JsonIgnore
     @OneToMany(mappedBy = "driver")
     private List<Travel> travelsAsDriver;
@@ -50,6 +52,8 @@ public class User {
         travelsAsPassenger = new ArrayList<>();
         travelsAsDriver = new ArrayList<>();
         feedbacks = new ArrayList<>();
+        this.role = UserRole.USER;
+        this.status = UserStatus.ACTIVE;
     }
 
     public List<Feedback> getFeedbacks() {
@@ -146,5 +150,13 @@ public class User {
 
     public void setStatus(UserStatus status) {
         this.status = status;
+    }
+
+    public boolean isValidated() {
+        return isValidated;
+    }
+
+    public void setValidated(boolean validated) {
+        isValidated = validated;
     }
 }

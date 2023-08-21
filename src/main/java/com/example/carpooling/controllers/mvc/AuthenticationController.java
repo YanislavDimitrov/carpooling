@@ -13,6 +13,7 @@ import com.example.carpooling.models.dtos.RegisterDto;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.models.enums.UserStatus;
 import com.example.carpooling.services.contracts.UserService;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
@@ -105,7 +106,7 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public String handleRegister(@Valid @ModelAttribute("register") RegisterDto registerDto,
-                                 BindingResult bindingResult, HttpSession session) {
+                                 BindingResult bindingResult, HttpSession session) throws MessagingException {
         if (bindingResult.hasErrors()) {
             return "RegisterView";
         }
