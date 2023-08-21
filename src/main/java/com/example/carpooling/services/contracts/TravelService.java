@@ -32,13 +32,14 @@ public interface TravelService {
     List<Travel> findAll(Sort sort);
 
     List<Travel> findTravelByUser(User user);
+    List<Travel> getTopRatedTravels();
 
     List<TravelRequest> findTravelsAsPassengerByUser(User user);
 
-    void submitRating(Long travelId, int rating);
+    void submitRating(Long travelId, int rating, User user);
+    boolean hasUserRatedTravel(User user, Travel travel);
 
-    List<Travel> getTopRatedTravels();
-
+    void updateAverageRating(Travel travel);
     Long count();
 
     Long countCompleted();

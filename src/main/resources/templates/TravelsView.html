@@ -25,10 +25,6 @@
                 <th scope="col" th:text="#{travel.label.departure-point}">Departure Point</th>
                 <th scope="col" th:text="#{travel.label.arrival-point}">Arrival Point</th>
                 <th scope="col" th:text="#{travel.label.free-spots}">Free Spots</th>
-                <th scope="col" th:text="#{travel.label.distance}">Distance</th>
-                <th scope="col" th:text="#{travel.label.duration}">Duration</th>
-                <th scope="col" th:text="#{travel.label.departure-time}">Departure Time</th>
-                <th scope="col" th:text="#{travel.label.arrival-time}">Arrival Time</th>
                 <th scope="col" th:text="#{travel.label.status}">Status</th>
             </tr>
             </thead>
@@ -41,10 +37,6 @@
                 <td th:text="${travel.getDeparturePoint()}">Burgas</td>
                 <td th:text="${travel.getArrivalPoint()}">Sofia</td>
                 <td th:text ="${travel.getFreeSpots()}">Free Spots</td>
-                <td th:text="${travel.getDistance()}">150km</td>
-                <td th:text="${travel.getDuration()}">1h 54min</td>
-                <td th:text="${#temporals.format(travel.getDepartureTime(),'dd MMM y HH:mm')}">1-Jan 10:45</td>
-                <td th:text="${#temporals.format(travel.getArrivalTime(),'dd MMM y HH:mm')}">2-Jan 10;45</td>
                 <td th:text="${travel.getStatus()}">COMPLETED</td>
                 <td th:if="${isAdmin} and ${!travel.getDriver().getUserName().equals(session.currentUser)}">
                     <a class="btn view" href="#" th:href="@{/travels/{id}(id=${travel.getId()})}"><i

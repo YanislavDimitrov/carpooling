@@ -41,17 +41,18 @@ public class Travel {
     private String distance;
     @Column(name = "duration")
     private String travelDuration;
-@Column(name = "arrival_time")
+    @Column(name = "arrival_time")
     private LocalDateTime estimatedTimeOfArrival;
     @JsonIgnore
     @OneToMany(mappedBy = "travel", fetch = FetchType.EAGER)
     private List<TravelRequest> travelRequests;
     @Column(name = "is_deleted")
     private boolean isDeleted;
-@Column(name="rating")
-    private int rating;
-@Column(name="average_rating")
-private double averageRating;
+    @Column(name = "average_rating")
+    private double averageRating;
+    @Column(name = "total_ratings")
+    private int totalRatings;
+
 
 //    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
 //    @JoinTable(name = "users_travels",
@@ -72,12 +73,12 @@ private double averageRating;
         this.averageRating = averageRating;
     }
 
-    public int getRating() {
-        return rating;
+    public int getTotalRatings() {
+        return totalRatings;
     }
 
-    public void setRating(int rating) {
-        this.rating = rating;
+    public void setTotalRatings(int totalRatings) {
+        this.totalRatings = totalRatings;
     }
 
     public boolean isDeleted() {
