@@ -16,11 +16,13 @@ import com.example.carpooling.services.contracts.TravelService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,10 +80,11 @@ public class TravelMvcController {
                 .map(travelMapper::fromTravelRequest)
                 .map(travelMapper::fromTravelToFrontEnd)
                 .toList();
-        travels.addAll(travelsAsPassenger);
-        model.addAttribute("travels", travels);
+//        travels.addAll(travelsAsPassenger);
+        model.addAttribute("travels",travels);
+        model.addAttribute("travelsAsPassenger",travelsAsPassenger);
         //ToDo View
-        return "";
+        return "UserTravelsView";
     }
     @GetMapping("/latest")
     public String getLatestTravels(Model model) {
@@ -207,6 +210,21 @@ public class TravelMvcController {
             return "redirect:/auth/login";
         }
         return "redirect:/travels";
+    }
+    @GetMapping("/{id}/cancel")
+    public String cancelTravel( @PathVariable Long id , HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            Travel travel = travelService.getById(id);
+            travelService.cancelTravel(id,loggedUser);
+            return "UserTravelsView";
+        } catch (AuthenticationFailureException | AuthorizationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,e.getMessage());
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage());
+        } catch (InvalidOperationException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
+        }
     }
 
     @ModelAttribute("isAdmin")
