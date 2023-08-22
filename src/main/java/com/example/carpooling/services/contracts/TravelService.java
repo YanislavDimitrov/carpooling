@@ -32,14 +32,9 @@ public interface TravelService {
     List<Travel> findAll(Sort sort);
 
     List<Travel> findTravelByUser(User user);
-    List<Travel> getTopRatedTravels();
 
     List<TravelRequest> findTravelsAsPassengerByUser(User user);
 
-    void submitRating(Long travelId, int rating, User user);
-    boolean hasUserRatedTravel(User user, Travel travel);
-
-    void updateAverageRating(Travel travel);
     Long count();
 
     Long countCompleted();
@@ -57,6 +52,8 @@ public interface TravelService {
     List<Travel> findPlannedTravelsWithPastDepartureTime();
 
     void updateTravelStatus();
+
+    List<Travel> findLatestTravels();
 
 
 }

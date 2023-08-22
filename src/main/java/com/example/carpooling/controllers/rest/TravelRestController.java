@@ -242,4 +242,16 @@ public class TravelRestController {
             return dto;
         }).collect(Collectors.toList());
     }
+    @GetMapping("/latest")
+    public List<TravelViewDto> showTheLatestTravels( @RequestHeader HttpHeaders headers) {
+        try {
+            User user = authenticationHelper.tryGetUser(headers);
+            return travelService.findLatestTravels()
+                    .stream()
+                    .map(travelMapper::fromTravel)
+                    .toList();
+        }catch (AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,e.getMessage());
+        }
+    }
 }

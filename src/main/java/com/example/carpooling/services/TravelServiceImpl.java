@@ -4,13 +4,11 @@ import com.example.carpooling.exceptions.AuthorizationException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.exceptions.InvalidOperationException;
 import com.example.carpooling.models.Travel;
-import com.example.carpooling.models.TravelRating;
 import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.TravelRequestStatus;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.models.enums.UserRole;
-import com.example.carpooling.repositories.contracts.TravelRatingRepository;
 import com.example.carpooling.repositories.contracts.TravelRepository;
 import com.example.carpooling.services.contracts.TravelService;
 import org.springframework.data.domain.Sort;
@@ -37,14 +35,13 @@ public class TravelServiceImpl implements TravelService {
     public static final String TRAVEL_AS_PASSENGER = "You have approved request for being passenger on travel from %s to %s , so if you want to create a Travel you should cancel your request for participating in your passenger travel!";
     public static final String CANNOT_RATE_THIS_TRAVEL_AGAIN = "You cannot rate this travel again!";
     private final TravelRepository travelRepository;
-    private final TravelRatingRepository travelRatingRepository;
+
 
     private final BingMapsService bingMapsService;
 
-    public TravelServiceImpl(TravelRepository travelRepository,
-                             TravelRatingRepository travelRatingRepository, BingMapsService bingMapsService) {
+    public TravelServiceImpl(TravelRepository travelRepository, BingMapsService bingMapsService) {
         this.travelRepository = travelRepository;
-        this.travelRatingRepository = travelRatingRepository;
+
         this.bingMapsService = bingMapsService;
     }
 
@@ -227,6 +224,11 @@ public class TravelServiceImpl implements TravelService {
         travelRepository.delete(id);
     }
 
+    @Override
+    public List<Travel> findLatestTravels() {
+        return travelRepository.findTop5ByOrderByDepartureTimeDesc();
+    }
+
     /**
      * @param id this parameters is used to find a travel with this ID
      *           This method is changing the status of a certain travel with status 'COMPLETED'
@@ -292,47 +294,6 @@ public class TravelServiceImpl implements TravelService {
                 .stream()
                 .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.APPROVED)
                 .toList();
-    }
-
-    @Override
-    public List<Travel> getTopRatedTravels() {
-        return travelRepository.findTop5ByOrderByAverageRatingDesc();
-    }
-
-    @Override
-    @Transactional
-    public void submitRating(Long travelId, int rating, User user) {
-        Travel travel = travelRepository.findById(travelId).orElse(null);
-        if (travel != null && !hasUserRatedTravel(user, travel)) {
-            TravelRating travelRating = new TravelRating();
-            travelRating.setUser(user);
-            travelRating.setTravel(travel);
-            travelRating.setRating(rating);
-            travelRatingRepository.save(travelRating);
-            updateAverageRating(travel);
-        }
-    }
-    @Transactional
-    public void updateAverageRating(Travel travel) {
-        List<TravelRating> ratings = travelRatingRepository.findByTravel(travel);
-        if (!ratings.isEmpty()) {
-            int totalRatings = 0;
-            double totalRatingSum = 0.0;
-
-            for (TravelRating rating : ratings) {
-                totalRatingSum += rating.getRating();
-                totalRatings++;
-            }
-
-            double averageRating = totalRatingSum / totalRatings;
-            travel.setAverageRating(averageRating);
-            travel.setTotalRatings(totalRatings);
-            travelRepository.save(travel);
-        }
-    }
-    @Override
-    public boolean hasUserRatedTravel(User user, Travel travel) {
-        return travelRatingRepository.existsByUserAndTravel(user,travel);
     }
     @Override
     @Scheduled(fixedRate = 60000)

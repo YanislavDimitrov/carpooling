@@ -148,12 +148,15 @@
         <a  class="destination"  href="#" th:href="@{/travels}">
         <p class="destination">All carpool routes</p>
         </a>
+        <a  class="destination" href="#" th:href="@{/travels/completed}">
+            <p class="destination">Completed travels</p>
+        </a>
     </div>
     <div class="info-container">
         <i class="fa-solid fa-star-half-stroke"></i>
-        <h2 class="info-title">Top Destinations</h2>
-        <ul>
-            <li th:each="travel : ${popularTravels}">
+        <h2 class="info-title">Latest travels</h2>
+        <ul role="list">
+            <li th:each="travel : ${latestTravels}">
                 <div class="travel-route">
                     <a class="destination" th:href="@{/travels/{id}(id=${travel.id})}" th:text="${travel.departurePoint}"></a>
                     <div class="arrow"></div>

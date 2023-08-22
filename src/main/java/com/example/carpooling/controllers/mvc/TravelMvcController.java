@@ -83,6 +83,12 @@ public class TravelMvcController {
         //ToDo View
         return "";
     }
+    @GetMapping("/latest")
+    public String getLatestTravels(Model model) {
+        List<Travel> latestTravels = travelService.findLatestTravels();
+        model.addAttribute("latestTravels",latestTravels);
+        return "";
+    }
 
     @GetMapping("/completed")
     public String viewCompletedTravels(Model model, HttpSession session) {
@@ -95,7 +101,8 @@ public class TravelMvcController {
                 .stream()
                 .map(travelMapper::fromTravelToFrontEnd)
                 .toList();
-        return "TravelsView";
+        model.addAttribute("travels",travels);
+        return "CompletedTravelsView";
     }
 
     @GetMapping("/{id}")
@@ -188,27 +195,6 @@ public class TravelMvcController {
         return String.format("redirect:/travels/%d", id);
     }
 
-    @GetMapping("/top-rated")
-    public String getTopRatedTravels(Model model) {
-        List<Travel> topRatedTravels = travelService.getTopRatedTravels();
-        model.addAttribute("topRatedTravels", topRatedTravels);
-        //ToDo View
-        return "";
-    }
-
-    @PostMapping("/{travelId}/rate")
-    public String rateTravel(@PathVariable Long travelId, @RequestParam int rating, HttpSession session) {
-        User currentUser;
-        try {
-            currentUser = authenticationHelper.tryGetUser(session);
-            travelService.submitRating(travelId, rating, currentUser);
-            return "redirect:/travels/" + travelId;
-        } catch (InvalidOperationException e) {
-            return "redirect:/travels";
-        } catch (AuthenticationFailureException e) {
-            return "redirect:/auth/login";
-        }
-    }
 
     @GetMapping("/{id}/delete")
     public String deleteTravel(@PathVariable Long id, HttpSession session) {

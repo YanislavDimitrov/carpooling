@@ -47,8 +47,8 @@ public class HomeMvcController {
             return false;
         }
     }
-    @ModelAttribute("popularTravels")
+    @ModelAttribute("latestTravels")
     public List<Travel> populateMostPopularTravels() {
-        return travelService.getTopRatedTravels();
+        return travelService.findLatestTravels();
     }
 }
