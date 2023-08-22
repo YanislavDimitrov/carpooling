@@ -38,7 +38,7 @@
                 <td th:text="${travel.getArrivalPoint()}">Sofia</td>
                 <td th:text ="${travel.getFreeSpots()}">Free Spots</td>
                 <td th:text="${travel.getStatus()}">COMPLETED</td>
-                <td th:if="${isAdmin} and ${!travel.getDriver().getUserName().equals(session.currentUser)}">
+                <td th:if="${isAdmin} and ${!travel.getDriverName().equals(session.currentUser)}">
                     <a class="btn view" href="#" th:href="@{/travels/{id}(id=${travel.getId()})}"><i
                             class="fa-solid fa-eye fa-beat"></i></a>
                     <a class="btn edit" href="#" th:href="@{/travels/{id}/update(id=${travel.getId()})}"><i

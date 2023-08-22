@@ -2,10 +2,7 @@ package com.example.carpooling.helpers.mappers;
 
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.TravelRequest;
-import com.example.carpooling.models.dtos.TravelCreationOrUpdateDto;
-import com.example.carpooling.models.dtos.TravelFrontEndView;
-import com.example.carpooling.models.dtos.TravelUpdateDto;
-import com.example.carpooling.models.dtos.TravelViewDto;
+import com.example.carpooling.models.dtos.*;
 import com.example.carpooling.models.enums.TravelRequestStatus;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.services.contracts.TravelService;
@@ -137,4 +134,5 @@ public class TravelMapper {
         travel = travelRequest.getTravel();
         return travel;
     }
+
 }

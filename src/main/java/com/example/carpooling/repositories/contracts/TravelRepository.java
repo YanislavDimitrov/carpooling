@@ -62,6 +62,5 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
     Long countAllByStatusIs(TravelStatus status);
 
     List<Travel> findTop5ByOrderByDepartureTimeDesc();
-
-
+    List<Travel> findAllByStatusIs(TravelStatus travelStatus);
 }

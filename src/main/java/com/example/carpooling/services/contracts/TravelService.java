@@ -34,6 +34,7 @@ public interface TravelService {
     List<Travel> findTravelByUser(User user);
 
     List<TravelRequest> findTravelsAsPassengerByUser(User user);
+    List<Travel> findAllByStatusPlanned();
 
     Long count();
 
@@ -41,7 +42,7 @@ public interface TravelService {
 
     void create(Travel travel, User driver);
 
-    Travel update(Travel travel, User editor);
+    Travel update(Travel travel,User editor);
 
     void delete(Long id, User editor);
 

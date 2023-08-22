@@ -34,6 +34,7 @@ public class TravelServiceImpl implements TravelService {
     public static final String TRAVEL_AT_THIS_TIME = "You already have planned travel for %s , if you want to proceed you should cancel it first!";
     public static final String TRAVEL_AS_PASSENGER = "You have approved request for being passenger on travel from %s to %s , so if you want to create a Travel you should cancel your request for participating in your passenger travel!";
     public static final String CANNOT_RATE_THIS_TRAVEL_AGAIN = "You cannot rate this travel again!";
+    public static final String YOU_CAN_UPDATE_ONLY_PLANNED_TRAVELS = "You can update only planned travels!";
     private final TravelRepository travelRepository;
 
 
@@ -55,6 +56,11 @@ public class TravelServiceImpl implements TravelService {
     @Override
     public List<Travel> getAllCompleted() {
         return travelRepository.getAllByStatusIs(TravelStatus.COMPLETED);
+    }
+
+    @Override
+    public List<Travel> findAllByStatusPlanned() {
+        return travelRepository.findAllByStatusIs(TravelStatus.PLANNED);
     }
 
     /**
@@ -192,12 +198,15 @@ public class TravelServiceImpl implements TravelService {
      * @throws AuthorizationException if the editor is not the driver of the travel.
      */
     @Override
-    public Travel update(Travel travel, User editor) {
-        if (travel.getDriver() != editor) {
+    public Travel update(Travel travel,User editor) {
+        if (!travel.getDriver().equals(editor)) {
             throw new AuthorizationException(UPDATE_CANCELLED);
         }
         if (!travelRepository.existsById(travel.getId())) {
             throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, travel.getId()));
+        }
+        if(travel.getStatus()!=TravelStatus.PLANNED) {
+            throw new InvalidOperationException(YOU_CAN_UPDATE_ONLY_PLANNED_TRAVELS);
         }
         calculatingDistanceAndDuration(travel);
         travelRepository.save(travel);
@@ -278,6 +287,8 @@ public class TravelServiceImpl implements TravelService {
     public List<Travel> findPlannedTravelsWithPastDepartureTime() {
         return travelRepository.findByStatusAndDepartureTimeBefore(TravelStatus.PLANNED, LocalDateTime.now());
     }
+
+
 
     @Override
     public Long countCompleted() {

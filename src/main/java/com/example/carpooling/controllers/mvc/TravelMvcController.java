@@ -29,7 +29,6 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/travels")
-@Validated
 public class TravelMvcController {
     private final TravelService travelService;
     private final TravelMapper travelMapper;
@@ -51,7 +50,7 @@ public class TravelMvcController {
             return "redirect:/auth/login";
         }
 
-        List<TravelFrontEndView> travels = travelService.get()
+        List<TravelFrontEndView> travels = travelService.findAllByStatusPlanned()
                 .stream()
                 .map(travelMapper::fromTravelToFrontEnd)
                 .toList();
@@ -171,6 +170,7 @@ public class TravelMvcController {
         }
         TravelCreationOrUpdateDto travelCreationOrUpdateDto = travelMapper.fromTravel(id);
         model.addAttribute("updateTravel", travelCreationOrUpdateDto);
+        model.addAttribute("travelId",id);
 
         return "UpdateTravelView";
     }
@@ -183,14 +183,15 @@ public class TravelMvcController {
                                HttpSession session
     ) {
         User loggedUser = this.authenticationHelper.tryGetUser(session);
-        Travel travel = travelMapper.toTravelFromTravelCreationDto(travelUpdateDto);
+        Travel travel = travelService.getById(id);
+        Travel travelUpdate = travelMapper.toTravelFromTravelUpdateSaveDto(travel,travelUpdateDto);
         if (errors.hasErrors()) {
             return "UpdateTravelView";
         }
 
         try {
-            travelService.update(travel, loggedUser);
-        } catch (AuthorizationException e) {
+            travelService.update(travelUpdate, loggedUser);
+        } catch (AuthorizationException | InvalidOperationException e) {
             return "AccessDeniedView";
         } catch (EntityNotFoundException e) {
             return "NotFoundView";
