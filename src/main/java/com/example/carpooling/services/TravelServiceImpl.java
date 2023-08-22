@@ -90,9 +90,10 @@ public class TravelServiceImpl implements TravelService {
     }
 
     @Override
-    public List<Travel> findBySearchCriteria(String departurePoint, String arrivalPoint, LocalDateTime departureTime, Short freeSpots, Sort sort) {
-        return travelRepository.findBySearchFilter(departurePoint, arrivalPoint, departureTime, freeSpots, sort);
+    public List<Travel> findBySearchCriteria( String departurePoint, String arrivalPoint, LocalDateTime departureTime, Short freeSpots) {
+        return travelRepository.findByCustomSearchFilter(departurePoint, arrivalPoint, departureTime, freeSpots);
     }
+
 
     /**
      * @param sort – the Sort specification to sort the results by, can be Sort.unsorted(), must not be null.

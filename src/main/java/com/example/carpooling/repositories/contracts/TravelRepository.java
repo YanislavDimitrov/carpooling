@@ -2,9 +2,7 @@ package com.example.carpooling.repositories.contracts;
 
 import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.models.Travel;
-import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.TravelStatus;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -39,18 +37,17 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
             Sort sort
     );
 
-    @Query("select t from Travel t where" +
-            "(:departurePoint is null or t.departurePoint like %:departurePoint%) " +
-            " and(:arrivalPoint is null or t.arrivalPoint =:arrivalPoint)" +
-            " and (:departureTime is null or t.departureTime =:departureTime) " +
-            " and(:free_spots is null or t.freeSpots  =:freeSpots)")
-    List<Travel> findBySearchFilter(
-            @Param("departurePoint") String departurePoint,
-            @Param("arrivalPoint") String arrivalPoint,
-            @Param("departureTime") LocalDateTime departureTime,
-            @Param("freeSpots") Short freeSpots,
-            Sort sort);
-
+    @Query("SELECT t FROM Travel t " +
+            "WHERE (:departurePoint IS NULL OR :departurePoint = '' OR t.departurePoint LIKE %:departurePoint%) " +
+            "AND (:arrivalPoint IS NULL OR :arrivalPoint = '' OR t.arrivalPoint LIKE %:arrivalPoint%) " +
+            "AND (:departureTime IS NULL OR t.departureTime = :departureTime) " +
+            "AND (:freeSpots IS NULL OR t.freeSpots >= :freeSpots)")
+    List<Travel> findByCustomSearchFilter(
+            String departurePoint,
+            String arrivalPoint,
+            LocalDateTime departureTime,
+            Short freeSpots
+    );
 
     List<Travel> findByStatusAndDepartureTimeBefore(TravelStatus status, LocalDateTime departureTime);
 
@@ -63,4 +60,7 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
 
     List<Travel> findTop5ByOrderByDepartureTimeDesc();
     List<Travel> findAllByStatusIs(TravelStatus travelStatus);
+
+
 }
+

@@ -26,8 +26,8 @@ public interface TravelService {
     List<Travel> findBySearchCriteria(String departurePoint,
                                       String arrivalPoint,
                                       LocalDateTime departureTime,
-                                      Short freeSpots,
-                                      Sort sort);
+                                      Short freeSpots
+                                      );
 
     List<Travel> findAll(Sort sort);
 
@@ -55,6 +55,5 @@ public interface TravelService {
     void updateTravelStatus();
 
     List<Travel> findLatestTravels();
-
 
 }

@@ -50,5 +50,10 @@ public class HomeMvcController {
     @ModelAttribute("latestTravels")
     public List<Travel> populateMostPopularTravels() {
         return travelService.findLatestTravels();
+
+    }
+    @ModelAttribute("travels")
+    public List<Travel> populatePlannedTravels () {
+        return travelService.findAllByStatusPlanned();
     }
 }

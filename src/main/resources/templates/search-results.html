@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Travel Search Results</title>
+</head>
+<body>
+<h1>Travel Search Results</h1>
+
+<table>
+  <thead>
+  <tr>
+    <th>Departure Point</th>
+    <th>Arrival Point</th>
+    <th>Departure Time</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="travel : ${travels}">
+    <td th:text="${travel.departurePoint}"></td>
+    <td th:text="${travel.arrivalPoint}"></td>
+    <td th:text="${#dates.format(travel.departureTime, 'dd-MM-yyyy HH:mm')}"></td>
+  </tr>
+  </tbody>
+</table>
+</body>
+</html>

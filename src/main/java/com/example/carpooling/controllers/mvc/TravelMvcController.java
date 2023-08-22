@@ -11,11 +11,13 @@ import com.example.carpooling.models.User;
 import com.example.carpooling.models.dtos.TravelCreationOrUpdateDto;
 import com.example.carpooling.models.dtos.TravelFrontEndView;
 import com.example.carpooling.models.dtos.TravelViewDto;
+import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.services.contracts.TravelService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +26,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,23 +45,40 @@ public class TravelMvcController {
         this.authenticationHelper = authenticationHelper;
     }
 
-    @GetMapping
-    public String viewAllTravels(Model model, HttpSession session) {
-        try {
-            authenticationHelper.tryGetUser(session);
-        } catch (AuthenticationFailureException e) {
-            return "redirect:/auth/login";
-        }
-
-        List<TravelFrontEndView> travels = travelService.findAllByStatusPlanned()
+    @GetMapping("/search")
+    public String searchTravels(
+            @RequestParam(required = false) String departurePoint,
+            @RequestParam(required = false) String arrivalPoint,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime departureTime,
+            @RequestParam(required = false) Short freeSpots,
+            Model model) {
+        List<TravelFrontEndView> travels = travelService.
+                findBySearchCriteria(departurePoint, arrivalPoint, departureTime, freeSpots)
                 .stream()
                 .map(travelMapper::fromTravelToFrontEnd)
                 .toList();
-
-
         model.addAttribute("travels", travels);
         return "TravelsView";
     }
+
+
+//    @GetMapping
+//    public String viewAllTravels(Model model, HttpSession session) {
+//        try {
+//            authenticationHelper.tryGetUser(session);
+//        } catch (AuthenticationFailureException e) {
+//            return "redirect:/auth/login";
+//        }
+//
+//        List<TravelFrontEndView> travels = travelService.findBySearchCriteria()
+//                .stream()
+//                .map(travelMapper::fromTravelToFrontEnd)
+//                .toList();
+//
+//
+//        model.addAttribute("travels", travels);
+//        return "TravelsView";
+//    }
 
     @GetMapping("/user")
     public String viewAllTravelsForUser(HttpSession session, Model model) {
@@ -80,15 +100,16 @@ public class TravelMvcController {
                 .map(travelMapper::fromTravelToFrontEnd)
                 .toList();
 //        travels.addAll(travelsAsPassenger);
-        model.addAttribute("travels",travels);
-        model.addAttribute("travelsAsPassenger",travelsAsPassenger);
+        model.addAttribute("travels", travels);
+        model.addAttribute("travelsAsPassenger", travelsAsPassenger);
         //ToDo View
         return "UserTravelsView";
     }
+
     @GetMapping("/latest")
     public String getLatestTravels(Model model) {
         List<Travel> latestTravels = travelService.findLatestTravels();
-        model.addAttribute("latestTravels",latestTravels);
+        model.addAttribute("latestTravels", latestTravels);
         return "";
     }
 
@@ -103,7 +124,7 @@ public class TravelMvcController {
                 .stream()
                 .map(travelMapper::fromTravelToFrontEnd)
                 .toList();
-        model.addAttribute("travels",travels);
+        model.addAttribute("travels", travels);
         return "CompletedTravelsView";
     }
 
@@ -170,7 +191,7 @@ public class TravelMvcController {
         }
         TravelCreationOrUpdateDto travelCreationOrUpdateDto = travelMapper.fromTravel(id);
         model.addAttribute("updateTravel", travelCreationOrUpdateDto);
-        model.addAttribute("travelId",id);
+        model.addAttribute("travelId", id);
 
         return "UpdateTravelView";
     }
@@ -184,7 +205,7 @@ public class TravelMvcController {
     ) {
         User loggedUser = this.authenticationHelper.tryGetUser(session);
         Travel travel = travelService.getById(id);
-        Travel travelUpdate = travelMapper.toTravelFromTravelUpdateSaveDto(travel,travelUpdateDto);
+        Travel travelUpdate = travelMapper.toTravelFromTravelUpdateSaveDto(travel, travelUpdateDto);
         if (errors.hasErrors()) {
             return "UpdateTravelView";
         }
@@ -212,19 +233,20 @@ public class TravelMvcController {
         }
         return "redirect:/travels";
     }
+
     @GetMapping("/{id}/cancel")
-    public String cancelTravel( @PathVariable Long id , HttpSession session) {
+    public String cancelTravel(@PathVariable Long id, HttpSession session) {
         try {
             User loggedUser = authenticationHelper.tryGetUser(session);
             Travel travel = travelService.getById(id);
-            travelService.cancelTravel(id,loggedUser);
+            travelService.cancelTravel(id, loggedUser);
             return "UserTravelsView";
         } catch (AuthenticationFailureException | AuthorizationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,e.getMessage());
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (InvalidOperationException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 
