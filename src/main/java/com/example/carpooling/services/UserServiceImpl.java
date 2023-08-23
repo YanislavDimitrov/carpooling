@@ -13,16 +13,19 @@ import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.repositories.contracts.VehicleRepository;
 import com.example.carpooling.services.contracts.UserService;
 import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Sort;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +34,7 @@ import static com.example.carpooling.helpers.CustomMessages.*;
 @Service
 public class UserServiceImpl implements UserService {
 
+    public static final String CONFIRMATION_EMAIL_TEMPLATE_PATH = "src/main/resources/templates/WelcomeTemplateEmail.html";
     private final UserRepository userRepository;
     private final VehicleRepository vehicleRepository;
     private final TokenRepository tokenRepository;
@@ -74,26 +78,45 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public User create(User user) throws MessagingException {
+    public User create(User user) throws MessagingException, IOException {
         checkForDuplicateUser(user);
         this.userRepository.save(user);
 
         VerificationToken verificationToken = new VerificationToken(user);
         tokenRepository.save(verificationToken);
         String verificationLink = "http://localhost:8080/verify?token=" + verificationToken.getToken();
-        String emailContent = "Click the link to verify your email: " + verificationLink;
-        sendVerificationEmail(user.getEmail(), emailContent);
+        String htmlContent = readHtmlFromFile();
+        htmlContent = htmlContent.replace("verificationLinkPlaceholder", verificationLink);
+        sendVerificationEmail(user.getEmail(), htmlContent);
+
+
         return user;
     }
 
     private void sendVerificationEmail(String emailAddress, String content) throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message);
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+        ClassPathResource imageResource = new ClassPathResource("src/main/resources/static/images/CoverPicture.svg");
+        helper.addInline("image123", imageResource);
+
         helper.setFrom("carpoolingalpha@gmail.com");
         helper.setTo(emailAddress);
         helper.setSubject("Carpool Email Verification");
-        helper.setText(content);
+        helper.setText(content, true);
+
         javaMailSender.send(message);
+    }
+
+    private static String readHtmlFromFile() throws IOException {
+        StringBuilder content = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new FileReader(CONFIRMATION_EMAIL_TEMPLATE_PATH))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line);
+            }
+        }
+        return content.toString();
     }
 
     @Override
@@ -295,24 +318,24 @@ public class UserServiceImpl implements UserService {
     }
 
     private void checkForDuplicateUser(User user) {
-        List<User> userWithUserName =
-                this.findAll(null, null, user.getUserName(), null, null, null);
-        if (!userWithUserName.isEmpty()) {
-            if (!userWithUserName.get(0).getId().equals(user.getId())) {
+        User userWithUserName =
+                this.userRepository.findByUserName(user.getUserName());
+        if (userWithUserName != null) {
+            if (!userWithUserName.getId().equals(user.getId())) {
                 throw new DuplicateUsernameException("User", user.getUserName());
             }
         }
-        List<User> userWithEmail =
-                this.findAll(null, null, null, user.getEmail(), null, null);
-        if (!userWithEmail.isEmpty()) {
-            if (!userWithEmail.get(0).getId().equals(user.getId())) {
+        User userWithEmail =
+                this.userRepository.findByEmail(user.getEmail());
+        if (userWithEmail != null) {
+            if (!userWithEmail.getId().equals(user.getId())) {
                 throw new DuplicateEmailException("User", user.getEmail());
             }
         }
-        List<User> userWithPhoneNumber =
-                this.findAll(null, null, null, null, user.getPhoneNumber(), null);
-        if (!userWithPhoneNumber.isEmpty()) {
-            if (!userWithPhoneNumber.get(0).getId().equals(user.getId())) {
+        User userWithPhoneNumber =
+                this.userRepository.findByPhoneNumber(user.getPhoneNumber());
+        if (userWithPhoneNumber != null) {
+            if (!userWithPhoneNumber.getId().equals(user.getId())) {
                 throw new DuplicatePhoneNumberException("User", user.getPhoneNumber());
             }
         }

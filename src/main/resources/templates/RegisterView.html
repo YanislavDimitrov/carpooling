@@ -6,52 +6,86 @@
     <link rel="website icon" th:type="png" th:href="@{/images/carpool_simplelogo.png}">
     <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
     <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
+    <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">
     <link rel="stylesheet" href="../static/register.css" th:href="@{/register.css}">
 </head>
 <body>
 <!--HEADER-->
 <header th:replace="index.html :: header"></header>
-<section class="main"><h1 class="login-title">Register</h1>
+<section class="main">
 
-    <form id="search-form" class="form" th:action="@{/auth/login}" th:object="${register}" method="post">
-        <a class="show-password">
-            <i class="fa-solid fa-eye"></i>
-        </a>
+    <h1 class="login-title">Registration form</h1>
+    <form id="search-form" class="form" th:action="@{/auth/register}" th:object="${register}" method="post">
         <div>
             <div class="input-container">
                 <div>
+                    <i class="fa-solid fa-circle-dot"></i>
                     <input type="text" th:field="*{firstName}" placeholder="First name">
                 </div>
-                <label class="error" th:errors="*{firstName}">First name error placeholder</label>
+
             </div>
             <div class="input-container">
                 <div>
-                    <i class="fa-solid fa-lock"></i>
+                    <i class="fa-solid fa-circle-dot"></i>
                     <input type="text" th:field="*{lastName}" placeholder="Last name">
                 </div>
-                <label class="error" th:errors="*{lastName}">Last name error placeholder</label>
+
             </div>
         </div>
-        <br>
         <div>
             <div class="input-container">
                 <div>
                     <i class="fa-solid fa-user"></i>
                     <input type="text" th:field="*{userName}" placeholder="Username">
                 </div>
-                <label class="error" th:errors="*{userName}">Username error placeholder</label>
+            </div>
+            <div class="input-container">
+                <div>
+                    <i class="fa-solid fa-phone"></i>
+                    <input type="text" th:field="*{phoneNumber}" placeholder="Phone number">
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="input-container">
+                <div>
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" th:field="*{email}" placeholder="Email address">
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="input-container">
+                <div>
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" th:field="*{password}" placeholder="Password">
+                </div>
             </div>
             <div class="input-container">
                 <div>
                     <i class="fa-solid fa-lock"></i>
-                    <input id="password" type="password" th:field="*{password}" placeholder="Password">
+                    <input type="password" th:field="*{confirmPassword}" placeholder="Confirm password">
                 </div>
-                <label class="error" th:errors="*{password}">Password error placeholder</label>
             </div>
         </div>
-        <button type="submit" id="search">Login</button>
+        <div class="field-container checkbox">
+            <input type="checkbox" id="terms">
+            <label for="terms">I accept the Terms of Use & Privacy Policy.</label>
+        </div>
+        <div class="errors">
+            <label class="error" th:errors="*{firstName}">First name error placeholder</label>
+            <label class="error" th:errors="*{lastName}">Last name error placeholder</label>
+            <label class="error" th:errors="*{userName}">Username error placeholder</label>
+            <label class="error" th:errors="*{password}">Password error placeholder</label>
+            <label class="error" th:errors="*{userName}">Username error placeholder</label>
+            <label class="error" th:errors="*{password}">Password error placeholder</label>
+        </div>
+
+        <button type="submit" id="search">Register</button>
     </form>
 </section>
+<!--FOOTER-->
+<header th:replace="index.html :: footer"></header>
 <script type="text/javascript" src="../static/js/showHidePass.js" th:src="@{/js/showHidePass.js}"></script>
 <script type="text/javascript" src="../static/js/showDropdown.js" th:src="@{/js/showDropdown.js}"></script>
 </body>

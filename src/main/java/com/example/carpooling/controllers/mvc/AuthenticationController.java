@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.io.IOException;
+
 @Controller
 @RequestMapping("/auth")
 public class AuthenticationController {
@@ -119,9 +121,9 @@ public class AuthenticationController {
         try {
             User user = this.modelMapper.map(registerDto, User.class);
             this.userService.create(user);
-            return "redirect:/auth/login";
+            return "VerificationLinkView";
         } catch (DuplicateUsernameException e) {
-            bindingResult.rejectValue("username",
+            bindingResult.rejectValue("userName",
                     "username_error",
                     e.getMessage());
             return "RegisterView";
@@ -131,6 +133,8 @@ public class AuthenticationController {
         } catch (DuplicatePhoneNumberException e) {
             bindingResult.rejectValue("phoneNumber", "phoneNumber_error,", e.getMessage());
             return "RegisterView";
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

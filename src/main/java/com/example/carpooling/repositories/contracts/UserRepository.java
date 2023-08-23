@@ -31,6 +31,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     );
 
     User findByUserName(String username);
+    User findByEmail(String email);
+    User findByPhoneNumber(String phoneNumber);
 
     @Modifying
     @Query("UPDATE User AS u SET u.status = 'DELETED' WHERE u.id = :id")

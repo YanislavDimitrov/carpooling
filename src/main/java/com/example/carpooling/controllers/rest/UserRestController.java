@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -121,7 +122,7 @@ public class UserRestController {
      * @throws DuplicateEntityException if either username, email or phoneNumber already exist in DataBase
      */
     @PostMapping()
-    public UserViewDto createUser(@RequestBody UserCreateDto payloadUser) throws MessagingException {
+    public UserViewDto createUser(@RequestBody UserCreateDto payloadUser) throws MessagingException, IOException {
         try {
             User user = this.modelMapper.map(payloadUser, User.class);
             return this.modelMapper.map(this.userService.create(user), UserViewDto.class);

@@ -6,6 +6,7 @@
     <link rel="website icon" th:type="png" th:href="@{/images/carpool_simplelogo.png}">
     <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
     <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
+    <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">
     <link rel="stylesheet" href="../static/index.css" th:href="@{/index.css}">
 </head>
 <body>
@@ -70,6 +71,7 @@
     </div>
     <a class="logo" th:href="@{/}">
         <img th:src="@{/images/carpool_logo.png}" src="../static/images/carpool_logo.png">
+    </a>
     </a>
     <div class="btns">
         <a th:if="${isAdmin}" class="admin-btn-container">
@@ -140,7 +142,6 @@
         </p>
     </div>
 </section>
-
 <section class=" additional-info">
     <div class="info-container">
         <i class="fa-solid fa-car fa-flip"></i>
@@ -168,7 +169,7 @@
         </ul>
     </div>
 </section>
-<footer class="footer">
+<footer th:fragment="footer" class="footer">
     <div class="links-container">
         <a class="terms-and-conditions">Terms and Conditions</a>
         <a class="faqs">FAQs</a>
