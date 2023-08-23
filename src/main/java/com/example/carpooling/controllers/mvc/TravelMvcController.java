@@ -171,9 +171,10 @@ public class TravelMvcController {
         } catch (InvalidOperationException e) {
             errors.rejectValue("departureTime", "creation_error", e.getMessage());
             return "NewTravelView";
-        }catch (InvalidLocationException e) {
+        }catch (InvalidLocationException | InvalidTravelException e) {
             errors.rejectValue("departurePoint","location_error",e.getMessage());
             errors.rejectValue("arrivalPoint","location_error",e.getMessage());
+            return "NewTravelView";
         }
         return "redirect:/travels/" + newTravel.getId();
     }

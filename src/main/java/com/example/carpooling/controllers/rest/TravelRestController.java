@@ -163,7 +163,7 @@ public class TravelRestController {
             return travelMapper.fromTravel(travel);
         } catch (AuthenticationFailureException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        } catch (InvalidOperationException e) {
+        } catch (InvalidOperationException | InvalidTravelException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
         } catch (InvalidLocationException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage());

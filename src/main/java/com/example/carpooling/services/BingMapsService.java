@@ -2,6 +2,7 @@ package com.example.carpooling.services;
 
 import com.example.carpooling.exceptions.InvalidLocationException;
 import com.example.carpooling.exceptions.InvalidOperationException;
+import com.example.carpooling.exceptions.InvalidTravelException;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -19,6 +20,7 @@ import java.net.URLEncoder;
 public class BingMapsService {
     private static final String API_KEY = "ApCDqrWiyt1uxxpCrXxFDT44JTvyUnba2onqQ9NEyrYFEKCq5F9-U02xEb2rcMcw";
     public static final String INVALID_LOCAtiON = "This location is not valid!";
+    public static final String IMPOSSIBLE_TRAVEL = "We are supporting only travels which can be done by land , this travel needs sea/air transport!";
 
     public String getTravelDistance(String origin, String destination) {
         String json = getDistanceMatrixJson(origin, destination);
@@ -63,12 +65,18 @@ public class BingMapsService {
                 .getAsJsonObject().getAsJsonArray("resources").get(0)
                 .getAsJsonObject().getAsJsonArray("results").get(0)
                 .getAsJsonObject().get("travelDistance").getAsDouble();
+
+        if (travelDistance == -1) {
+            throw new InvalidTravelException(IMPOSSIBLE_TRAVEL);
+        }
         double travelDuration = jsonObject
                 .getAsJsonArray("resourceSets").get(0)
                 .getAsJsonObject().getAsJsonArray("resources").get(0)
                 .getAsJsonObject().getAsJsonArray("results").get(0)
                 .getAsJsonObject().get("travelDuration").getAsDouble();
-
+        if (travelDuration == -1) {
+            throw new InvalidTravelException(IMPOSSIBLE_TRAVEL);
+        }
         return travelDistance + " km" + travelDuration + " minutes";
     }
 
@@ -114,14 +122,10 @@ public class BingMapsService {
 
     public double[] parseCoordinates(String json) {
         JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
-//        JsonObject point = jsonObject
-//                .getAsJsonArray("resourceSets").get(0)
-//                .getAsJsonObject().getAsJsonArray("resources").get(0)
-//                .getAsJsonObject().getAsJsonObject("point");
         JsonArray resourcesArray = jsonObject
                 .getAsJsonArray("resourceSets").get(0)
                 .getAsJsonObject().getAsJsonArray("resources");
-        if(resourcesArray.size() == 0) {
+        if (resourcesArray.size() == 0) {
             throw new InvalidLocationException(INVALID_LOCAtiON);
         }
         JsonObject point = resourcesArray.get(0)

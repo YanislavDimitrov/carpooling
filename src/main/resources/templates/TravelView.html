@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="">
 <head>
     <title>Travel Details</title>
     <script type="text/javascript"
@@ -13,10 +13,9 @@
 <h1>Travel Details</h1>
 
 <section class="main">
-
     <!--HEADER-->
     <header th:replace="index.html :: header"></header>
-    <div id="mapContainer" style="width: 100%; height: 800px;"></div>
+
     <!--    CONTENT-->
     <div id="content">
         <table>
@@ -45,47 +44,12 @@
                 <td th:text="${#temporals.format(travel.getArrivalTime(),'dd MMM y HH:mm')}">2-Jan 10;45</td>
                 <td th:text="${travel.getStatus()}">COMPLETED</td>
                 <td th:if="${isAdmin} and ${!travel.getDriverName().equals(session.currentUser)}">
-                    <a class="btn view" href="#" th:href="@{/travels/{id}(id=${travel.getId()})}"><i
-                            class="fa-solid fa-eye fa-beat"></i></a>
                     <a class="btn edit" href="#" th:href="@{/travels/{id}/update(id=${travel.getId()})}"><i
                             class="fa-solid fa-pencil"></i></a>
                     <a class="btn delete" href="#" th:href="@{/travels/{id}/delete(id=${travel.getId()})}"><i
                             class="fa-solid fa-trash-can"></i></a>
                 </td>
-                <script type="text/javascript">
-                    function loadMap() {
-                        var start = '[[${startDestination}]]' ;
-                        var end = '[[${endDestination}]]';
-                        var map = new Microsoft.Maps.Map(document.getElementById('mapContainer'), {
-                            credentials: 'ApCDqrWiyt1uxxpCrXxFDT44JTvyUnba2onqQ9NEyrYFEKCq5F9-U02xEb2rcMcw'
-                        });
-
-                        var directionsManager = new Microsoft.Maps.Directions.DirectionsManager(map);
-                        var startLocation = new Microsoft.Maps.Directions.Waypoint({ address: start });
-                        var endLocation = new Microsoft.Maps.Directions.Waypoint({ address: end });
-
-                        directionsManager.addWaypoint(startLocation);
-                        directionsManager.addWaypoint(endLocation);
-
-                        directionsManager.setRequestOptions({
-                            routeMode: Microsoft.Maps.Directions.RouteMode.driving
-                        });
-
-                        directionsManager.calculateDirections();
-                    }
-
-                    // Load the map and route when the Bing Maps API script has finished loading
-                    window.onload = function () {
-                        Microsoft.Maps.loadModule('Microsoft.Maps.Directions', { callback: loadMap });
-                    };
-                </script>
-
-
-
                 <td th:if="${travel.getDriverName().equals(session.currentUser)}">
-
-                    <a class="btn view" href="#" th:href="@{/travels/{id}(id=${travel.getId()})}"><i
-                            class="fa-solid fa-eye fa-beat"></i></a>
                     <a class="btn edit" href="#" th:href="@{/travels/{id}/update(id=${travel.getId()})}"><i
                             class="fa-solid fa-pencil"></i></a>
                     <a class="btn delete" href="#" th:href="@{/travels/{id}/delete(id=${travel.getId()})}"><i
@@ -100,7 +64,34 @@
             </tbody>
         </table>
     </div>
+    <div id="mapContainer" style="width: 100%; height: 800px;"></div>
     <footer th:replace="index.html :: footer"></footer>
 </section>
+<script type="text/javascript">
+    function loadMap() {
+        var start = '[[${startDestination}]]' ;
+        var end = '[[${endDestination}]]';
+        var map = new Microsoft.Maps.Map(document.getElementById('mapContainer'), {
+            credentials: 'ApCDqrWiyt1uxxpCrXxFDT44JTvyUnba2onqQ9NEyrYFEKCq5F9-U02xEb2rcMcw'
+        });
+        var directionsManager = new Microsoft.Maps.Directions.DirectionsManager(map);
+        var startLocation = new Microsoft.Maps.Directions.Waypoint({ address: start });
+        var endLocation = new Microsoft.Maps.Directions.Waypoint({ address: end });
+
+        directionsManager.addWaypoint(startLocation);
+        directionsManager.addWaypoint(endLocation);
+
+        directionsManager.setRequestOptions({
+            routeMode: Microsoft.Maps.Directions.RouteMode.driving
+        });
+
+        directionsManager.calculateDirections();
+
+    }
+    window.onload = function () {
+        Microsoft.Maps.loadModule('Microsoft.Maps.Directions', { callback: loadMap });
+    };
+</script>
+
 </body>
 </html>
