@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Travels</title>
-    <link rel="website icon"  type="png" href="../static/images/carpool_simplelogo.png"
-          th:type="png" th:href="@{/images/carpool_simplelogo.png}">
-    <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
-    <link rel="stylesheet" href="../static/index.css" th:href="@{/index.css}">
+    <title>Completed travels</title>
+  <link rel="website icon" th:type="png" th:href="@{/images/carpool_simplelogo.png}">
+  <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
+  <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
+  <link rel="stylesheet" href="../static/index.css" th:href="@{/index.css}">
 </head>
 <body>
 <section class="main">
     <!--HEADER-->
     <header th:replace="index.html :: header"></header>
 
-<!--    CONTENT-->
+    <!--    CONTENT-->
     <div id="content">
         <div class="no-travels" th:if="${travels.isEmpty()}">
             <h2 th:text="#{travel.label.no-travels}">No travels to show</h2>
@@ -24,7 +24,6 @@
                 <th scope="col" th:text="#{travel.label.driver}">Driver</th>
                 <th scope="col" th:text="#{travel.label.departure-point}">Departure Point</th>
                 <th scope="col" th:text="#{travel.label.arrival-point}">Arrival Point</th>
-                <th scope="col" th:text="#{travel.label.free-spots}">Free Spots</th>
                 <th scope="col" th:text="#{travel.label.status}">Status</th>
             </tr>
             </thead>
@@ -36,25 +35,16 @@
                 </td>
                 <td th:text="${travel.getDeparturePoint()}">Burgas</td>
                 <td th:text="${travel.getArrivalPoint()}">Sofia</td>
-                <td th:text ="${travel.getFreeSpots()}">Free Spots</td>
                 <td th:text="${travel.getStatus()}">COMPLETED</td>
                 <td th:if="${isAdmin} and ${!travel.getDriverName().equals(session.currentUser)}">
                     <a class="btn view" href="#" th:href="@{/travels/{id}(id=${travel.getId()})}"><i
                             class="fa-solid fa-eye fa-beat"></i></a>
-                    <a class="btn edit" href="#" th:href="@{/travels/{id}/update(id=${travel.getId()})}"><i
-                            class="fa-solid fa-pencil"></i></a>
-                    <a class="btn delete" href="#" th:href="@{/travels/{id}/delete(id=${travel.getId()})}"><i
-                            class="fa-solid fa-trash-can"></i></a>
                 </td>
 
                 <td th:if="${travel.getDriverName().equals(session.currentUser)}">
 
                     <a class="btn view" href="#" th:href="@{/travels/{id}(id=${travel.getId()})}"><i
                             class="fa-solid fa-eye fa-beat"></i></a>
-                    <a class="btn edit" href="#" th:href="@{/travels/{id}/update(id=${travel.getId()})}"><i
-                            class="fa-solid fa-pencil"></i></a>
-                    <a class="btn delete" href="#" th:href="@{/travels/{id}/delete(id=${travel.getId()})}"><i
-                            class="fa-solid fa-trash-can"></i></a>
                 </td>
                 <td th:if="${!travel.getDriverName().equals(session.currentUser)} and !${isAdmin}">
                     <a class="btn view" href="#" th:href="@{/travels/{id}(id=${travel.getId()})}"><i

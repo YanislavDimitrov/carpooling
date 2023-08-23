@@ -3,6 +3,10 @@ package com.example.carpooling.models;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 import java.time.LocalDateTime;
@@ -35,23 +39,19 @@ public class Travel {
     private Vehicle vehicle;
 
     @Enumerated(EnumType.STRING)
-    private TravelStatus status;
+    private TravelStatus status ;
 
     @Column(name = "distance")
     private String distance;
     @Column(name = "duration")
     private String travelDuration;
-@Column(name = "arrival_time")
+    @Column(name = "arrival_time")
     private LocalDateTime estimatedTimeOfArrival;
     @JsonIgnore
     @OneToMany(mappedBy = "travel", fetch = FetchType.EAGER)
     private List<TravelRequest> travelRequests;
     @Column(name = "is_deleted")
     private boolean isDeleted;
-@Column(name="rating")
-    private int rating;
-@Column(name="average_rating")
-private double averageRating;
 
 //    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
 //    @JoinTable(name = "users_travels",
@@ -64,21 +64,7 @@ private double averageRating;
         status = TravelStatus.PLANNED;
     }
 
-    public double getAverageRating() {
-        return averageRating;
-    }
 
-    public void setAverageRating(double averageRating) {
-        this.averageRating = averageRating;
-    }
-
-    public int getRating() {
-        return rating;
-    }
-
-    public void setRating(int rating) {
-        this.rating = rating;
-    }
 
     public boolean isDeleted() {
         return isDeleted;

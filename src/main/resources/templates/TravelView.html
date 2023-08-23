@@ -41,7 +41,7 @@
         <td th:text="${#temporals.format(travel.getDepartureTime(),'dd MMM y HH:mm')}">1-Jan 10:45</td>
         <td th:text="${#temporals.format(travel.getArrivalTime(),'dd MMM y HH:mm')}">2-Jan 10;45</td>
         <td th:text="${travel.getStatus()}">COMPLETED</td>
-        <td th:if="${isAdmin} and ${!travel.getDriver().getUserName().equals(session.currentUser)}">
+        <td th:if="${isAdmin} and ${!travel.getDriverName().equals(session.currentUser)}">
           <a class="btn view" href="#" th:href="@{/travels/{id}(id=${travel.getId()})}"><i
                   class="fa-solid fa-eye fa-beat"></i></a>
           <a class="btn edit" href="#" th:href="@{/travels/{id}/update(id=${travel.getId()})}"><i
@@ -64,11 +64,6 @@
                   class="fa-solid fa-eye fa-beat"></i></a>
         </td>
       </tr>
-      <form  th:if="${travel.status == T(com.example.carpooling.models.enums.TravelStatus).COMPLETED}" th:action="@{/travels/{travelId}/rate(travelId=${travel.id})}" method="post">
-          <label >Rate this travel:</label>
-          <input type="number" name="rating" min="1" max="5" required>
-          <button type="submit">Submit Rating</button>
-      </form>
       </tbody>
     </table>
   </div>

@@ -163,6 +163,10 @@ public class TravelRestController {
             return travelMapper.fromTravel(travel);
         } catch (AuthenticationFailureException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (InvalidOperationException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,e.getMessage());
+        } catch (InvalidLocationException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage());
         }
     }
     @PutMapping("/{id}")
@@ -241,5 +245,17 @@ public class TravelRestController {
             UserViewDto dto = this.modelMapper.map(user, UserViewDto.class);
             return dto;
         }).collect(Collectors.toList());
+    }
+    @GetMapping("/latest")
+    public List<TravelViewDto> showTheLatestTravels( @RequestHeader HttpHeaders headers) {
+        try {
+            User user = authenticationHelper.tryGetUser(headers);
+            return travelService.findLatestTravels()
+                    .stream()
+                    .map(travelMapper::fromTravel)
+                    .toList();
+        }catch (AuthenticationFailureException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,e.getMessage());
+        }
     }
 }

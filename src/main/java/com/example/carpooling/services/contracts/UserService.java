@@ -7,6 +7,7 @@ import com.example.carpooling.models.dtos.VehicleViewDto;
 import jakarta.mail.MessagingException;
 import org.springframework.data.domain.Sort;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface UserService {
@@ -18,7 +19,7 @@ public interface UserService {
 
     User getByUsername(String username);
 
-    User create(User user) throws MessagingException;
+    User create(User user) throws MessagingException, IOException;
 
     void delete(Long id, User loggedUser);
 
@@ -39,4 +40,6 @@ public interface UserService {
     void upgrade(Long id, User loggedUser);
 
     void downgrade(Long id, User loggedUser);
+
+    void validate(Long id);
 }

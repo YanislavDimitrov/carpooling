@@ -17,20 +17,22 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public interface FeedbackRepository extends JpaRepository<Feedback,Long> {
+public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
 
     @Query("select f from Feedback f where" +
             "(:rating is null or f.rating =:rating) " +
-            " and(:comment is null or f.comment =:comment)" )
+            " and(:comment is null or f.comment =:comment)")
     List<Feedback> findByCriteria(
             @Param("rating") Short rating,
             @Param("comment") String comment,
             Sort sort
     );
 
+    List<Feedback> findByRecipientIs(User user);
+
     @Modifying
     @Query("UPDATE Feedback AS f SET f.isDeleted=true WHERE f.id = :id")
     void delete(@Param("id") Long id) throws EntityNotFoundException;
 
-   List<Feedback> findByRecipientIs(User user);
+
 }

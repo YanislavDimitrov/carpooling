@@ -6,6 +6,7 @@
     <link rel="website icon" th:type="png" th:href="@{/images/carpool_simplelogo.png}">
     <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
     <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
+    <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">
     <link rel="stylesheet" href="../static/index.css" th:href="@{/index.css}">
 </head>
 <body>
@@ -48,7 +49,7 @@
                     </a>
                 </li>
                 <li class="link">
-                    <a class="btn">
+                    <a class="btn" th:href="@{/travels/user}">
                         <div>
                             <i class="fa-solid fa-car-side"></i>
                             <span class="btn-content">Your rides</span>
@@ -71,6 +72,7 @@
     <a class="logo" th:href="@{/}">
         <img th:src="@{/images/carpool_logo.png}" src="../static/images/carpool_logo.png">
     </a>
+    </a>
     <div class="btns">
         <a th:if="${isAdmin}" class="admin-btn-container">
             <i class="fa-solid fa-gear"></i>Admin
@@ -91,27 +93,27 @@
     </div>
 </header>
 <section class="hero">
-    <form id="search-form" class="form" method="get" action="#" th:action="@{/travels}">
-        <div class="from-container">
-            <i class="fa-solid fa-circle-dot"></i>
-            <input type="text" placeholder="Leaving from...">
-        </div>
-        <div class="to-container">
-            <i class="fa-solid fa-circle-dot"></i>
-            <input type="text" placeholder="Going to...">
-        </div>
-        <div class="to-container">
-            <i class="fa-solid fa-calendar-days"></i>
-            <input type="date" id="date" onfocus="this.showPicker()">
-        </div>
-        <div class="passengers-container">
-            <i class="fa-solid fa-user"></i>
-            <input type="number" id="passengers" value="1">
-        </div>
+        <form id="search-form" class="form" method="get"  action="#" th:action="@{/travels/search}">
+            <div class="from-container">
+                <i class="fa-solid fa-circle-dot"></i>
+                <input type="text"  name="departurePoint" placeholder="Leaving from...">
+            </div>
+            <div class="to-container">
+                <i class="fa-solid fa-circle-dot"></i>
+                <input type="text"  name="arrivalPoint" placeholder="Going to...">
+            </div>
+            <div class="to-container">
+                <i class="fa-solid fa-calendar-days"></i>
+                <input type="date"   name="departureTime" id="date" onfocus="this.showPicker()">
+            </div>
+            <div class="passengers-container">
+                <i class="fa-solid fa-user"></i>
+                <input type="number"  name="freeSpots" id="passengers" value="1">
+            </div>
 
-        <button type="submit" id="search" >Search</button>
+            <button type="submit" id="search" >Search</button>
+        </form>
 
-    </form>
     <h1 class="title">Your pick of rides at low prices</h1>
     <img th:src="@{/images/CoverPicture.svg}" src="../static/images/CoverPicture.svg">
 </section>
@@ -140,30 +142,34 @@
         </p>
     </div>
 </section>
-
 <section class=" additional-info">
     <div class="info-container">
         <i class="fa-solid fa-car fa-flip"></i>
         <h2 class="info-title">All directories</h2>
-        <a  class="destination"  href="#" th:href="@{/travels}">
-        <p class="destination">All carpool routes</p>
+        <a class="destination" href="#" th:href="@{/travels}">
+            <p class="destination">All carpool routes</p>
+        </a>
+        <a class="destination" href="#" th:href="@{/travels/completed}">
+            <p class="destination">Completed travels</p>
         </a>
     </div>
     <div class="info-container">
         <i class="fa-solid fa-star-half-stroke"></i>
-        <h2 class="info-title">Top Destinations</h2>
-        <ul>
-            <li th:each="travel : ${popularTravels}">
+        <h2 class="info-title">Latest travels</h2>
+        <ul role="list">
+            <li th:each="travel : ${latestTravels}">
                 <div class="travel-route">
-                    <a class="destination" th:href="@{/travels/{id}(id=${travel.id})}" th:text="${travel.departurePoint}"></a>
+                    <a class="destination" th:href="@{/travels/{id}(id=${travel.id})}"
+                       th:text="${travel.departurePoint}"></a>
                     <div class="arrow"></div>
-                    <a class="destination" th:href="@{/travels/{id}(id=${travel.id})}" th:text="${travel.arrivalPoint}"></a>
+                    <a class="destination" th:href="@{/travels/{id}(id=${travel.id})}"
+                       th:text="${travel.arrivalPoint}"></a>
                 </div>
             </li>
         </ul>
     </div>
 </section>
-<footer class="footer">
+<footer th:fragment="footer" class="footer">
     <div class="links-container">
         <a class="terms-and-conditions">Terms and Conditions</a>
         <a class="faqs">FAQs</a>

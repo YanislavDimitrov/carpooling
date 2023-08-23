@@ -3,7 +3,6 @@ package com.example.carpooling.services;
 import com.example.carpooling.exceptions.AuthorizationException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.exceptions.InvalidOperationException;
-import com.example.carpooling.helpers.mappers.TravelMapper;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
@@ -11,8 +10,6 @@ import com.example.carpooling.models.enums.TravelRequestStatus;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.repositories.contracts.TravelRepository;
-import com.example.carpooling.repositories.contracts.TravelRequestRepository;
-import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.services.contracts.TravelService;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -36,24 +33,34 @@ public class TravelServiceImpl implements TravelService {
     public static final String EXISTING_TRAVEL = "If you want to create a travel within this time frame you should  cancel your planned travel from %s to %s  which is planned on %s,first";
     public static final String TRAVEL_AT_THIS_TIME = "You already have planned travel for %s , if you want to proceed you should cancel it first!";
     public static final String TRAVEL_AS_PASSENGER = "You have approved request for being passenger on travel from %s to %s , so if you want to create a Travel you should cancel your request for participating in your passenger travel!";
+    public static final String CANNOT_RATE_THIS_TRAVEL_AGAIN = "You cannot rate this travel again!";
+    public static final String YOU_CAN_UPDATE_ONLY_PLANNED_TRAVELS = "You can update only planned travels!";
     private final TravelRepository travelRepository;
+
 
     private final BingMapsService bingMapsService;
 
-    public TravelServiceImpl(TravelRepository travelRepository,
-                              BingMapsService bingMapsService) {
+    public TravelServiceImpl(TravelRepository travelRepository, BingMapsService bingMapsService) {
         this.travelRepository = travelRepository;
+
         this.bingMapsService = bingMapsService;
     }
+
     /**
      * @return Returns all travels which are in the database using JPA Repository findAll method
      */
     public List<Travel> get() {
         return travelRepository.getAll();
     }
+
     @Override
     public List<Travel> getAllCompleted() {
         return travelRepository.getAllByStatusIs(TravelStatus.COMPLETED);
+    }
+
+    @Override
+    public List<Travel> findAllByStatusPlanned() {
+        return travelRepository.getAllByStatusIs(TravelStatus.PLANNED);
     }
 
     /**
@@ -83,9 +90,10 @@ public class TravelServiceImpl implements TravelService {
     }
 
     @Override
-    public List<Travel> findBySearchCriteria(String departurePoint, String arrivalPoint, LocalDateTime departureTime, Short freeSpots,Sort sort) {
-        return travelRepository.findBySearchFilter(departurePoint,arrivalPoint,departureTime,freeSpots,sort);
+    public List<Travel> findBySearchCriteria( String departurePoint, String arrivalPoint, LocalDateTime departureTime, Short freeSpots) {
+        return travelRepository.findByCustomSearchFilter(departurePoint, arrivalPoint, departureTime, freeSpots);
     }
+
 
     /**
      * @param sort – the Sort specification to sort the results by, can be Sort.unsorted(), must not be null.
@@ -110,31 +118,31 @@ public class TravelServiceImpl implements TravelService {
      */
     @Override
     public void create(Travel travel, User driver) {
-       for(Travel travelToCheck : driver.getTravelsAsDriver()) {
-           if(travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime())
-                   && travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival())
-                   && travelToCheck.getStatus() == TravelStatus.ACTIVE
-                   ) {
-               throw new InvalidOperationException(TRAVEL_CREATION_FAILED);
-           }
-           if(travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime())
-                   && travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival()) && travelToCheck.getStatus() == TravelStatus.PLANNED) {
-               throw new InvalidOperationException(String.format(EXISTING_TRAVEL,travelToCheck.getDeparturePoint(),travelToCheck.getArrivalPoint(),travelToCheck.getDepartureTime()));
-           }
-           if(travel.getDepartureTime().isEqual(travelToCheck.getDepartureTime())) {
-               throw new InvalidOperationException(String.format(TRAVEL_AT_THIS_TIME,travelToCheck.getDepartureTime()));
-           }
-       }
-       List<TravelRequest> travelRequestOfTheDriverAsPassenger = driver.getTravelsAsPassenger()
-               .stream()
-               .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.APPROVED)
-               .toList();
-       List<Travel> travelsOfUserAsPassenger = new ArrayList<>();
+        for (Travel travelToCheck : driver.getTravelsAsDriver()) {
+            if (travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime())
+                    && travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival())
+                    && travelToCheck.getStatus() == TravelStatus.ACTIVE
+            ) {
+                throw new InvalidOperationException(TRAVEL_CREATION_FAILED);
+            }
+            if (travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime())
+                    && travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival()) && travelToCheck.getStatus() == TravelStatus.PLANNED) {
+                throw new InvalidOperationException(String.format(EXISTING_TRAVEL, travelToCheck.getDeparturePoint(), travelToCheck.getArrivalPoint(), travelToCheck.getDepartureTime()));
+            }
+            if (travel.getDepartureTime().isEqual(travelToCheck.getDepartureTime())) {
+                throw new InvalidOperationException(String.format(TRAVEL_AT_THIS_TIME, travelToCheck.getDepartureTime()));
+            }
+        }
+        List<TravelRequest> travelRequestOfTheDriverAsPassenger = driver.getTravelsAsPassenger()
+                .stream()
+                .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.APPROVED)
+                .toList();
+        List<Travel> travelsOfUserAsPassenger = new ArrayList<>();
         for (TravelRequest travelRequest : travelRequestOfTheDriverAsPassenger) {
             travelsOfUserAsPassenger.add(travelRequest.getTravel());
         }
-        for(Travel travelToCheckAsPassenger : travelsOfUserAsPassenger) {
-            if(travel.getDepartureTime().isAfter(travelToCheckAsPassenger.getDepartureTime())
+        for (Travel travelToCheckAsPassenger : travelsOfUserAsPassenger) {
+            if (travel.getDepartureTime().isAfter(travelToCheckAsPassenger.getDepartureTime())
                     && travel.getDepartureTime().isBefore(travelToCheckAsPassenger.getEstimatedTimeOfArrival()) && travelToCheckAsPassenger.getStatus() == TravelStatus.ACTIVE) {
                 throw new InvalidOperationException(String.format(TRAVEL_AS_PASSENGER,
                         travelToCheckAsPassenger.getDeparturePoint(),
@@ -191,12 +199,15 @@ public class TravelServiceImpl implements TravelService {
      * @throws AuthorizationException if the editor is not the driver of the travel.
      */
     @Override
-    public Travel update(Travel travel, User editor) {
-        if (travel.getDriver() != editor) {
+    public Travel update(Travel travel,User editor) {
+        if (!travel.getDriver().equals(editor)) {
             throw new AuthorizationException(UPDATE_CANCELLED);
         }
-        if(!travelRepository.existsById(travel.getId())) {
-            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND,travel.getId()));
+        if (!travelRepository.existsById(travel.getId())) {
+            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, travel.getId()));
+        }
+        if(travel.getStatus()!=TravelStatus.PLANNED) {
+            throw new InvalidOperationException(YOU_CAN_UPDATE_ONLY_PLANNED_TRAVELS);
         }
         calculatingDistanceAndDuration(travel);
         travelRepository.save(travel);
@@ -216,11 +227,16 @@ public class TravelServiceImpl implements TravelService {
         if (editor.getRole() != UserRole.ADMIN && getById(id).getDriver() != editor) {
             throw new AuthorizationException(OPERATION_DENIED);
         }
-        if(!travelRepository.existsById(id)) {
-            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND,id));
+        if (!travelRepository.existsById(id)) {
+            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, id));
         }
 
         travelRepository.delete(id);
+    }
+
+    @Override
+    public List<Travel> findLatestTravels() {
+        return travelRepository.findTop5ByOrderByDepartureTimeDesc();
     }
 
     /**
@@ -229,19 +245,18 @@ public class TravelServiceImpl implements TravelService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public Travel completeTravel(Long id , User editor) {
+    public void completeTravel(Long id, User editor) {
         if (!travelRepository.existsById(id)) {
             throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, id));
         }
         Travel travel = getById(id);
-        if(travel.getDriver() != editor) {
+        if (travel.getDriver() != editor) {
             throw new AuthorizationException(OPERATION_DENIED);
         }
-        if(travel.isDeleted()) {
+        if (travel.isDeleted()) {
             throw new InvalidOperationException(DELETE_TRAVEL_ERROR);
         }
         travelRepository.completeTravel(id);
-        return travel;
     }
 
     /**
@@ -250,18 +265,18 @@ public class TravelServiceImpl implements TravelService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void cancelTravel(Long id , User editor) {
-        if(!travelRepository.existsById(id)) {
-            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND,id));
+    public void cancelTravel(Long id, User editor) {
+        if (!travelRepository.existsById(id)) {
+            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, id));
         }
         Travel travel = getById(id);
-        if(LocalDateTime.now().isAfter(travel.getDepartureTime())) {
+        if (LocalDateTime.now().isAfter(travel.getDepartureTime())) {
             throw new InvalidOperationException(ALREADY_STARTED_TRAVEL);
         }
-        if(travel.getDriver() != editor) {
+        if (travel.getDriver() != editor) {
             throw new AuthorizationException(OPERATION_DENIED);
         }
-        if(travel.getStatus() == TravelStatus.COMPLETED || travel.isDeleted()) {
+        if (travel.getStatus() == TravelStatus.COMPLETED || travel.isDeleted()) {
             throw new InvalidOperationException(COMPLETED_OR_DELETED_TRAVEL_ERROR);
         }
         travel.setStatus(TravelStatus.CANCELED);
@@ -270,8 +285,10 @@ public class TravelServiceImpl implements TravelService {
 
     @Override
     public List<Travel> findPlannedTravelsWithPastDepartureTime() {
-        return travelRepository.findByStatusAndDepartureTimeBefore(TravelStatus.PLANNED,LocalDateTime.now());
+        return travelRepository.findByStatusAndDepartureTimeBefore(TravelStatus.PLANNED, LocalDateTime.now());
     }
+
+
 
     @Override
     public Long countCompleted() {
@@ -282,37 +299,23 @@ public class TravelServiceImpl implements TravelService {
     public List<Travel> findTravelByUser(User user) {
         return user.getTravelsAsDriver();
     }
+
     public List<TravelRequest> findTravelsAsPassengerByUser(User user) {
         return user.getTravelsAsPassenger()
                 .stream()
                 .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.APPROVED)
                 .toList();
     }
-    @Transactional
-    public void submitRating(Long travelId, int rating) {
-        Travel travel = travelRepository.findById(travelId).orElse(null);
-        if (travel != null) {
-            double newAverageRating = ((travel.getAverageRating() * travel.getRating()) + rating) / (travel.getRating() + 1);
-            travel.setAverageRating(newAverageRating);
-            travel.setRating(travel.getRating() + 1);
-            travelRepository.save(travel);
-        }
-    }
-    public List<Travel> getTopRatedTravels() {
-        return travelRepository.findTop5ByOrderByAverageRatingDesc();
-    }
-
-
     @Override
     @Scheduled(fixedRate = 60000)
     public void updateTravelStatus() {
-            List<Travel> plannedTravels = findPlannedTravelsWithPastDepartureTime();
-            for (Travel travel : plannedTravels) {
-                if (travel.getDepartureTime().isBefore(LocalDateTime.now())) {
-                    travel.setStatus(TravelStatus.ACTIVE);
-                    travelRepository.save(travel);
-                }
+        List<Travel> plannedTravels = findPlannedTravelsWithPastDepartureTime();
+        for (Travel travel : plannedTravels) {
+            if (travel.getDepartureTime().isBefore(LocalDateTime.now())) {
+                travel.setStatus(TravelStatus.ACTIVE);
+                travelRepository.save(travel);
             }
         }
     }
+}
 

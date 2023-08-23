@@ -80,11 +80,10 @@ public class TravelRequestServiceImpl implements TravelRequestService {
     /**
      * @param travel this parameter is used as a reference where we are doing the request for
      * @param user   this parameter is used to identify who is making the request for the travel
-     * @return TravelRequest entity if the parameters are valid.
      */
     // ToDo add validation which checks whether a feedback for this user and for this travel already exists and throw exception if yes
     @Override
-    public String createRequest(Travel travel, User user) {
+    public void createRequest(Travel travel, User user) {
         TravelRequest travelRequest = new TravelRequest();
         if(travel.getFreeSpots() == 0) {
             throw new VehicleIsFullException(VEHICLE_IS_FULL);
@@ -114,10 +113,6 @@ public class TravelRequestServiceImpl implements TravelRequestService {
             travelRequest.setPassenger(user);
             travelRequest.setStatus(TravelRequestStatus.PENDING);
             travelRequestRepository.save(travelRequest);
-            return String.format(SUCCESSFULL_REQUEST,
-                    travel.getDeparturePoint(),
-                    travel.getArrivalPoint(),
-                    travel.getDepartureTime());
         }
     }
 

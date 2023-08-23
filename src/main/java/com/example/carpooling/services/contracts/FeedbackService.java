@@ -14,18 +14,19 @@ public interface FeedbackService {
 
     Feedback getById(Long id);
 
-     List <Feedback> getByRecipientIs(User user);
+    List<Feedback> getByRecipientIs(User user);
 
     List<Feedback> findByCriteria(Short rating,
-                                String comment,
-                                Sort sort);
+                                  String comment,
+                                  Sort sort);
+
     List<Feedback> findAll(Sort sort);
 
-    Long count ();
+    Feedback create(Travel travel, User creator, User recipient, Feedback feedback);
 
-    Feedback create(Travel travel , User creator , User recipient , Feedback feedback);
+    Feedback update(Feedback originalFeedback, Feedback updateFeedback, User editor);
 
-    Feedback update(Feedback originalFeedback , Feedback updateFeedback , User editor);
+    void delete(Long id, User editor);
 
-    void delete(Long id,User editor);
+    Long count();
 }
