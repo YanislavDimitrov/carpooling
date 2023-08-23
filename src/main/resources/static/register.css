@@ -14,7 +14,7 @@ html {
 }
 
 .main {
-    height: 84vh;
+    min-height: 84vh;
     background-image: linear-gradient(rgba(0, 0, 0, 0.8),
     rgba(0, 0, 0, 0.5)), url(images/CoverPicture.svg);
     background-position: center center;
