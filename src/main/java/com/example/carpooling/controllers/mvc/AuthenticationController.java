@@ -115,7 +115,7 @@ public class AuthenticationController {
         if (!registerDto.getPassword().equals(registerDto.getConfirmPassword())) {
             bindingResult.rejectValue("confirmPassword",
                     "password_error",
-                    "Password confirmation should match password");
+                    "Password and Confirm password don't match");
             return "RegisterView";
         }
         try {
