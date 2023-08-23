@@ -65,7 +65,6 @@ public class TravelMapper {
 
     public Travel toTravelFromTravelCreationDto(TravelCreationOrUpdateDto travelCreationOrUpdateDto) {
         Travel travel = new Travel();
-        travel.setStatus(TravelStatus.ACTIVE);
         travel.setArrivalPoint(travelCreationOrUpdateDto.getArrivalPoint());
         travel.setDeparturePoint(travelCreationOrUpdateDto.getDeparturePoint());
         travel.setDepartureTime(travelCreationOrUpdateDto.getDepartureTime());

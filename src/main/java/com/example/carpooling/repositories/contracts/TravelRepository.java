@@ -15,14 +15,12 @@ import java.util.List;
 
 @Repository
 public interface TravelRepository extends JpaRepository<Travel, Long> {
+    @Query("select t from Travel t where  t.isDeleted=false")
+    List<Travel> getAll();
 
-    @Modifying
-    @Query("UPDATE Travel AS t SET t.isDeleted=true WHERE t.id = :id")
-    void delete(@Param("id") Long id) throws EntityNotFoundException;
+    List<Travel> getAllByStatusIs(TravelStatus status);
 
-    @Modifying
-    @Query("UPDATE Travel AS t SET t.status='COMPLETED' WHERE t.id = :id")
-    void completeTravel(@Param("id") Long id) throws EntityNotFoundException;
+    List<Travel> findTop5ByOrderByDepartureTimeDesc();
 
     @Query("select t from Travel t where" +
             "(:driver is null or t.driver.userName like %:driver%) " +
@@ -36,7 +34,6 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
             @Param("departureTime") LocalDateTime departureTime,
             Sort sort
     );
-
     @Query("SELECT t FROM Travel t " +
             "WHERE (:departurePoint IS NULL OR :departurePoint = '' OR t.departurePoint LIKE %:departurePoint%) " +
             "AND (:arrivalPoint IS NULL OR :arrivalPoint = '' OR t.arrivalPoint LIKE %:arrivalPoint%) " +
@@ -48,18 +45,14 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
             LocalDateTime departureTime,
             Short freeSpots
     );
-
     List<Travel> findByStatusAndDepartureTimeBefore(TravelStatus status, LocalDateTime departureTime);
-
-    @Query("select t from Travel t where  t.isDeleted=false")
-    List<Travel> getAll();
-
-    List<Travel> getAllByStatusIs(TravelStatus status);
-
+    @Modifying
+    @Query("UPDATE Travel AS t SET t.isDeleted=true WHERE t.id = :id")
+    void delete(@Param("id") Long id) throws EntityNotFoundException;
+    @Modifying
+    @Query("UPDATE Travel AS t SET t.status='COMPLETED' WHERE t.id = :id")
+    void completeTravel(@Param("id") Long id) throws EntityNotFoundException;
     Long countAllByStatusIs(TravelStatus status);
-
-    List<Travel> findTop5ByOrderByDepartureTimeDesc();
-    List<Travel> findAllByStatusIs(TravelStatus travelStatus);
 
 
 }

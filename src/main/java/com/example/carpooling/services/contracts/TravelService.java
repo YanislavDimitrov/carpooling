@@ -13,9 +13,9 @@ public interface TravelService {
 
     List<Travel> get();
 
-    List<Travel> getAllCompleted();
-
     Travel getById(Long id);
+
+    List<Travel> getAllCompleted();
 
     List<Travel> findByCriteria(String driver,
                                 TravelStatus status,
@@ -27,33 +27,33 @@ public interface TravelService {
                                       String arrivalPoint,
                                       LocalDateTime departureTime,
                                       Short freeSpots
-                                      );
+    );
+
+    List<Travel> findLatestTravels();
 
     List<Travel> findAll(Sort sort);
 
     List<Travel> findTravelByUser(User user);
 
     List<TravelRequest> findTravelsAsPassengerByUser(User user);
+
     List<Travel> findAllByStatusPlanned();
+
+    List<Travel> findPlannedTravelsWithPastDepartureTime();
+
+    void create(Travel travel, User driver);
+
+    Travel update(Travel travel, User editor);
+
+    void delete(Long id, User editor);
+
+    void completeTravel(Long id, User editor);
+
+    void cancelTravel(Long id, User editor);
+
+    void updateTravelStatus();
 
     Long count();
 
     Long countCompleted();
-
-    void create(Travel travel, User driver);
-
-    Travel update(Travel travel,User editor);
-
-    void delete(Long id, User editor);
-
-    Travel completeTravel(Long id, User editor);
-
-    void cancelTravel(Long id, User editor);
-
-    List<Travel> findPlannedTravelsWithPastDepartureTime();
-
-    void updateTravelStatus();
-
-    List<Travel> findLatestTravels();
-
 }

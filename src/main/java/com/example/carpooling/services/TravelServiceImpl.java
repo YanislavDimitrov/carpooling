@@ -60,7 +60,7 @@ public class TravelServiceImpl implements TravelService {
 
     @Override
     public List<Travel> findAllByStatusPlanned() {
-        return travelRepository.findAllByStatusIs(TravelStatus.PLANNED);
+        return travelRepository.getAllByStatusIs(TravelStatus.PLANNED);
     }
 
     /**
@@ -245,7 +245,7 @@ public class TravelServiceImpl implements TravelService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public Travel completeTravel(Long id, User editor) {
+    public void completeTravel(Long id, User editor) {
         if (!travelRepository.existsById(id)) {
             throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, id));
         }
@@ -257,7 +257,6 @@ public class TravelServiceImpl implements TravelService {
             throw new InvalidOperationException(DELETE_TRAVEL_ERROR);
         }
         travelRepository.completeTravel(id);
-        return travel;
     }
 
     /**

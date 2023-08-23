@@ -3,6 +3,10 @@ package com.example.carpooling.models;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 import java.time.LocalDateTime;
@@ -35,7 +39,7 @@ public class Travel {
     private Vehicle vehicle;
 
     @Enumerated(EnumType.STRING)
-    private TravelStatus status;
+    private TravelStatus status ;
 
     @Column(name = "distance")
     private String distance;

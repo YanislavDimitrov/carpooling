@@ -12,8 +12,10 @@ public class TravelCreationOrUpdateDto {
     private String departurePoint;
     @NotEmpty(message = "Arrival point field cannot be empty!")
     private String arrivalPoint;
-    @Min(value = 0, message = "Free spots cannot be negative")
+    @Min(value = 1, message = "Free spots cannot be negative")
+    @NotNull(message = "Free Spots field cannot be null!")
     private Short freeSpots;
+    @NotNull(message = "The departure time field cannot be empty!")
     @FutureOrPresent(message = "The date should be valid!")
     private LocalDateTime departureTime;
     private String comment;

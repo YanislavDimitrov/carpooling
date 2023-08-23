@@ -1,9 +1,6 @@
 package com.example.carpooling.controllers.mvc;
 
-import com.example.carpooling.exceptions.AuthenticationFailureException;
-import com.example.carpooling.exceptions.AuthorizationException;
-import com.example.carpooling.exceptions.EntityNotFoundException;
-import com.example.carpooling.exceptions.InvalidOperationException;
+import com.example.carpooling.exceptions.*;
 import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.helpers.mappers.TravelMapper;
 import com.example.carpooling.models.Travel;
@@ -56,29 +53,30 @@ public class TravelMvcController {
                 findBySearchCriteria(departurePoint, arrivalPoint, departureTime, freeSpots)
                 .stream()
                 .map(travelMapper::fromTravelToFrontEnd)
+                .filter(travelFrontEndView -> travelFrontEndView.getStatus() == TravelStatus.PLANNED)
                 .toList();
         model.addAttribute("travels", travels);
         return "TravelsView";
     }
 
 
-//    @GetMapping
-//    public String viewAllTravels(Model model, HttpSession session) {
-//        try {
-//            authenticationHelper.tryGetUser(session);
-//        } catch (AuthenticationFailureException e) {
-//            return "redirect:/auth/login";
-//        }
-//
-//        List<TravelFrontEndView> travels = travelService.findBySearchCriteria()
-//                .stream()
-//                .map(travelMapper::fromTravelToFrontEnd)
-//                .toList();
-//
-//
-//        model.addAttribute("travels", travels);
-//        return "TravelsView";
-//    }
+    @GetMapping
+    public String viewAllTravels(Model model, HttpSession session) {
+        try {
+            authenticationHelper.tryGetUser(session);
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        }
+
+        List<TravelFrontEndView> travels = travelService.findAllByStatusPlanned()
+                .stream()
+                .map(travelMapper::fromTravelToFrontEnd)
+                .toList();
+
+
+        model.addAttribute("travels", travels);
+        return "TravelsView";
+    }
 
     @GetMapping("/user")
     public String viewAllTravelsForUser(HttpSession session, Model model) {
@@ -171,6 +169,9 @@ public class TravelMvcController {
         } catch (InvalidOperationException e) {
             errors.rejectValue("departureTime", "creation_error", e.getMessage());
             return "NewTravelView";
+        }catch (InvalidLocationException e) {
+            errors.rejectValue("departurePoint","location_error",e.getMessage());
+            errors.rejectValue("arrivalPoint","location_error",e.getMessage());
         }
         return "redirect:/travels";
     }
@@ -216,6 +217,9 @@ public class TravelMvcController {
             return "AccessDeniedView";
         } catch (EntityNotFoundException e) {
             return "NotFoundView";
+        }catch (InvalidLocationException e) {
+            errors.rejectValue("departurePoint","location_error",e.getMessage());
+            errors.rejectValue("arrivalPoint","location_error",e.getMessage());
         }
         return String.format("redirect:/travels/%d", id);
     }
