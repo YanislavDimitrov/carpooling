@@ -2,6 +2,7 @@ package com.example.carpooling.controllers.mvc;
 
 import com.example.carpooling.exceptions.AuthenticationFailureException;
 import com.example.carpooling.helpers.AuthenticationHelper;
+import com.example.carpooling.models.Image;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.UserRole;
@@ -46,6 +47,26 @@ public class HomeMvcController {
             return loggedUser.getRole() == UserRole.ADMIN;
         } catch (AuthenticationFailureException e) {
             return false;
+        }
+    }
+
+    @ModelAttribute("hasProfilePicture")
+    public Boolean hasProfilePicture(HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            return loggedUser.getProfilePicture() != null;
+        } catch (AuthenticationFailureException e) {
+            return false;
+        }
+    }
+
+    @ModelAttribute("profilePicture")
+    public Image populateProfilePicture(HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            return loggedUser.getProfilePicture();
+        } catch (AuthenticationFailureException e) {
+            return null;
         }
     }
 

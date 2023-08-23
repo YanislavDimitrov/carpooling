@@ -74,18 +74,22 @@
     </a>
     </a>
     <div class="btns">
-        <a th:if="${isAdmin} and ${!isBlocked}" class="admin-btn-container">
+        <a th:if="${isAdmin}" class="admin-btn-container">
             <i class="fa-solid fa-gear"></i>Admin
         </a>
-        <a th:if="${!isBlocked}" class="search-btn-container">
+        <a class="search-btn-container">
             <i class="fa-solid fa-magnifying-glass"></i>Search
         </a>
-        <a th:if="${!isBlocked}" class="create-btn-container" th:href="@{/travels/new}">
+        <a class="create-btn-container" th:href="@{/travels/new}">
             <i class="fa-solid fa-circle-plus"></i>Publish a ride
         </a>
         <a id="avatar">
             <span class="avatar avatar-content-container">
-                <i class="avatar fa-solid fa-circle-user"></i>
+                <div class="profile-picture-container">
+                    <img th:if="${hasProfilePicture}"  th:src="${profilePicture.getImageUrl()}" class="profile-picture" src="../static/images/avatar.png">
+                    <img th:unless="${hasProfilePicture}"  th:src="@{/images/avatar.png}" class="profile-picture" src="../static/images/avatar.png">
+                </div>
+
                 <span class="avatar" th:text="${session.currentUser}" th:if="${isAuthenticated}"></span>
                 <i class="avatar fa-solid fa-chevron-down"></i>
             </span>
@@ -93,26 +97,26 @@
     </div>
 </header>
 <section class="hero">
-        <form id="search-form" class="form" method="get"  action="#" th:action="@{/travels/search}">
-            <div class="from-container">
-                <i class="fa-solid fa-circle-dot"></i>
-                <input type="text"  name="departurePoint" placeholder="Leaving from...">
-            </div>
-            <div class="to-container">
-                <i class="fa-solid fa-circle-dot"></i>
-                <input type="text"  name="arrivalPoint" placeholder="Going to...">
-            </div>
-            <div class="to-container">
-                <i class="fa-solid fa-calendar-days"></i>
-                <input type="date"   name="departureTime" id="date" onfocus="this.showPicker()">
-            </div>
-            <div class="passengers-container">
-                <i class="fa-solid fa-user"></i>
-                <input type="number"  name="freeSpots" id="passengers" value="1">
-            </div>
+    <form id="search-form" class="form" method="get" action="#" th:action="@{/travels/search}">
+        <div class="from-container">
+            <i class="fa-solid fa-circle-dot"></i>
+            <input type="text" name="departurePoint" placeholder="Leaving from...">
+        </div>
+        <div class="to-container">
+            <i class="fa-solid fa-circle-dot"></i>
+            <input type="text" name="arrivalPoint" placeholder="Going to...">
+        </div>
+        <div class="to-container">
+            <i class="fa-solid fa-calendar-days"></i>
+            <input type="date" name="departureTime" id="date" onfocus="this.showPicker()">
+        </div>
+        <div class="passengers-container">
+            <i class="fa-solid fa-user"></i>
+            <input type="number" name="freeSpots" id="passengers" value="1">
+        </div>
 
-            <button type="submit" id="search" >Search</button>
-        </form>
+        <button type="submit" id="search">Search</button>
+    </form>
 
     <h1 class="title">Your pick of rides at low prices</h1>
     <img th:src="@{/images/CoverPicture.svg}" src="../static/images/CoverPicture.svg">

@@ -36,6 +36,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.9'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.7.1'
     implementation group: 'com.sun.mail', name: 'jakarta.mail', version: '2.0.1'
+    implementation group: 'com.cloudinary', name: 'cloudinary-http44', version: '1.32.0'
 
 
 }

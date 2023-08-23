@@ -39,6 +39,9 @@ public class User {
     private UserStatus status;
     @Column(name = "is_validated")
     private boolean isValidated;
+    @OneToOne
+    @JoinColumn(name = "image_id")
+    private Image profilePicture;
     @JsonIgnore
     @OneToMany(mappedBy = "driver")
     private List<Travel> travelsAsDriver;
@@ -172,5 +175,13 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(userName, email, phoneNumber);
+    }
+
+    public Image getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(Image profilePicture) {
+        this.profilePicture = profilePicture;
     }
 }
