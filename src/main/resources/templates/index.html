@@ -74,13 +74,13 @@
     </a>
     </a>
     <div class="btns">
-        <a th:if="${isAdmin}" class="admin-btn-container">
+        <a th:if="${isAdmin} and ${!isBlocked}" class="admin-btn-container">
             <i class="fa-solid fa-gear"></i>Admin
         </a>
-        <a class="search-btn-container">
+        <a th:if="${!isBlocked}" class="search-btn-container">
             <i class="fa-solid fa-magnifying-glass"></i>Search
         </a>
-        <a class="create-btn-container" th:href="@{/travels/new}">
+        <a th:if="${!isBlocked}" class="create-btn-container" th:href="@{/travels/new}">
             <i class="fa-solid fa-circle-plus"></i>Publish a ride
         </a>
         <a id="avatar">

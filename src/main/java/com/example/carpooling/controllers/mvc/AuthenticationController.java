@@ -56,6 +56,15 @@ public class AuthenticationController {
             return false;
         }
     }
+    @ModelAttribute("isBlocked")
+    public boolean populateIsActive(HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            return loggedUser.getStatus() == UserStatus.BLOCKED;
+        } catch (AuthenticationFailureException e) {
+            return false;
+        }
+    }
 
     @GetMapping("/login")
     public String showLoginPage(Model model) {
@@ -75,13 +84,12 @@ public class AuthenticationController {
 
         try {
             User user = userService.getByUsername(dto.getUserName());
-            if (user.getStatus() == UserStatus.BLOCKED) {
-                return "BlockedUserView";
-            }
             authenticationHelper.verifyAuthentication(user.getUserName(), dto.getPassword());
+
             if (user.getStatus() == UserStatus.DELETED) {
                 userService.restore(user.getId(), user);
             }
+
             session.setAttribute("currentUser", dto.getUserName());
             session.setAttribute("id", user.getId());
 

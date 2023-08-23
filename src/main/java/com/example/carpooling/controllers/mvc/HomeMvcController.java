@@ -5,6 +5,7 @@ import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.UserRole;
+import com.example.carpooling.models.enums.UserStatus;
 import com.example.carpooling.services.contracts.TravelService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -29,7 +30,7 @@ public class HomeMvcController {
     @GetMapping
     public String viewHomePage(Model model) {
         long completedTravels = travelService.countCompleted();
-        model.addAttribute("completedTravels",completedTravels);
+        model.addAttribute("completedTravels", completedTravels);
         return "index";
     }
 
@@ -47,12 +48,24 @@ public class HomeMvcController {
             return false;
         }
     }
+
+    @ModelAttribute("isBlocked")
+    public boolean populateIsActive(HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            return loggedUser.getStatus() == UserStatus.BLOCKED;
+        } catch (AuthenticationFailureException e) {
+            return false;
+        }
+    }
+
     @ModelAttribute("latestTravels")
     public List<Travel> populateMostPopularTravels() {
         return travelService.findLatestTravels();
     }
+
     @ModelAttribute("travels")
-    public List<Travel> populatePlannedTravels () {
+    public List<Travel> populatePlannedTravels() {
         return travelService.findAllByStatusPlanned();
     }
 }
