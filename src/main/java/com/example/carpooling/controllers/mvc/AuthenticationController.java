@@ -77,7 +77,6 @@ public class AuthenticationController {
             User user = userService.getByUsername(dto.getUserName());
             if (user.getStatus() == UserStatus.BLOCKED) {
                 return "BlockedUserView";
-                //Todo BlockedUserView
             }
             authenticationHelper.verifyAuthentication(user.getUserName(), dto.getPassword());
             if (user.getStatus() == UserStatus.DELETED) {

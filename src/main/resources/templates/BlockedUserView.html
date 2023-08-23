@@ -1,15 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Suspended User</title>
-  <link rel="website icon"  type="png" href="../static/images/carpool_simplelogo.png"
-        th:type="png" th:href="@{/images/carpool_simplelogo.png}">
+  <title>Verification</title>
+  <link rel="website icon" th:type="png" th:href="@{/images/carpool_simplelogo.png}">
+  <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
+  <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
+  <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">
+  <link rel="stylesheet" href="../static/blockedUser.css" th:href="@{/blockedUser.css}">
 </head>
 <body>
+<!--HEADER-->
+<header th:replace="index.html :: header"></header>
 <section class="main">
-  <h1 class ="error">Your account has been blocked by admin!<br>For further information, contact our email:systemAdministrator@gmail.com</h1>
+  <h1 class="title">Verify Your Email</h1>
+  <p>Please check your email for a link to verify your identity. <br> Once verified, you'll be able to continue.</p>
+  <img src="../static/images/VerificationEmail.png" th:src="@{/images/VerificationEmail.png}">
 </section>
-
+<!--FOOTER-->
+<header th:replace="index.html :: footer"></header>
+<script type="text/javascript" src="../static/js/showDropdown.js" th:src="@{/js/showDropdown.js}"></script>
 </body>
 </html>

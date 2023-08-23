@@ -1,0 +1,24 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css");
+
+html {
+    font-family: "Poppins", sans-serif;
+    background-color: #ffffff;
+}
+
+.main {
+    height: 84vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    padding-top: 6rem;
+    text-align: center;
+    color: rgb(44, 60, 66);
+}
+
+
+.main img {
+    display: inline-block;
+    width: 20%;
+}
