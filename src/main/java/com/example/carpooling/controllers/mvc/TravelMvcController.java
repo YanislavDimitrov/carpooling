@@ -134,6 +134,8 @@ public class TravelMvcController {
             return "redirect:/auth/login";
         }
         TravelFrontEndView travelFrontEndView = travelMapper.fromTravelToFrontEnd(travelService.getById(id));
+        model.addAttribute("startDestination",travelFrontEndView.getDeparturePoint());
+        model.addAttribute("endDestination",travelFrontEndView.getArrivalPoint());
         model.addAttribute("travel", travelFrontEndView);
         return "TravelView";
     }
@@ -153,7 +155,7 @@ public class TravelMvcController {
     @PostMapping("/new")
     public String createTravel(@Valid @ModelAttribute("travel") TravelCreationOrUpdateDto travel,
                                BindingResult errors,
-                               HttpSession session) {
+                               HttpSession session ) {
         User driver;
         try {
             driver = authenticationHelper.tryGetUser(session);
@@ -169,11 +171,12 @@ public class TravelMvcController {
         } catch (InvalidOperationException e) {
             errors.rejectValue("departureTime", "creation_error", e.getMessage());
             return "NewTravelView";
-        }catch (InvalidLocationException e) {
+        }catch (InvalidLocationException | InvalidTravelException e) {
             errors.rejectValue("departurePoint","location_error",e.getMessage());
             errors.rejectValue("arrivalPoint","location_error",e.getMessage());
+            return "NewTravelView";
         }
-        return "redirect:/travels";
+        return "redirect:/travels/" + newTravel.getId();
     }
 
     @GetMapping("/{id}/update")

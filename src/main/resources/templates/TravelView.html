@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="">
 <head>
-  <title>Travel Details</title>
-    <link rel="website icon"  type="png" href="../static/images/carpool_simplelogo.png"
+    <title>Travel Details</title>
+    <script type="text/javascript"
+            src="https://www.bing.com/api/maps/mapcontrol?key=ApCDqrWiyt1uxxpCrXxFDT44JTvyUnba2onqQ9NEyrYFEKCq5F9-U02xEb2rcMcw"></script>
+    <link rel="website icon" type="png" href="../static/images/carpool_simplelogo.png"
           th:type="png" th:href="@{/images/carpool_simplelogo.png}">
     <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
     <link rel="stylesheet" href="../static/index.css" th:href="@{/index.css}">
@@ -11,63 +13,85 @@
 <h1>Travel Details</h1>
 
 <section class="main">
-  <!--HEADER-->
-  <header th:replace="index.html :: header"></header>
+    <!--HEADER-->
+    <header th:replace="index.html :: header"></header>
 
-  <!--    CONTENT-->
-  <div id="content">
-    <table>
-      <thead>
-      <tr>
-        <th scope="col" th:text="#{travel.label.driver}">Driver</th>
-        <th scope="col" th:text="#{travel.label.departure-point}">Departure Point</th>
-        <th scope="col" th:text="#{travel.label.arrival-point}">Arrival Point</th>
-        <th scope="col" th:text="#{travel.label.free-spots}">Free Spots</th>
-        <th scope="col" th:text="#{travel.label.distance}">Distance</th>
-        <th scope="col" th:text="#{travel.label.duration}">Duration</th>
-        <th scope="col" th:text="#{travel.label.departure-time}">Departure Time</th>
-        <th scope="col" th:text="#{travel.label.arrival-time}">Arrival Time</th>
-        <th scope="col" th:text="#{travel.label.status}">Status</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr>
-       <td th:text="${travel.getDriverName()}">Driver</td>
-        <td th:text="${travel.getDeparturePoint()}">Burgas</td>
-        <td th:text="${travel.getArrivalPoint()}">Sofia</td>
-        <td th:text ="${travel.getFreeSpots()}">Free Spots</td>
-        <td th:text="${travel.getDistance()}">150km</td>
-        <td th:text="${travel.getDuration()}">1h 54min</td>
-        <td th:text="${#temporals.format(travel.getDepartureTime(),'dd MMM y HH:mm')}">1-Jan 10:45</td>
-        <td th:text="${#temporals.format(travel.getArrivalTime(),'dd MMM y HH:mm')}">2-Jan 10;45</td>
-        <td th:text="${travel.getStatus()}">COMPLETED</td>
-        <td th:if="${isAdmin} and ${!travel.getDriverName().equals(session.currentUser)}">
-          <a class="btn view" href="#" th:href="@{/travels/{id}(id=${travel.getId()})}"><i
-                  class="fa-solid fa-eye fa-beat"></i></a>
-          <a class="btn edit" href="#" th:href="@{/travels/{id}/update(id=${travel.getId()})}"><i
-                  class="fa-solid fa-pencil"></i></a>
-          <a class="btn delete" href="#" th:href="@{/travels/{id}/delete(id=${travel.getId()})}"><i
-                  class="fa-solid fa-trash-can"></i></a>
-        </td>
+    <!--    CONTENT-->
+    <div id="content">
+        <table>
+            <thead>
+            <tr>
+                <th scope="col" th:text="#{travel.label.driver}">Driver</th>
+                <th scope="col" th:text="#{travel.label.departure-point}">Departure Point</th>
+                <th scope="col" th:text="#{travel.label.arrival-point}">Arrival Point</th>
+                <th scope="col" th:text="#{travel.label.free-spots}">Free Spots</th>
+                <th scope="col" th:text="#{travel.label.distance}">Distance</th>
+                <th scope="col" th:text="#{travel.label.duration}">Duration</th>
+                <th scope="col" th:text="#{travel.label.departure-time}">Departure Time</th>
+                <th scope="col" th:text="#{travel.label.arrival-time}">Arrival Time</th>
+                <th scope="col" th:text="#{travel.label.status}">Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td th:text="${travel.getDriverName()}">Driver</td>
+                <td th:text="${travel.getDeparturePoint()}">Burgas</td>
+                <td th:text="${travel.getArrivalPoint()}">Sofia</td>
+                <td th:text="${travel.getFreeSpots()}">Free Spots</td>
+                <td th:text="${travel.getDistance()}">150km</td>
+                <td th:text="${travel.getDuration()}">1h 54min</td>
+                <td th:text="${#temporals.format(travel.getDepartureTime(),'dd MMM y HH:mm')}">1-Jan 10:45</td>
+                <td th:text="${#temporals.format(travel.getArrivalTime(),'dd MMM y HH:mm')}">2-Jan 10;45</td>
+                <td th:text="${travel.getStatus()}">COMPLETED</td>
+                <td th:if="${isAdmin} and ${!travel.getDriverName().equals(session.currentUser)}">
+                    <a class="btn edit" href="#" th:href="@{/travels/{id}/update(id=${travel.getId()})}"><i
+                            class="fa-solid fa-pencil"></i></a>
+                    <a class="btn delete" href="#" th:href="@{/travels/{id}/delete(id=${travel.getId()})}"><i
+                            class="fa-solid fa-trash-can"></i></a>
+                </td>
+                <td th:if="${travel.getDriverName().equals(session.currentUser)}">
+                    <a class="btn edit" href="#" th:href="@{/travels/{id}/update(id=${travel.getId()})}"><i
+                            class="fa-solid fa-pencil"></i></a>
+                    <a class="btn delete" href="#" th:href="@{/travels/{id}/delete(id=${travel.getId()})}"><i
+                            class="fa-solid fa-trash-can"></i></a>
+                </td>
+                <td th:if="${!travel.getDriverName().equals(session.currentUser)} and !${isAdmin}">
+                    <a class="btn view" href="#" th:href="@{/travels/{id}(id=${travel.getId()})}"><i
+                            class="fa-solid fa-eye fa-beat"></i></a>
 
-        <td th:if="${travel.getDriverName().equals(session.currentUser)}">
-
-          <a class="btn view" href="#" th:href="@{/travels/{id}(id=${travel.getId()})}"><i
-                  class="fa-solid fa-eye fa-beat"></i></a>
-          <a class="btn edit" href="#" th:href="@{/travels/{id}/update(id=${travel.getId()})}"><i
-                  class="fa-solid fa-pencil"></i></a>
-          <a class="btn delete" href="#" th:href="@{/travels/{id}/delete(id=${travel.getId()})}"><i
-                  class="fa-solid fa-trash-can"></i></a>
-        </td>
-        <td th:if="${!travel.getDriverName().equals(session.currentUser)} and !${isAdmin}">
-          <a class="btn view" href="#" th:href="@{/travels/{id}(id=${travel.getId()})}"><i
-                  class="fa-solid fa-eye fa-beat"></i></a>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
-  <footer th:replace="index.html :: footer"></footer>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="mapContainer" style="width: 100%; height: 800px;"></div>
+    <footer th:replace="index.html :: footer"></footer>
 </section>
+<script type="text/javascript">
+    function loadMap() {
+        var start = '[[${startDestination}]]' ;
+        var end = '[[${endDestination}]]';
+        var map = new Microsoft.Maps.Map(document.getElementById('mapContainer'), {
+            credentials: 'ApCDqrWiyt1uxxpCrXxFDT44JTvyUnba2onqQ9NEyrYFEKCq5F9-U02xEb2rcMcw'
+        });
+        var directionsManager = new Microsoft.Maps.Directions.DirectionsManager(map);
+        var startLocation = new Microsoft.Maps.Directions.Waypoint({ address: start });
+        var endLocation = new Microsoft.Maps.Directions.Waypoint({ address: end });
+
+        directionsManager.addWaypoint(startLocation);
+        directionsManager.addWaypoint(endLocation);
+
+        directionsManager.setRequestOptions({
+            routeMode: Microsoft.Maps.Directions.RouteMode.driving
+        });
+
+        directionsManager.calculateDirections();
+
+    }
+    window.onload = function () {
+        Microsoft.Maps.loadModule('Microsoft.Maps.Directions', { callback: loadMap });
+    };
+</script>
+
 </body>
 </html>

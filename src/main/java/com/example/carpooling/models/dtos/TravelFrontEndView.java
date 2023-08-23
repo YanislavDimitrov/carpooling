@@ -22,6 +22,7 @@ public class TravelFrontEndView {
     @NotEmpty(message = "Arrival point cannot be empty!")
     private String arrivalPoint;
     @FutureOrPresent(message = "The date should be valid!")
+    @NotNull(message = "Departure time field cannot be null!")
     private LocalDateTime departureTime;
     private String distance;
     private String duration;
