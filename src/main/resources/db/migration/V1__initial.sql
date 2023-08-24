@@ -17,7 +17,7 @@ CREATE TABLE `vehicles`
     `make`                 varchar(20)                                                   NOT NULL,
     `model`                varchar(20)                                                   NOT NULL,
     `licence_plate_number` varchar(20)                                                   NOT NULL,
-    `type`                 enum ('SUV','Saloon','Hatchback','Cabriolet','Station Wagon') NOT NULL,
+    `type`                 enum ('SUV','SALOON','HATCHBACK','CABRIOLET','STATION_WAGON') NOT NULL,
     `color`                varchar(20)                                                   NOT NULL,
     `year_of_production`   varchar(10)                                                   NOT NULL,
     `owner_id`             int(11)                                                       NOT NULL,

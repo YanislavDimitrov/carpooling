@@ -5,6 +5,7 @@ import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.models.Image;
 import com.example.carpooling.models.User;
+import com.example.carpooling.models.dtos.UserChangePasswordDto;
 import com.example.carpooling.models.dtos.UserViewDto;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.repositories.contracts.ImageRepository;
@@ -54,6 +55,26 @@ public class UserMvcController {
         }
     }
 
+    @ModelAttribute("hasProfilePicture")
+    public Boolean hasProfilePicture(HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            return loggedUser.getProfilePicture() != null;
+        } catch (AuthenticationFailureException e) {
+            return false;
+        }
+    }
+
+    @ModelAttribute("profilePicture")
+    public Image populateProfilePicture(HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            return loggedUser.getProfilePicture();
+        } catch (AuthenticationFailureException e) {
+            return null;
+        }
+    }
+
     @GetMapping("/{id}")
     public String getUserById(@PathVariable Long id, Model model, HttpSession session) {
         try {
@@ -91,16 +112,49 @@ public class UserMvcController {
         }
 
         if (!file.isEmpty()) {
-            // Upload image to Cloudinary
-            String imgUrl = this.imageService.uploadImage(file.getBytes());
+            Image oldImage = targetUser.getProfilePicture();
 
-            // Save image URL to database
-            Image image = new Image();
-            image.setImageUrl(imgUrl);
-            this.imageRepository.save(image);
-            targetUser.setProfilePicture(image);
+            //Remove old picture from Cloudinary if such
+            if (oldImage != null) {
+                this.imageService.destroyImage(oldImage, targetUser.getUserName());
+            }
+
+            // Upload newImage to Cloudinary
+            String imgUrl = this.imageService.uploadImage(file.getBytes(), targetUser.getUserName());
+
+            // Save newImage URL to database
+            Image newImage = new Image();
+            newImage.setImageUrl(imgUrl);
+            this.imageRepository.save(newImage);
+
+            // Update User profile picture
+            targetUser.setProfilePicture(newImage);
             this.userRepository.save(targetUser);
+
+            //Remove old picture from DB
+            if (oldImage != null) {
+                this.imageService.delete(oldImage);
+            }
         }
-        return "redirect:/";
+        return String.format("redirect:/users/%d", id);
+    }
+
+    @GetMapping("{id}/change-password")
+    public String getChangePassword(@PathVariable Long id, Model model, HttpSession session) {
+        User loggedUser;
+        try {
+            loggedUser = authenticationHelper.tryGetUser(session);
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        }
+
+        User targetUser = this.userService.getById(id);
+
+        if (!loggedUser.getRole().equals(UserRole.ADMIN) &&
+                !loggedUser.getUserName().equals(targetUser.getUserName())) {
+            return "AccessDeniedView";
+        }
+        model.addAttribute("changePasswordInfo", new UserChangePasswordDto());
+        return "ChangePasswordView";
     }
 }

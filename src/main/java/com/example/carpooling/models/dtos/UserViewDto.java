@@ -1,10 +1,14 @@
 package com.example.carpooling.models.dtos;
 
+import com.example.carpooling.models.Image;
+import com.example.carpooling.models.Vehicle;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.models.enums.UserStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 //@Getter
 //@Setter
@@ -18,6 +22,9 @@ public class UserViewDto {
     private String phoneNumber;
     private UserRole role;
     private UserStatus status;
+    private boolean isValidated;
+    private Image profilePicture;
+    private List<Vehicle> vehicles;
 
     public UserViewDto() {
     }
@@ -84,5 +91,29 @@ public class UserViewDto {
 
     public void setStatus(UserStatus status) {
         this.status = status;
+    }
+
+    public boolean isValidated() {
+        return isValidated;
+    }
+
+    public void setValidated(boolean validated) {
+        isValidated = validated;
+    }
+
+    public Image getProfilePicture() {
+        return profilePicture;
+    }
+
+    public void setProfilePicture(Image profilePicture) {
+        this.profilePicture = profilePicture;
+    }
+
+    public List<Vehicle> getVehicles() {
+        return vehicles;
+    }
+
+    public void setVehicles(List<Vehicle> vehicles) {
+        this.vehicles = vehicles;
     }
 }

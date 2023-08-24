@@ -39,7 +39,7 @@
         <nav>
             <ul class="links" role="list">
                 <li class="link">
-                    <a class="btn" th:href="@{/auth/login}">
+                    <a class="btn" th:href="@{/users/{id}(id=${session.id})}">
                         <div>
                             <i class="fa-solid fa-user"></i>
                             <span class="btn-content">Profile</span>

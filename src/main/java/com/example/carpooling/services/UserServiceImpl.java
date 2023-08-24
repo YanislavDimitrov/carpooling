@@ -304,6 +304,8 @@ public class UserServiceImpl implements UserService {
         User targetUser = optionalTargetUser.get();
         if (isAdmin(loggedUser) || areSameUser(loggedUser, targetUser)) {
             payloadVehicle.setOwner(targetUser);
+            targetUser.addVehicle(payloadVehicle);
+            this.userRepository.save(targetUser);
             return this.vehicleRepository.save(payloadVehicle);
         } else {
             throw new AuthorizationException(

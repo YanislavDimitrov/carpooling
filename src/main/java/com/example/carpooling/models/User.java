@@ -52,10 +52,14 @@ public class User {
     @OneToMany(mappedBy = "recipient")
     private List<Feedback> feedbacks;
 
+    @OneToMany(mappedBy = "owner")
+    private List<Vehicle> vehicles;
+
     public User() {
         travelsAsPassenger = new ArrayList<>();
         travelsAsDriver = new ArrayList<>();
         feedbacks = new ArrayList<>();
+        vehicles = new ArrayList<>();
         this.role = UserRole.USER;
         this.status = UserStatus.ACTIVE;
     }
@@ -183,5 +187,17 @@ public class User {
 
     public void setProfilePicture(Image profilePicture) {
         this.profilePicture = profilePicture;
+    }
+
+    public List<Vehicle> getVehicles() {
+        return vehicles;
+    }
+
+    public void setVehicles(List<Vehicle> vehicles) {
+        this.vehicles = vehicles;
+    }
+
+    public void addVehicle(Vehicle vehicle) {
+        this.vehicles.add(vehicle);
     }
 }

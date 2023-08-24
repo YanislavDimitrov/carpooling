@@ -15,13 +15,62 @@
 <section class="main">
     <ul role="list">
         <li class="personal-info">
-            <h2 class="firstName" th:text="${user.getFirstName()} + ${user.getLastName()}">Yanislav Dimitrov</h2>
-            <form class="form-container" th:if="${session.currentUser.equals(user.getUserName())}"
-                  th:action="@{'/users/' + ${user.id} + '/avatar'}" th:object="${user}"
-                  method="post" enctype="multipart/form-data">
-                <input class="file-container" type="file" name="file" accept="image/*"/>
-                <input class="file-container" type="submit" value="Upload Profile Picture"/>
-            </form>
+            <div class="image-content-container">
+                <div class="img-container">
+                    <img th:if="${user.getProfilePicture()!=null}" th:src="${user.getProfilePicture().getImageUrl()}"
+                         class="profile-picture"
+                         src="../static/images/avatar.png">
+                    <img th:unless="${user.getProfilePicture()!=null}" th:src="@{/images/avatar.png}" class="profile-picture"
+                         src="../static/images/avatar.png">
+                </div>
+                <form class="form-container" th:if="${session.currentUser.equals(user.getUserName())} or ${isAdmin}"
+                      th:action="@{'/users/' + ${user.id} + '/avatar'}" th:object="${user}"
+                      method="post" enctype="multipart/form-data">
+                    <input id="choose-file-btn" class="file-container" type="file" name="file" accept="image/*"/>
+                    <input class="upload-btn" type="submit" value="Upload Profile Picture"/>
+                </form>
+            </div>
+            <div class="names">
+                <h1 class="firstName" th:text="${user.getFirstName()} +' '+ ${user.getLastName()}">Yanislav
+                    Dimitrov</h1>
+                <h2 class="firstName" th:text="'(' + ${user.getUserName()} +')'">(Yanidim)</h2>
+                <a class="btn change-pass-btn" th:href="@{'/users/' + ${user.id} + '/change-password'}">Change password
+                </a>
+            </div>
+
+        </li>
+        <li class="contact-info">
+            <div class="phone-number-container">
+                <h3 class="phone-number-label">Phone number:</h3>
+                <span class="phone-number" th:text="${user.getPhoneNumber()}">0899220228</span>
+            </div>
+            <div class="email-container">
+                <h3 class="email-label">Email address:</h3>
+                <span class="email" th:text="${user.getEmail()}">qniivon@gmail.com</span>
+            </div>
+        </li>
+        <li class="additional-info">
+            <div class="status-container">
+                <h3 class="status-label">Account status:</h3>
+                <span class="status" th:text="${user.getStatus()}">ACTIVE</span>
+            </div>
+            <div class="role-container">
+                <h3 class="role-label">Email address:</h3>
+                <span class="role" th:text="${user.getRole()}">USER</span>
+            </div>
+            <div class="validation-container">
+                <h3 class="validation-label">Validated:</h3>
+                <i th:if="${user.isValidated()}" class="fa-solid fa-circle-check"></i>
+                <i th:unless="${user.isValidated()}" class="fa-solid fa-circle-xmark"></i>
+            </div>
+        </li>
+        <li th:unless="${user.getVehicles().isEmpty()}" class="vehicles">
+            <div th:each="vehicle :${user.getVehicles()}"  class="vehicle-container">
+                <h3 class="vehicle" th:text="${vehicle.getMake()+' '+vehicle.getModel()}">BMW 3 Series</h3>
+                <a class="btn edit-vehicle" th:href="@{'/vehicles/' + ${vehicle.getId()} + '/update'}">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                </a>
+            </div>
         </li>
     </ul>
 </section>

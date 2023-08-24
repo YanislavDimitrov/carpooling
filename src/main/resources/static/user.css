@@ -1,0 +1,130 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css");
+
+html {
+    font-family: "Poppins", sans-serif;
+    background-color: #ffffff;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+input[type=file]::file-selector-button {
+    border: none;
+    padding: 0.4rem 0.8rem;
+    background-color: rgb(65, 89, 96);
+    color: white;
+    transition: ease-in-out .1s;
+    text-decoration: none;
+    border-radius: .5rem
+}
+
+input[type=file]::file-selector-button:hover {
+    cursor: pointer;
+    background-color: rgb(53, 74, 82);
+}
+
+.form-container .upload-btn {
+    border: none;
+    width: 100%;
+    padding: 0.3rem 0.6rem;
+    background-color: rgb(65, 89, 96);
+    color: white;
+    transition: ease-in-out .1s;
+    text-decoration: none;
+    border-radius: .5rem
+}
+
+.form-container .upload-btn:hover {
+    cursor: pointer;
+    background-color: rgb(53, 74, 82);
+}
+
+
+.main {
+    min-height: 84vh;
+    padding: 2rem 24rem;
+}
+
+.main .names {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn {
+    padding: 0.2rem 1rem;
+    font-weight: 600;
+    background-color: white;
+    border: none;
+    color: rgb(65, 89, 96);
+    transition: ease-in-out .1s;
+    text-decoration: none;
+}
+
+.main ul > :not(:last-child) {
+    border-bottom: 1px solid black;
+}
+
+.main .personal-info {
+    display: flex;
+    justify-content: space-between;
+    text-align: center;
+    align-items: center;
+    padding: 2rem 4rem;
+}
+
+.img-container {
+    overflow: hidden;
+    width: 10rem;
+    height: 10rem;
+    border-radius: 100%;
+    margin: auto;
+    margin-bottom: 2rem;
+}
+
+.profile-picture {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.main h3 {
+    font-weight: 500;
+}
+
+.main .contact-info,
+.main .additional-info,
+.main .vehicles{
+    padding: 2rem 4rem;
+}
+
+.main .contact-info div,
+.main .additional-info div,
+.main .vehicles div{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.main i {
+    font-size: 1.8rem;
+}
+.fa-circle-check {
+    color: green;
+}
+
+.fa-circle-xmark {
+    color: darkred;
+}
+.main a:hover{
+    cursor: pointer;
+    transform: scale(1.1);
+    color: rgb(53, 74, 82);
+}

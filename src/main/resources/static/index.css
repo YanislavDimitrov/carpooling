@@ -12,21 +12,6 @@ html {
     font-size: 1.1rem;
 }
 
-.btns a {
-    padding: 0.5rem 1rem;
-    font-weight: 500;
-    background-color: white;
-    border: none;
-    color: rgb(65, 89, 96);
-    transition: ease-in-out .1s;
-    text-decoration: none;
-}
-
-.btns a:hover {
-    cursor: pointer;
-    color: #054752;
-}
-
 .hero {
     position: relative;
     height: 50vh;
