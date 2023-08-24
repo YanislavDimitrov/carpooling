@@ -6,6 +6,8 @@ html {
     background-color: #ffffff;
 }
 
+
+
 .form-container {
     display: flex;
     flex-direction: column;
@@ -58,15 +60,7 @@ input[type=file]::file-selector-button:hover {
     align-items: center;
 }
 
-.btn {
-    padding: 0.2rem 1rem;
-    font-weight: 600;
-    background-color: white;
-    border: none;
-    color: rgb(65, 89, 96);
-    transition: ease-in-out .1s;
-    text-decoration: none;
-}
+
 
 .main ul > :not(:last-child) {
     border-bottom: 1px solid black;
@@ -85,8 +79,7 @@ input[type=file]::file-selector-button:hover {
     width: 10rem;
     height: 10rem;
     border-radius: 100%;
-    margin: auto;
-    margin-bottom: 2rem;
+    margin: auto auto 2rem;
 }
 
 .profile-picture {
@@ -101,21 +94,80 @@ input[type=file]::file-selector-button:hover {
 
 .main .contact-info,
 .main .additional-info,
-.main .vehicles{
+.main .vehicles,
+.main .travels {
     padding: 2rem 4rem;
 }
 
 .main .contact-info div,
 .main .additional-info div,
-.main .vehicles div{
+.main .vehicles div {
     display: flex;
     justify-content: space-between;
     margin-bottom: 1rem;
 }
 
+.main .vehicles .vehicle-info {
+    display: flex;
+    flex-direction: column;
+}
+.main .travels .travel-container{
+    width: 100%;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+
+.main .travels .travel-info{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+.main .travels .travel-info-container{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.main .travels .view-travel{
+    border: none;
+    display: inline-block;
+    text-align: center;
+    width: 10%;
+    padding: 0.3rem 0.6rem;
+    background-color: rgb(65, 89, 96);
+    color: white;
+    transition: ease-in-out .1s;
+    text-decoration: none;
+    border-radius: 1rem
+}
+.btn {
+    padding: 0.2rem 1rem;
+    font-weight: 600;
+    background-color: white;
+    border: none;
+    color: rgb(65, 89, 96);
+    transition: ease-in-out .1s;
+    text-decoration: none;
+}
+
+.main .vehicles .color {
+    font-size: 0.9rem;
+    color: #414040;
+}
+
+.main .section-title {
+    font-weight: 700;
+    margin-bottom: 2rem;
+}
+.main ul{
+    max-width: 1200px;
+    margin: auto;
+}
 .main i {
     font-size: 1.8rem;
 }
+
 .fa-circle-check {
     color: green;
 }
@@ -123,7 +175,8 @@ input[type=file]::file-selector-button:hover {
 .fa-circle-xmark {
     color: darkred;
 }
-.main a:hover{
+
+.main .change-pass-btn:hover {
     cursor: pointer;
     transform: scale(1.1);
     color: rgb(53, 74, 82);

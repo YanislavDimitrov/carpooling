@@ -85,9 +85,9 @@
         </a>
         <a id="avatar">
             <span class="avatar avatar-content-container">
-                <div class="profile-picture-container">
-                    <img th:if="${hasProfilePicture}"  th:src="${profilePicture.getImageUrl()}" class="profile-picture" src="../static/images/avatar.png">
-                    <img th:unless="${hasProfilePicture}"  th:src="@{/images/avatar.png}" class="profile-picture" src="../static/images/avatar.png">
+                <div class="avatar profile-picture-container">
+                    <img th:if="${hasProfilePicture}"  th:src="${profilePicture.getImageUrl()}" class="avatar profile-picture" src="../static/images/avatar.png">
+                    <img th:unless="${hasProfilePicture}"  th:src="@{/images/avatar.png}" class="avatar profile-picture" src="../static/images/avatar.png">
                 </div>
 
                 <span class="avatar" th:text="${session.currentUser}" th:if="${isAuthenticated}"></span>

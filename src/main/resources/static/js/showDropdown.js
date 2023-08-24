@@ -5,7 +5,6 @@ function attachEvents() {
     dropdown.style.display = 'none'
 
     window.addEventListener('click', function (event) {
-        console.log(event.target)
         if ((!event.target.classList.contains('avatar'))
             && dropdown.style.display === 'block') {
             dropdown.style.display = 'none';

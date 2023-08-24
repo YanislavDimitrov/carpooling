@@ -20,7 +20,8 @@
                     <img th:if="${user.getProfilePicture()!=null}" th:src="${user.getProfilePicture().getImageUrl()}"
                          class="profile-picture"
                          src="../static/images/avatar.png">
-                    <img th:unless="${user.getProfilePicture()!=null}" th:src="@{/images/avatar.png}" class="profile-picture"
+                    <img th:unless="${user.getProfilePicture()!=null}" th:src="@{/images/avatar.png}"
+                         class="profile-picture"
                          src="../static/images/avatar.png">
                 </div>
                 <form class="form-container" th:if="${session.currentUser.equals(user.getUserName())} or ${isAdmin}"
@@ -34,12 +35,14 @@
                 <h1 class="firstName" th:text="${user.getFirstName()} +' '+ ${user.getLastName()}">Yanislav
                     Dimitrov</h1>
                 <h2 class="firstName" th:text="'(' + ${user.getUserName()} +')'">(Yanidim)</h2>
-                <a class="btn change-pass-btn" th:href="@{'/users/' + ${user.id} + '/change-password'}">Change password
+                <a th:if="${isAdmin} or ${user.getUserName().equals(session.currentUser)}" class="btn change-pass-btn"
+                   th:href="@{'/users/' + ${user.id} + '/change-password'}">Change password
                 </a>
             </div>
 
         </li>
         <li class="contact-info">
+            <h2 class="section-title">Contact info</h2>
             <div class="phone-number-container">
                 <h3 class="phone-number-label">Phone number:</h3>
                 <span class="phone-number" th:text="${user.getPhoneNumber()}">0899220228</span>
@@ -50,6 +53,7 @@
             </div>
         </li>
         <li class="additional-info">
+            <h2 class="section-title">Additional info</h2>
             <div class="status-container">
                 <h3 class="status-label">Account status:</h3>
                 <span class="status" th:text="${user.getStatus()}">ACTIVE</span>
@@ -65,10 +69,50 @@
             </div>
         </li>
         <li th:unless="${user.getVehicles().isEmpty()}" class="vehicles">
-            <div th:each="vehicle :${user.getVehicles()}"  class="vehicle-container">
-                <h3 class="vehicle" th:text="${vehicle.getMake()+' '+vehicle.getModel()}">BMW 3 Series</h3>
-                <a class="btn edit-vehicle" th:href="@{'/vehicles/' + ${vehicle.getId()} + '/update'}">
+            <h2 class="section-title">Vehicles</h2>
+            <div th:each="vehicle :${user.getVehicles()}" class="vehicle-container">
+                <div class="vehicle-info">
+                    <h3 class="vehicle" th:text="${vehicle.getMake()+' '+vehicle.getModel()}">BMW 3 Series</h3>
+                    <p class="color" th:text="${vehicle.getColor()}">White</p>
+                </div>
+                <a th:if="${isAdmin} or ${user.getUserName().equals(session.currentUser)}" class="btn edit-vehicle"
+                   th:href="@{'/vehicles/' + ${vehicle.getId()} + '/update'}">
                     <i class="fa-regular fa-pen-to-square"></i>
+                </a>
+            </div>
+        </li>
+        <li th:unless="${user.getTravelsAsDriver().isEmpty()}" class="travels">
+            <h2 class="section-title">Travels</h2>
+            <div th:each="travel :${user.getTravelsAsDriver()}" class="travel-container">
+                <div class="travel-info-container">
+                    <div class="travel-info">
+                        <h3 class="travel" th:text="'Departure point: '">Departure point: </h3>
+                        <span th:text="${travel.getDeparturePoint()}">Sofia</span>
+                    </div>
+                    <div class="travel-info">
+                        <h3 class="travel" th:text="'Arrival point: '">Arrival point: </h3>
+                        <span th:text="${travel.getArrivalPoint()}">Plovdiv</span>
+                    </div>
+                    <div class="travel-info">
+                        <h3 class="travel" th:text="'Departure time: '">Departure time: </h3>
+                        <span th:text="${#temporals.format(travel.getDepartureTime(),'dd MMM y HH:mm')}">1-Jan 10:45</span>
+                    </div>
+                    <div class="travel-info">
+                        <h3 class="travel" th:text="'Status: '">Status: </h3>
+                        <span th:text="${travel.getStatus()}">Completed</span>
+                    </div>
+                    <div class="travel-info">
+                        <h3 class="travel" th:text="'Distance: '">Distance: </h3>
+                        <span th:text="${travel.getDistance()}">80 km</span>
+                    </div>
+                    <div class="travel-info">
+                        <h3 class="travel" th:text="'Duration: '">Duration: </h3>
+                        <span th:text="${travel.getTravelDuration()}">120 min</span>
+                    </div>
+                </div>
+                <a th:if="${isAdmin} or ${user.getUserName().equals(session.currentUser)}" class="btn view-travel"
+                   th:href="@{'/travel/' + ${travel.getId()} + '/update'}">
+                    <i class="fa-solid fa-eye"></i>
                 </a>
             </div>
         </li>

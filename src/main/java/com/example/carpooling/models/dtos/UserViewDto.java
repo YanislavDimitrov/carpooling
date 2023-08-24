@@ -1,6 +1,7 @@
 package com.example.carpooling.models.dtos;
 
 import com.example.carpooling.models.Image;
+import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.Vehicle;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.models.enums.UserStatus;
@@ -25,6 +26,7 @@ public class UserViewDto {
     private boolean isValidated;
     private Image profilePicture;
     private List<Vehicle> vehicles;
+    private List<Travel> travelsAsDriver;
 
     public UserViewDto() {
     }
@@ -115,5 +117,13 @@ public class UserViewDto {
 
     public void setVehicles(List<Vehicle> vehicles) {
         this.vehicles = vehicles;
+    }
+
+    public List<Travel> getTravelsAsDriver() {
+        return travelsAsDriver;
+    }
+
+    public void setTravelsAsDriver(List<Travel> travelsAsDriver) {
+        this.travelsAsDriver = travelsAsDriver;
     }
 }
