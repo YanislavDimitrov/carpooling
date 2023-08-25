@@ -329,9 +329,12 @@ public class TravelServiceImpl implements TravelService {
 
     public void completeActiveTravels(User user) {
         List<Travel> travels = user.getTravelsAsDriver();
-        for (int i = 0; i < travels.size(); i++) {
-            travels.get(i).setStatus(TravelStatus.COMPLETED);
-            travels.get(i).setDeleted(true);
+        travels
+                .stream()
+                .filter(travel -> travel.getStatus() == TravelStatus.ACTIVE);
+        for (Travel travel : travels) {
+            travel.setStatus(TravelStatus.COMPLETED);
+            travel.setDeleted(true);
         }
         userService.delete(user.getId(), user);
 
