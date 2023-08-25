@@ -217,7 +217,7 @@ public class TravelServiceImpl implements TravelService {
      */
     @Override
     public Travel update(Travel travel, User editor) {
-        if (!travel.getDriver().equals(editor)) {
+        if (!travel.getDriver().equals(editor) && editor.getRole() != UserRole.ADMIN) {
             throw new AuthorizationException(UPDATE_CANCELLED);
         }
         if (!travelRepository.existsById(travel.getId())) {

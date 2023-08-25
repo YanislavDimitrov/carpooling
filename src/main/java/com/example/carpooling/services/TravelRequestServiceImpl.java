@@ -167,6 +167,9 @@ public class TravelRequestServiceImpl implements TravelRequestService {
         if (!travel.getDriver().equals(editor)) {
             throw new AuthorizationException(NOT_AUTHORIZED);
         }
+        if(travel.getStatus() != TravelStatus.PLANNED) {
+            throw new InvalidOperationException("You cannot remove a passenger if the travel is not in Planned status!");
+        }
         TravelRequest travelRequest = findByTravelIsAndPassengerIsAndStatus(travel, user, TravelRequestStatus.APPROVED);
         travelRequest.setStatus(TravelRequestStatus.REJECTED);
         travelRequestRepository.delete(travelRequest);

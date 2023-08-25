@@ -330,6 +330,8 @@ public class TravelMvcController {
             return "redirect:/auth/login";
         } catch (AuthorizationException e) {
             return "AccessDeniedView";
+        } catch (InvalidOperationException e) {
+            return "InvalidOperationView";
         }
     }
 

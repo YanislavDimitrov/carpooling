@@ -65,10 +65,10 @@
         </table>
     </div>
 
-    <button class="btn" id="toggleButton">Show passengers<i id="show-hide-icon"
+    <button  th:if="${travel.getDriverName().equals(session.currentUser)}" class="btn" id="toggleButton">Show passengers<i id="show-hide-icon"
                                                             class="fa-solid fa-angle-down"></i></button>
-    <div id="infoContainer" class="info">
-        <div th:if="${passengers.isEmpty()}">
+    <div  th:if="${travel.getDriverName().equals(session.currentUser)}"  id="infoContainer" class="info">
+        <div th:if="${passengers.isEmpty()} and ${travel.getDriverName().equals(session.currentUser)}">
             <h1>No passengers to show for this travel</h1>
         </div>
         <table th:unless="${passengers.isEmpty()}">
@@ -85,11 +85,11 @@
     <button th:if="${travel.getDriverName().equals(session.currentUser)}" class="btn" id="toggle">Show Travel Requests
         <i id="show-hide-ico"
            class="fa-solid fa-angle-down"></i></button>
-    <div id="information-container" class="info">
+    <div th:if="${travel.getDriverName().equals(session.currentUser)}" id="information-container" class="info">
         <div th:if="${travelRequestForThisTravel.isEmpty()}">
             <h1>No travel request to show</h1>
         </div>
-        <table th:unless="${travelRequestForThisTravel.isEmpty()}">
+        <table  th:unless="${travelRequestForThisTravel.isEmpty()}">
             <tr th:each="travelRequest : ${travelRequestForThisTravel}">
                 <th>Username:</th>
                 <td th:text="${travelRequest.passenger.getUserName()}"></td>
