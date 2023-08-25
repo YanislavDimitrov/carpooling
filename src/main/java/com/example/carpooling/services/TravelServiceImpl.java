@@ -217,7 +217,7 @@ public class TravelServiceImpl implements TravelService {
      */
     @Override
     public Travel update(Travel travel, User editor) {
-        if (!travel.getDriver().equals(editor) && editor.getRole() != UserRole.ADMIN) {
+        if (!travel.getDriver().equals(editor)) {
             throw new AuthorizationException(UPDATE_CANCELLED);
         }
         if (!travelRepository.existsById(travel.getId())) {
@@ -247,7 +247,8 @@ public class TravelServiceImpl implements TravelService {
         if (!travelRepository.existsById(id)) {
             throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, id));
         }
-
+        Travel travel = travelRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, id)));
+        travel.setStatus(TravelStatus.CANCELED);
         travelRepository.delete(id);
     }
 

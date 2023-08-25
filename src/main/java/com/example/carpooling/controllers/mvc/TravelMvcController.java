@@ -7,6 +7,7 @@ import com.example.carpooling.helpers.mappers.TravelMapper;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
+import com.example.carpooling.models.Vehicle;
 import com.example.carpooling.models.dtos.TravelCreationOrUpdateDto;
 import com.example.carpooling.models.dtos.TravelFrontEndView;
 import com.example.carpooling.models.enums.TravelRequestStatus;
@@ -363,5 +364,9 @@ public class TravelMvcController {
     @ModelAttribute("isAuthenticated")
     public boolean populateIsAuthenticated(HttpSession session) {
         return session.getAttribute("currentUser") != null;
+    }
+    @ModelAttribute("vehicles")
+    public List<Vehicle> populateVehicles(HttpSession session) {
+        return authenticationHelper.tryGetUser(session).getVehicles();
     }
 }
