@@ -149,7 +149,7 @@ public class TravelRequestServiceImpl implements TravelRequestService {
     @Override
     public void rejectRequest(Travel travel, User editor, User requestCreator) {
         checkIfAttributesExists(travel, editor, requestCreator);
-        if(!travel.getDriver().equals(editor)) {
+        if (!travel.getDriver().equals(editor)) {
             throw new AuthorizationException(NOT_AUTHORIZED);
         }
         TravelRequest request = travelRequestRepository.findByTravelIsAndPassengerIsAndStatus(travel,
@@ -163,7 +163,18 @@ public class TravelRequestServiceImpl implements TravelRequestService {
 
     @Override
     public void rejectRequestWhenUserIsAlreadyPassenger(Travel travel, User user, User editor) {
+        checkIfAttributesExists(travel, editor, user);
+        if (!travel.getDriver().equals(editor)) {
+            throw new AuthorizationException(NOT_AUTHORIZED);
+        }
+        TravelRequest travelRequest = findByTravelIsAndPassengerIsAndStatus(travel, user, TravelRequestStatus.APPROVED);
+        travelRequest.setStatus(TravelRequestStatus.REJECTED);
+        travelRequestRepository.delete(travelRequest);
 
+        travel.setFreeSpots((short) (travel.getFreeSpots() + 1));
+
+        Passenger passenger = passengerRepository.findByUserAndTravel(user, travel);
+        passengerRepository.delete(passenger);
     }
 
     private void checkIfAttributesExists(Travel travel, User editor, User requestCreator) {
@@ -173,8 +184,8 @@ public class TravelRequestServiceImpl implements TravelRequestService {
         if (!userRepository.existsById(editor.getId())) {
             throw new EntityNotFoundException(String.format(USER_NOT_FOUND, editor.getId()));
         }
-        if(!userRepository.existsById(requestCreator.getId())) {
-            throw new EntityNotFoundException(String.format(USER_NOT_FOUND,requestCreator.getId()));
+        if (!userRepository.existsById(requestCreator.getId())) {
+            throw new EntityNotFoundException(String.format(USER_NOT_FOUND, requestCreator.getId()));
         }
     }
 

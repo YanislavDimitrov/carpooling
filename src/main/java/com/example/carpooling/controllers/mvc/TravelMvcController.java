@@ -63,7 +63,6 @@ public class TravelMvcController {
         return "TravelsView";
     }
 
-
     @GetMapping
     public String viewAllTravels(Model model, HttpSession session) {
         try {
@@ -71,13 +70,10 @@ public class TravelMvcController {
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         }
-
         List<TravelFrontEndView> travels = travelService.findAllByStatusPlanned()
                 .stream()
                 .map(travelMapper::fromTravelToFrontEnd)
                 .toList();
-
-
         model.addAttribute("travels", travels);
         return "TravelsView";
     }
@@ -90,12 +86,10 @@ public class TravelMvcController {
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         }
-
         List<TravelFrontEndView> travels = new ArrayList<>(travelService.findTravelByUser(user)
                 .stream()
                 .map(travelMapper::fromTravelToFrontEnd)
                 .toList());
-
         List<TravelFrontEndView> travelsAsPassenger = travelService.findTravelsAsPassengerByUser(user)
                 .stream()
                 .map(travelMapper::fromTravelRequest)
@@ -103,7 +97,6 @@ public class TravelMvcController {
                 .toList();
         model.addAttribute("travels", travels);
         model.addAttribute("travelsAsPassenger", travelsAsPassenger);
-        //ToDo View
         return "UserTravelsView";
     }
 
@@ -151,7 +144,6 @@ public class TravelMvcController {
             return "redirect:/auth/login";
         }
         model.addAttribute("travel", new TravelCreationOrUpdateDto());
-        //ToDo the view
         return "NewTravelView";
     }
 
@@ -229,7 +221,6 @@ public class TravelMvcController {
         }
         return String.format("redirect:/travels/%d", id);
     }
-
 
     @GetMapping("/{id}/delete")
     public String deleteTravel(@PathVariable Long id, HttpSession session) {
@@ -314,14 +305,31 @@ public class TravelMvcController {
             User loggedUser = authenticationHelper.tryGetUser(session);
             Travel travel = travelService.getById(id);
             User requestCreator = userService.getById(userId);
-            travelRequestService.rejectRequest(travel,loggedUser,requestCreator);
-            return "redirect:/travels/"+travel.getId();
+            travelRequestService.rejectRequest(travel, loggedUser, requestCreator);
+            return "redirect:/travels/" + travel.getId();
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         } catch (AuthorizationException e) {
             return "AccessDeniedView";
         } catch (EntityNotFoundException e) {
             return "NotFoundView";
+        }
+    }
+
+    @GetMapping("/{id}/remove/user/{userId}")
+    public String removePassengerFromTravel(@PathVariable Long id, @PathVariable Long userId, HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            User passenger = userService.getById(userId);
+            Travel travel = travelService.getById(id);
+            travelRequestService.rejectRequestWhenUserIsAlreadyPassenger(travel, passenger, loggedUser);
+            return "redirect:/travels/" + travel.getId();
+        } catch (EntityNotFoundException e) {
+            return "NotFoundView";
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        } catch (AuthorizationException e) {
+            return "AccessDeniedView";
         }
     }
 

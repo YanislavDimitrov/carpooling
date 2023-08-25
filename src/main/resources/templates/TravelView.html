@@ -75,7 +75,10 @@
             <tr th:each="passenger : ${passengers}">
                 <th>Username:</th>
                 <td th:text="${passenger.getUserName()}">Username</td>
-
+                <td>
+                    <a href="#"
+                       th:href="@{/travels/{id}/remove/user/{userId}(id=${travel.getId()},userId=${passenger.getId()})}">Remove</a>
+                </td>
         </table>
     </div>
 
