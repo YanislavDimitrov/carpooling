@@ -47,9 +47,10 @@ public class Travel {
     private String travelDuration;
     @Column(name = "arrival_time")
     private LocalDateTime estimatedTimeOfArrival;
-    @JsonIgnore
+
     @OneToMany(mappedBy = "travel", fetch = FetchType.EAGER)
     private List<TravelRequest> travelRequests;
+
     @Column(name = "is_deleted")
     private boolean isDeleted;
 

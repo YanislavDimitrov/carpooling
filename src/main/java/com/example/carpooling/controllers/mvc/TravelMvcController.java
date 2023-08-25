@@ -1,27 +1,27 @@
 package com.example.carpooling.controllers.mvc;
 
 import com.example.carpooling.exceptions.*;
+import com.example.carpooling.exceptions.duplicate.DuplicateEntityException;
 import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.helpers.mappers.TravelMapper;
 import com.example.carpooling.models.Travel;
+import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.dtos.TravelCreationOrUpdateDto;
 import com.example.carpooling.models.dtos.TravelFrontEndView;
-import com.example.carpooling.models.dtos.TravelViewDto;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.models.enums.UserRole;
+import com.example.carpooling.services.contracts.TravelRequestService;
 import com.example.carpooling.services.contracts.TravelService;
+import com.example.carpooling.services.contracts.UserService;
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -31,13 +31,17 @@ import java.util.List;
 @RequestMapping("/travels")
 public class TravelMvcController {
     private final TravelService travelService;
+    private final TravelRequestService travelRequestService;
+    private final UserService userService;
     private final TravelMapper travelMapper;
     private final AuthenticationHelper authenticationHelper;
 
     public TravelMvcController(TravelService travelService,
-                               TravelMapper travelMapper,
+                               TravelRequestService travelRequestService, UserService userService, TravelMapper travelMapper,
                                AuthenticationHelper authenticationHelper) {
         this.travelService = travelService;
+        this.travelRequestService = travelRequestService;
+        this.userService = userService;
         this.travelMapper = travelMapper;
         this.authenticationHelper = authenticationHelper;
     }
@@ -97,7 +101,6 @@ public class TravelMvcController {
                 .map(travelMapper::fromTravelRequest)
                 .map(travelMapper::fromTravelToFrontEnd)
                 .toList();
-//        travels.addAll(travelsAsPassenger);
         model.addAttribute("travels", travels);
         model.addAttribute("travelsAsPassenger", travelsAsPassenger);
         //ToDo View
@@ -134,9 +137,10 @@ public class TravelMvcController {
             return "redirect:/auth/login";
         }
         TravelFrontEndView travelFrontEndView = travelMapper.fromTravelToFrontEnd(travelService.getById(id));
-        model.addAttribute("startDestination",travelFrontEndView.getDeparturePoint());
-        model.addAttribute("endDestination",travelFrontEndView.getArrivalPoint());
+        model.addAttribute("startDestination", travelFrontEndView.getDeparturePoint());
+        model.addAttribute("endDestination", travelFrontEndView.getArrivalPoint());
         model.addAttribute("travel", travelFrontEndView);
+        model.addAttribute("passengers",travelService.getAllPassengersForTravel(travelService.getById(id)));
         return "TravelView";
     }
 
@@ -155,7 +159,7 @@ public class TravelMvcController {
     @PostMapping("/new")
     public String createTravel(@Valid @ModelAttribute("travel") TravelCreationOrUpdateDto travel,
                                BindingResult errors,
-                               HttpSession session ) {
+                               HttpSession session) {
         User driver;
         try {
             driver = authenticationHelper.tryGetUser(session);
@@ -171,9 +175,9 @@ public class TravelMvcController {
         } catch (InvalidOperationException e) {
             errors.rejectValue("departureTime", "creation_error", e.getMessage());
             return "NewTravelView";
-        }catch (InvalidLocationException | InvalidTravelException e) {
-            errors.rejectValue("departurePoint","location_error",e.getMessage());
-            errors.rejectValue("arrivalPoint","location_error",e.getMessage());
+        } catch (InvalidLocationException | InvalidTravelException e) {
+            errors.rejectValue("departurePoint", "location_error", e.getMessage());
+            errors.rejectValue("arrivalPoint", "location_error", e.getMessage());
             return "NewTravelView";
         }
         return "redirect:/travels/" + newTravel.getId();
@@ -220,9 +224,9 @@ public class TravelMvcController {
             return "AccessDeniedView";
         } catch (EntityNotFoundException e) {
             return "NotFoundView";
-        }catch (InvalidLocationException e) {
-            errors.rejectValue("departurePoint","location_error",e.getMessage());
-            errors.rejectValue("arrivalPoint","location_error",e.getMessage());
+        } catch (InvalidLocationException e) {
+            errors.rejectValue("departurePoint", "location_error", e.getMessage());
+            errors.rejectValue("arrivalPoint", "location_error", e.getMessage());
         }
         return String.format("redirect:/travels/%d", id);
     }
@@ -247,13 +251,47 @@ public class TravelMvcController {
             User loggedUser = authenticationHelper.tryGetUser(session);
             Travel travel = travelService.getById(id);
             travelService.cancelTravel(id, loggedUser);
-            return "UserTravelsView";
-        } catch (AuthenticationFailureException | AuthorizationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            return "redirect:/travels/user";
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (InvalidOperationException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+            return "NotFoundView";
+        } catch (InvalidOperationException | AuthorizationException e) {
+            return "AccessDeniedView";
+        }
+    }
+
+    @GetMapping("/{id}/apply")
+    public String applyForTravel(@PathVariable Long id, HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            Travel travel = travelService.getById(id);
+            travelRequestService.createRequest(travel, loggedUser);
+            return "RequestSentView";
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        } catch (EntityNotFoundException e) {
+            return "NotFoundView";
+        } catch (VehicleIsFullException e) {
+            return "VehicleIsFullView";
+        } catch (InvalidOperationException | DuplicateEntityException e) {
+            return "InvalidOperationView";
+        }
+    }
+
+    @GetMapping("{id}/reject")
+    public String rejectRequest(@PathVariable Long id, HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            Travel travel = travelService.getById(id);
+            travelRequestService.rejectRequest(travel, loggedUser);
+            return "redirect:/";
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        } catch (AuthorizationException e) {
+            return "AccessDeniedView";
+        } catch (EntityNotFoundException e) {
+            return "NotFoundView";
         }
     }
 
@@ -265,6 +303,16 @@ public class TravelMvcController {
         } catch (AuthenticationFailureException e) {
             return false;
         }
+    }
+
+    @ModelAttribute("travelRequests")
+    public List<TravelRequest> populateTravelRequests() {
+        return travelRequestService.get();
+    }
+
+    @ModelAttribute("users")
+    public List<User> populateUsers() {
+        return userService.getAll();
     }
 
     @ModelAttribute("isAuthenticated")

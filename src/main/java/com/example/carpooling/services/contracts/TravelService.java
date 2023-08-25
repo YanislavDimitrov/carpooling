@@ -41,6 +41,8 @@ public interface TravelService {
 
     List<Travel> findPlannedTravelsWithPastDepartureTime();
 
+    List<User> getAllPassengersForTravel(Travel travel);
+
     void create(Travel travel, User driver);
 
     Travel update(Travel travel, User editor);

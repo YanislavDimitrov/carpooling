@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Travels</title>
-    <link rel="website icon"  type="png" href="../static/images/carpool_simplelogo.png"
-          th:type="png" th:href="@{/images/carpool_simplelogo.png}">
+    <link rel="website icon" th:type="png" th:href="@{/images/carpool_simplelogo.png}">
     <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
-    <link rel="stylesheet" href="../static/index.css" th:href="@{/index.css}">
+    <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
+    <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">
 </head>
 <body>
 <section class="main">
@@ -46,7 +46,10 @@
                     <a class="btn delete" href="#" th:href="@{/travels/{id}/delete(id=${travel.getId()})}"><i
                             class="fa-solid fa-trash-can"></i></a>
                 </td>
-
+<td th:if="${!travel.getDriverName().equals(session.currentUser)}">
+    <a  class="btn view" href="#" th:href="@{/travels/{id}/apply(id=${travel.getId()})}"><i class="fa-solid fa-plus"></i></a>
+    <a  class="btn view" href="#" th:href="@{/travels/{id}/reject(id=${travel.getId()})}"><i class="fa-solid fa-ban"></i></a>
+</td>
                 <td th:if="${travel.getDriverName().equals(session.currentUser)}">
 
                     <a class="btn view" href="#" th:href="@{/travels/{id}(id=${travel.getId()})}"><i

@@ -14,6 +14,7 @@ public interface UserService {
     List<User> findAll(Sort sort);
 
     List<User> findAll(String firstName, String lastName, String username, String email, String phoneNumber, Sort sort);
+    List<User> getAll();
 
     User getById(Long id);
 

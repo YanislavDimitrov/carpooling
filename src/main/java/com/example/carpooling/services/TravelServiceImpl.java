@@ -3,12 +3,14 @@ package com.example.carpooling.services;
 import com.example.carpooling.exceptions.AuthorizationException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.exceptions.InvalidOperationException;
+import com.example.carpooling.models.Passenger;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.TravelRequestStatus;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.models.enums.UserRole;
+import com.example.carpooling.repositories.contracts.PassengerRepository;
 import com.example.carpooling.repositories.contracts.TravelRepository;
 import com.example.carpooling.services.contracts.TravelService;
 import org.springframework.data.domain.Sort;
@@ -33,16 +35,15 @@ public class TravelServiceImpl implements TravelService {
     public static final String EXISTING_TRAVEL = "If you want to create a travel within this time frame you should  cancel your planned travel from %s to %s  which is planned on %s,first";
     public static final String TRAVEL_AT_THIS_TIME = "You already have planned travel for %s , if you want to proceed you should cancel it first!";
     public static final String TRAVEL_AS_PASSENGER = "You have approved request for being passenger on travel from %s to %s , so if you want to create a Travel you should cancel your request for participating in your passenger travel!";
-    public static final String CANNOT_RATE_THIS_TRAVEL_AGAIN = "You cannot rate this travel again!";
     public static final String YOU_CAN_UPDATE_ONLY_PLANNED_TRAVELS = "You can update only planned travels!";
     private final TravelRepository travelRepository;
-
+    private final PassengerRepository passengerRepository;
 
     private final BingMapsService bingMapsService;
 
-    public TravelServiceImpl(TravelRepository travelRepository, BingMapsService bingMapsService) {
+    public TravelServiceImpl(TravelRepository travelRepository, PassengerRepository passengerRepository, BingMapsService bingMapsService) {
         this.travelRepository = travelRepository;
-
+        this.passengerRepository = passengerRepository;
         this.bingMapsService = bingMapsService;
     }
 
@@ -90,7 +91,7 @@ public class TravelServiceImpl implements TravelService {
     }
 
     @Override
-    public List<Travel> findBySearchCriteria( String departurePoint, String arrivalPoint, LocalDateTime departureTime, Short freeSpots) {
+    public List<Travel> findBySearchCriteria(String departurePoint, String arrivalPoint, LocalDateTime departureTime, Short freeSpots) {
         return travelRepository.findByCustomSearchFilter(departurePoint, arrivalPoint, departureTime, freeSpots);
     }
 
@@ -103,9 +104,25 @@ public class TravelServiceImpl implements TravelService {
         return travelRepository.findAll(sort);
     }
 
+    @Override
+    public List<User> getAllPassengersForTravel(Travel travel) {
+        List<Passenger> passengers = passengerRepository.findAllByTravelIs(travel);
+        List<User> passengersAsUsers = new ArrayList<>();
+        convertPassengerToUser(passengers, passengersAsUsers);
+        return passengersAsUsers;
+    }
+
+    private static void convertPassengerToUser(List<Passenger> passengers, List<User> passengersAsUsers) {
+        for (Passenger passenger : passengers) {
+            passengersAsUsers.add(passenger.getUser());
+        }
+    }
+
     /**
      * @return number of entities available(status = 'ACTIVE' || 'COMPLETED') in the database.
      */
+
+
     @Override
     public Long count() {
         return travelRepository.count();
@@ -199,14 +216,14 @@ public class TravelServiceImpl implements TravelService {
      * @throws AuthorizationException if the editor is not the driver of the travel.
      */
     @Override
-    public Travel update(Travel travel,User editor) {
+    public Travel update(Travel travel, User editor) {
         if (!travel.getDriver().equals(editor)) {
             throw new AuthorizationException(UPDATE_CANCELLED);
         }
         if (!travelRepository.existsById(travel.getId())) {
             throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, travel.getId()));
         }
-        if(travel.getStatus()!=TravelStatus.PLANNED) {
+        if (travel.getStatus() != TravelStatus.PLANNED) {
             throw new InvalidOperationException(YOU_CAN_UPDATE_ONLY_PLANNED_TRAVELS);
         }
         calculatingDistanceAndDuration(travel);
@@ -289,7 +306,6 @@ public class TravelServiceImpl implements TravelService {
     }
 
 
-
     @Override
     public Long countCompleted() {
         return travelRepository.countAllByStatusIs(TravelStatus.COMPLETED);
@@ -306,6 +322,7 @@ public class TravelServiceImpl implements TravelService {
                 .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.APPROVED)
                 .toList();
     }
+
     @Override
     @Scheduled(fixedRate = 60000)
     public void updateTravelStatus() {

@@ -1,5 +1,5 @@
 package com.example.carpooling.models.enums;
 
 public enum TravelRequestStatus {
-    PENDING , APPROVED , REJECTED
+    PENDING , APPROVED , REJECTED , CANCELLED
 }

@@ -59,6 +59,11 @@ public class UserServiceImpl implements UserService {
         return this.userRepository.findByCriteria(firstName, lastName, username, email, phoneNumber, sort);
     }
 
+    @Override
+    public List<User> getAll() {
+        return userRepository.findAll();
+    }
+
     public User getById(Long id) {
         Optional<User> optionalUser = this.userRepository.findById(id);
         if (optionalUser.isEmpty()) {

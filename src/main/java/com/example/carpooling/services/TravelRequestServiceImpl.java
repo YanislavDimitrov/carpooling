@@ -2,11 +2,13 @@ package com.example.carpooling.services;
 
 import com.example.carpooling.exceptions.*;
 import com.example.carpooling.exceptions.duplicate.DuplicateEntityException;
+import com.example.carpooling.models.Passenger;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.TravelRequestStatus;
 import com.example.carpooling.models.enums.TravelStatus;
+import com.example.carpooling.repositories.contracts.PassengerRepository;
 import com.example.carpooling.repositories.contracts.TravelRepository;
 import com.example.carpooling.repositories.contracts.TravelRequestRepository;
 import com.example.carpooling.repositories.contracts.UserRepository;
@@ -33,15 +35,16 @@ public class TravelRequestServiceImpl implements TravelRequestService {
     private final TravelRequestRepository travelRequestRepository;
     private final TravelRepository travelRepository;
     private final UserRepository userRepository;
+    private final PassengerRepository passengerRepository;
 
     public static final String TRAVEL_REQUEST_NOT_FOUND = "Travel request with ID %d was not found!";
 
     @Autowired
-    public TravelRequestServiceImpl(TravelRequestRepository travelRequestRepository, TravelRepository travelRepository, UserRepository userRepository) {
+    public TravelRequestServiceImpl(TravelRequestRepository travelRequestRepository, TravelRepository travelRepository, UserRepository userRepository, PassengerRepository passengerRepository) {
         this.travelRequestRepository = travelRequestRepository;
         this.travelRepository = travelRepository;
         this.userRepository = userRepository;
-
+        this.passengerRepository = passengerRepository;
     }
 
     /**
@@ -59,11 +62,12 @@ public class TravelRequestServiceImpl implements TravelRequestService {
 
     @Override
     public List<TravelRequest> getByTravel(Travel travel) {
-        if(!travelRepository.existsById(travel.getId())) {
-            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND,travel.getId()));
+        if (!travelRepository.existsById(travel.getId())) {
+            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, travel.getId()));
         }
         return travelRequestRepository.findByTravelIs(travel);
     }
+
     /**
      * @param id this parameter is used to identify if there is a travel reques with this id and if there is
      *           to return its value
@@ -85,28 +89,28 @@ public class TravelRequestServiceImpl implements TravelRequestService {
     @Override
     public void createRequest(Travel travel, User user) {
         TravelRequest travelRequest = new TravelRequest();
-        if(travel.getFreeSpots() == 0) {
+        if (travel.getFreeSpots() == 0) {
             throw new VehicleIsFullException(VEHICLE_IS_FULL);
         }
-        if(!travelRepository.existsById(travel.getId())) {
-            throw new EntityNotFoundException(String.format(TravelServiceImpl.TRAVEL_NOT_FOUND,travel.getId()));
+        if (!travelRepository.existsById(travel.getId())) {
+            throw new EntityNotFoundException(String.format(TravelServiceImpl.TRAVEL_NOT_FOUND, travel.getId()));
         }
-        if(!userRepository.existsById(user.getId())) {
-            throw new EntityNotFoundException(String.format(USER_NOT_FOUND,user.getId()));
+        if (!userRepository.existsById(user.getId())) {
+            throw new EntityNotFoundException(String.format(USER_NOT_FOUND, user.getId()));
         }
-        if(travel.getDriver() == user) {
+        if (travel.getDriver() == user) {
             throw new InvalidOperationException(DRIVER_APPLYING_RESTRICTION);
         }
-        if(travel.getStatus()!= TravelStatus.ACTIVE) {
+        if (travel.getStatus() != TravelStatus.PLANNED) {
             throw new InvalidOperationException(TRAVEL_NOT_ACTIVE);
         }
         Optional<TravelRequest> travelRequestOptional = travel
                 .getTravelRequests()
                 .stream()
-                .filter(travelRequest1 -> travelRequest1.getPassenger().equals(user) && travelRequest1.getStatus()==TravelRequestStatus.PENDING || travelRequest1.getPassenger().equals(user) && travelRequest1.getStatus() == TravelRequestStatus.APPROVED)
+                .filter(travelRequest1 -> travelRequest1.getPassenger().equals(user) && travelRequest1.getStatus() == TravelRequestStatus.PENDING || travelRequest1.getPassenger().equals(user) && travelRequest1.getStatus() == TravelRequestStatus.APPROVED)
                 .findFirst();
 
-        if(travelRequestOptional.isPresent()) {
+        if (travelRequestOptional.isPresent()) {
             throw new DuplicateEntityException(REQUEST_ALREADY_SENT);
         } else {
             travelRequest.setTravel(travel);
@@ -130,30 +134,33 @@ public class TravelRequestServiceImpl implements TravelRequestService {
         if (request.getTravel().getDriver() != editor) {
             throw new AuthorizationException(OPERATION_DENIED);
         }
-        if(request.getTravel().getFreeSpots() == 0 ) {
+        if (request.getTravel().getFreeSpots() == 0) {
             throw new VehicleIsFullException(VEHICLE_IS_FULL);
         }
         request.setStatus(TravelRequestStatus.APPROVED);
         short freeSpots = (short) (request.getTravel().getFreeSpots() - 1);
         request.getTravel().setFreeSpots(freeSpots);
         travelRequestRepository.save(request);
+
+        Passenger passenger = new Passenger();
+        passenger.setUser(request.getPassenger());
+        passenger.setTravel(request.getTravel());
+        passengerRepository.save(passenger);
     }
 
-    /**
-     * @param id this parameter is used to identify if there is a travel request with this ID and if there is one
-     *           to reject the request of the user
-     * @throws EntityNotFoundException if a travel request with this ID is not existing
-     */
+
     @Override
-    public void rejectRequest(Long id, User editor) {
-        TravelRequest request = travelRequestRepository
-                .findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format(TRAVEL_REQUEST_NOT_FOUND, id)));
-        if (request.getTravel().getDriver() != editor) {
-            throw new AuthorizationException(OPERATION_DENIED);
+    public void rejectRequest(Travel travel, User editor) {
+        if (!travelRepository.existsById(travel.getId())) {
+            throw new EntityNotFoundException(TRAVEL_NOT_FOUND, travel.getId());
         }
-        request.setStatus(TravelRequestStatus.REJECTED);
-        travelRequestRepository.save(request);
+        if (!userRepository.existsById(editor.getId())) {
+            throw new EntityNotFoundException(USER_NOT_FOUND, editor.getId());
+        }
+
+        TravelRequest travelRequest = travelRequestRepository.findByTravelIsAndPassengerIs(travel, editor);
+        travelRequest.setStatus(TravelRequestStatus.CANCELLED);
+        travelRequestRepository.save(travelRequest);
     }
 
     /**
@@ -185,18 +192,18 @@ public class TravelRequestServiceImpl implements TravelRequestService {
 
     @Override
     public void rejectWhenAlreadyPassenger(Long id, User editor, Travel travel) {
-        if(!userRepository.existsById(id)) {
-            throw new EntityNotFoundException(String.format(USER_NOT_FOUND,id));
+        if (!userRepository.existsById(id)) {
+            throw new EntityNotFoundException(String.format(USER_NOT_FOUND, id));
         }
-        if(!userRepository.existsById(editor.getId())) {
+        if (!userRepository.existsById(editor.getId())) {
             throw new EntityNotFoundException(String.format(USER_NOT_FOUND, editor.getId()));
         }
-        if(!travelRepository.existsById(travel.getId())) {
-            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND,travel.getId()));
+        if (!travelRepository.existsById(travel.getId())) {
+            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, travel.getId()));
         }
-        Optional<User> user =   userRepository.findById(id);
-        if(haveTravelInTheList(user.get(),travel) && travel.getDriver().equals(editor)) {
-            TravelRequest travelRequest =  travelRequestRepository.findByTravelIs(travel).stream().filter(travelRequest1 -> travelRequest1.getPassenger().equals(user)).findFirst().get();
+        Optional<User> user = userRepository.findById(id);
+        if (haveTravelInTheList(user.get(), travel) && travel.getDriver().equals(editor)) {
+            TravelRequest travelRequest = travelRequestRepository.findByTravelIs(travel).stream().filter(travelRequest1 -> travelRequest1.getPassenger().equals(user)).findFirst().get();
             travelRequest.setStatus(TravelRequestStatus.REJECTED);
         } else {
             throw new InvalidOperationException("Invalid operation!You cannot reject travel request if you are not the driver!");
@@ -204,10 +211,11 @@ public class TravelRequestServiceImpl implements TravelRequestService {
 
 
     }
-    public boolean haveTravelInTheList(User user , Travel travel) {
-        for(TravelRequest travelRequest : user.getTravelsAsPassenger()) {
-            if(travelRequest.getTravel().equals(travel) && travelRequest.getStatus() ==TravelRequestStatus.APPROVED) {
-                return true ;
+
+    public boolean haveTravelInTheList(User user, Travel travel) {
+        for (TravelRequest travelRequest : user.getTravelsAsPassenger()) {
+            if (travelRequest.getTravel().equals(travel) && travelRequest.getStatus() == TravelRequestStatus.APPROVED) {
+                return true;
             }
         }
         return false;
