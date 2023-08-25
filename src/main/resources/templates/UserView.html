@@ -14,6 +14,16 @@
 <header th:replace="index.html :: header"></header>
 <section class="main">
     <ul role="list">
+        <li th:if="${user.getUserName().equals(session.currentUser)}" class="buttons">
+            <a class="btn edit-profile"
+               th:href="@{'/users/' + ${userId} + '/update'}">
+                <i class="fa-regular fa-pen-to-square"></i>
+            </a>
+            <a class="btn edit-profile"
+               th:href="@{'/users/' + ${userId} + '/delete'}">
+                <i class="fa-solid fa-trash-can"></i>
+            </a>
+        </li>
         <li class="personal-info">
             <div class="image-content-container">
                 <div class="img-container">
@@ -81,41 +91,41 @@
                 </a>
             </div>
         </li>
-<!--        <li th:unless="${user.getTravelsAsDriver().isEmpty()}" class="travels">-->
-<!--            <h2 class="section-title">Travels</h2>-->
-<!--            <div th:each="travel :${user.getTravelsAsDriver()}" class="travel-container">-->
-<!--                <div class="travel-info-container">-->
-<!--                    <div class="travel-info">-->
-<!--                        <h3 class="travel" th:text="'Departure point: '">Departure point: </h3>-->
-<!--                        <span th:text="${travel.getDeparturePoint()}">Sofia</span>-->
-<!--                    </div>-->
-<!--                    <div class="travel-info">-->
-<!--                        <h3 class="travel" th:text="'Arrival point: '">Arrival point: </h3>-->
-<!--                        <span th:text="${travel.getArrivalPoint()}">Plovdiv</span>-->
-<!--                    </div>-->
-<!--                    <div class="travel-info">-->
-<!--                        <h3 class="travel" th:text="'Departure time: '">Departure time: </h3>-->
-<!--                        <span th:text="${#temporals.format(travel.getDepartureTime(),'dd MMM y HH:mm')}">1-Jan 10:45</span>-->
-<!--                    </div>-->
-<!--                    <div class="travel-info">-->
-<!--                        <h3 class="travel" th:text="'Status: '">Status: </h3>-->
-<!--                        <span th:text="${travel.getStatus()}">Completed</span>-->
-<!--                    </div>-->
-<!--                    <div class="travel-info">-->
-<!--                        <h3 class="travel" th:text="'Distance: '">Distance: </h3>-->
-<!--                        <span th:text="${travel.getDistance()}">80 km</span>-->
-<!--                    </div>-->
-<!--                    <div class="travel-info">-->
-<!--                        <h3 class="travel" th:text="'Duration: '">Duration: </h3>-->
-<!--                        <span th:text="${travel.getTravelDuration()}">120 min</span>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                <a th:if="${isAdmin} or ${user.getUserName().equals(session.currentUser)}" class="btn view-travel"-->
-<!--                   th:href="@{'/travel/' + ${travel.getId()} + '/update'}">-->
-<!--                    <i class="fa-solid fa-eye"></i>-->
-<!--                </a>-->
-<!--            </div>-->
-<!--        </li>-->
+        <!--        <li th:unless="${user.getTravelsAsDriver().isEmpty()}" class="travels">-->
+        <!--            <h2 class="section-title">Travels</h2>-->
+        <!--            <div th:each="travel :${user.getTravelsAsDriver()}" class="travel-container">-->
+        <!--                <div class="travel-info-container">-->
+        <!--                    <div class="travel-info">-->
+        <!--                        <h3 class="travel" th:text="'Departure point: '">Departure point: </h3>-->
+        <!--                        <span th:text="${travel.getDeparturePoint()}">Sofia</span>-->
+        <!--                    </div>-->
+        <!--                    <div class="travel-info">-->
+        <!--                        <h3 class="travel" th:text="'Arrival point: '">Arrival point: </h3>-->
+        <!--                        <span th:text="${travel.getArrivalPoint()}">Plovdiv</span>-->
+        <!--                    </div>-->
+        <!--                    <div class="travel-info">-->
+        <!--                        <h3 class="travel" th:text="'Departure time: '">Departure time: </h3>-->
+        <!--                        <span th:text="${#temporals.format(travel.getDepartureTime(),'dd MMM y HH:mm')}">1-Jan 10:45</span>-->
+        <!--                    </div>-->
+        <!--                    <div class="travel-info">-->
+        <!--                        <h3 class="travel" th:text="'Status: '">Status: </h3>-->
+        <!--                        <span th:text="${travel.getStatus()}">Completed</span>-->
+        <!--                    </div>-->
+        <!--                    <div class="travel-info">-->
+        <!--                        <h3 class="travel" th:text="'Distance: '">Distance: </h3>-->
+        <!--                        <span th:text="${travel.getDistance()}">80 km</span>-->
+        <!--                    </div>-->
+        <!--                    <div class="travel-info">-->
+        <!--                        <h3 class="travel" th:text="'Duration: '">Duration: </h3>-->
+        <!--                        <span th:text="${travel.getTravelDuration()}">120 min</span>-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--                <a th:if="${isAdmin} or ${user.getUserName().equals(session.currentUser)}" class="btn view-travel"-->
+        <!--                   th:href="@{'/travel/' + ${travel.getId()} + '/update'}">-->
+        <!--                    <i class="fa-solid fa-eye"></i>-->
+        <!--                </a>-->
+        <!--            </div>-->
+        <!--        </li>-->
     </ul>
 </section>
 <!--FOOTER-->

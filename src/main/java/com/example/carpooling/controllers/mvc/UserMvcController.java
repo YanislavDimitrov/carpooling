@@ -1,5 +1,6 @@
 package com.example.carpooling.controllers.mvc;
 
+import com.example.carpooling.exceptions.ActiveTravelException;
 import com.example.carpooling.exceptions.AuthenticationFailureException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.helpers.AuthenticationHelper;
@@ -87,11 +88,29 @@ public class UserMvcController {
             User user = userService.getById(id);
             UserViewDto userNewViewDto = this.modelMapper.map(user, UserViewDto.class);
             model.addAttribute("user", userNewViewDto);
+            model.addAttribute("userId", userNewViewDto.getId());
             return "UserView";
         } catch (EntityNotFoundException e) {
-            model.addAttribute("error", e.getMessage());
             return "NotFoundView";
-            //ToDO
+        }
+    }
+
+    @GetMapping("/{id}/delete")
+    public String deleteUser(@PathVariable Long id, HttpSession session) {
+        User loggedUser;
+        try {
+            loggedUser = authenticationHelper.tryGetUser(session);
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        }
+
+        try {
+            this.userService.delete(id, loggedUser);
+            return "redirect:/auth/logout";
+        } catch (EntityNotFoundException e) {
+            return "NotFoundView";
+        } catch (ActiveTravelException e) {
+            return "ActiveTravelsView";
         }
     }
 

@@ -1,6 +1,6 @@
 package com.example.carpooling.config;
 
-import com.cloudinary.*;
+import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

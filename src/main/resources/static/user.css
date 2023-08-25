@@ -7,7 +7,6 @@ html {
 }
 
 
-
 .form-container {
     display: flex;
     flex-direction: column;
@@ -53,13 +52,25 @@ input[type=file]::file-selector-button:hover {
     padding: 2rem 24rem;
 }
 
+.main ul {
+    position: relative;
+}
+
+.main .buttons {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+.main .buttons a{
+    padding: .6rem;
+}
+
 .main .names {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
 }
-
 
 
 .main ul > :not(:last-child) {
@@ -111,25 +122,28 @@ input[type=file]::file-selector-button:hover {
     display: flex;
     flex-direction: column;
 }
-.main .travels .travel-container{
+
+.main .travels .travel-container {
     width: 100%;
     text-align: center;
     margin-bottom: 2rem;
 }
 
 
-.main .travels .travel-info{
+.main .travels .travel-info {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 1rem;
 }
-.main .travels .travel-info-container{
+
+.main .travels .travel-info-container {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
-.main .travels .view-travel{
+
+.main .travels .view-travel {
     border: none;
     display: inline-block;
     text-align: center;
@@ -141,6 +155,7 @@ input[type=file]::file-selector-button:hover {
     text-decoration: none;
     border-radius: 1rem
 }
+
 .btn {
     padding: 0.2rem 1rem;
     font-weight: 600;
@@ -160,10 +175,12 @@ input[type=file]::file-selector-button:hover {
     font-weight: 700;
     margin-bottom: 2rem;
 }
-.main ul{
+
+.main ul {
     max-width: 1200px;
     margin: auto;
 }
+
 .main i {
     font-size: 1.8rem;
 }
@@ -172,7 +189,8 @@ input[type=file]::file-selector-button:hover {
     color: green;
 }
 
-.fa-circle-xmark {
+.fa-circle-xmark,
+.fa-trash-can{
     color: darkred;
 }
 

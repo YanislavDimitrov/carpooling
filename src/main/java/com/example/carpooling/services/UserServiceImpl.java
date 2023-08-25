@@ -372,7 +372,7 @@ public class UserServiceImpl implements UserService {
         for (Travel travel : targetUser.getTravelsAsDriver()) {
 
             if (travel.getStatus().equals(TravelStatus.ACTIVE)) {
-                throw new InvalidOperationException(ACTIVE_TRAVEL_EXCEPTION_MSG);
+                throw new ActiveTravelException(ACTIVE_TRAVEL_EXCEPTION_MSG);
             }
 
             if (travel.getStatus().equals(TravelStatus.PLANNED)) {
