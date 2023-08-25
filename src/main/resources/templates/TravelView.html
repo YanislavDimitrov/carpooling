@@ -28,6 +28,7 @@
                 <th scope="col" th:text="#{travel.label.departure-time}">Departure Time</th>
                 <th scope="col" th:text="#{travel.label.arrival-time}">Arrival Time</th>
                 <th scope="col" th:text="#{travel.label.status}">Status</th>
+                <th th:if="${!travel.getComment().isEmpty()}" scope="col" th:text="#{travel.label.comment}">Comment</th>
             </tr>
             </thead>
             <tbody>
@@ -41,6 +42,7 @@
                 <td th:text="${#temporals.format(travel.getDepartureTime(),'dd MMM y HH:mm')}">1-Jan 10:45</td>
                 <td th:text="${#temporals.format(travel.getArrivalTime(),'dd MMM y HH:mm')}">2-Jan 10;45</td>
                 <td th:text="${travel.getStatus()}">COMPLETED</td>
+                <td th:if="${!travel.comment.isEmpty()}" th:text="${travel.getComment()}">Comment</td>
                 <td th:if="${isAdmin} and ${!travel.getDriverName().equals(session.currentUser)}">
                     <a class="btn delete" href="#" th:href="@{/travels/{id}/delete(id=${travel.getId()})}"><i
                             class="fa-solid fa-trash-can"></i></a>
@@ -63,11 +65,12 @@
         </table>
     </div>
 
-    <button  th:if="${travel.getDriverName().equals(session.currentUser)} or ${isAdmin}" class="btn" id="toggleButton">Show passengers<i id="show-hide-icon"
-                                                            class="fa-solid fa-angle-down"></i></button>
-    <div  th:if="${travel.getDriverName().equals(session.currentUser)} or ${isAdmin}"  id="infoContainer" class="info">
+    <button th:if="${travel.getDriverName().equals(session.currentUser)} or ${isAdmin}" class="btn" id="toggleButton">
+        Show passengers<i id="show-hide-icon"
+                          class="fa-solid fa-angle-down"></i></button>
+    <div th:if="${travel.getDriverName().equals(session.currentUser)} or ${isAdmin}" id="infoContainer" class="info">
         <div th:if="${passengers.isEmpty()}">
-            <h1>No passengers to show for this travel</h1>
+            <h1>No passengers to show</h1>
         </div>
         <table th:unless="${passengers.isEmpty()}">
             <tr th:each="passenger : ${passengers}">
@@ -80,14 +83,16 @@
         </table>
     </div>
 
-    <button th:if="${travel.getDriverName().equals(session.currentUser)} or ${isAdmin}" class="btn" id="toggle">Show Travel Requests
+    <button th:if="${travel.getDriverName().equals(session.currentUser)} or ${isAdmin}" class="btn" id="toggle">Show
+        Travel Requests
         <i id="show-hide-ico"
            class="fa-solid fa-angle-down"></i></button>
-    <div th:if="${travel.getDriverName().equals(session.currentUser)} or ${isAdmin}" id="information-container" class="info">
+    <div th:if="${travel.getDriverName().equals(session.currentUser)} or ${isAdmin}" id="information-container"
+         class="info">
         <div th:if="${travelRequestForThisTravel.isEmpty()}">
             <h1>No travel request to show</h1>
         </div>
-        <table  th:unless="${travelRequestForThisTravel.isEmpty()}">
+        <table th:unless="${travelRequestForThisTravel.isEmpty()}">
             <tr th:each="travelRequest : ${travelRequestForThisTravel}">
                 <th>Username:</th>
                 <td th:text="${travelRequest.passenger.getUserName()}"></td>

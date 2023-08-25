@@ -233,7 +233,7 @@ public class TravelMvcController {
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         }
-        return "redirect:/travels";
+        return "redirect:/travels/user";
     }
 
     @GetMapping("/{id}/cancel")
@@ -345,7 +345,6 @@ public class TravelMvcController {
             return false;
         }
     }
-
     @ModelAttribute("travelRequests")
     public List<TravelRequest> populateTravelRequests() {
         return travelRequestService.get();

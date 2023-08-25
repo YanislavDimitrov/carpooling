@@ -14,6 +14,7 @@ import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.repositories.contracts.ImageRepository;
 import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.services.contracts.ImageService;
+import com.example.carpooling.services.contracts.TravelService;
 import com.example.carpooling.services.contracts.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -35,14 +36,16 @@ public class UserMvcController {
     private final ModelMapper modelMapper;
     private final ImageService imageService;
     private final ImageRepository imageRepository;
+    private final TravelService travelService;
 
-    public UserMvcController(AuthenticationHelper authenticationHelper, UserService userService, UserRepository userRepository, ModelMapper modelMapper, ImageService imageService, ImageRepository imageRepository) {
+    public UserMvcController(AuthenticationHelper authenticationHelper, UserService userService, UserRepository userRepository, ModelMapper modelMapper, ImageService imageService, ImageRepository imageRepository, TravelService travelService) {
         this.authenticationHelper = authenticationHelper;
         this.userService = userService;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.imageService = imageService;
         this.imageRepository = imageRepository;
+        this.travelService = travelService;
     }
 
     @ModelAttribute("isAuthenticated")
@@ -228,4 +231,23 @@ public class UserMvcController {
         model.addAttribute("changePasswordInfo", new UserChangePasswordDto());
         return "ChangePasswordView";
     }
+    @GetMapping("/complete-travels")
+    public String completeTravelsAndDelete(HttpSession session) {
+        User loggedUser;
+        try {
+            loggedUser = authenticationHelper.tryGetUser(session);
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        }
+        try {
+           travelService.completeActiveTravels(loggedUser);
+            return "redirect:/auth/logout";
+        } catch (EntityNotFoundException e) {
+            return "NotFoundView";
+        } catch (ActiveTravelException e) {
+            return "ActiveTravelsView";
+        }
+    }
+
+
 }
