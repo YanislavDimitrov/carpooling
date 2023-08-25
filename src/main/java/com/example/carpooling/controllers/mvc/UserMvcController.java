@@ -6,7 +6,9 @@ import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.models.Image;
 import com.example.carpooling.models.User;
+import com.example.carpooling.models.dtos.LoginDto;
 import com.example.carpooling.models.dtos.UserChangePasswordDto;
+import com.example.carpooling.models.dtos.UserUpdateDto;
 import com.example.carpooling.models.dtos.UserViewDto;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.repositories.contracts.ImageRepository;
@@ -14,9 +16,11 @@ import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.services.contracts.ImageService;
 import com.example.carpooling.services.contracts.UserService;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -114,6 +118,49 @@ public class UserMvcController {
         }
     }
 
+    @GetMapping("/{id}/update")
+    public String getUpdateUser(@PathVariable Long id, Model model, HttpSession session) {
+        User loggedUser;
+        try {
+            loggedUser = authenticationHelper.tryGetUser(session);
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        }
+
+        try {
+            User targetUser = this.userService.getById(id);
+            if (!loggedUser.getUserName().equals(targetUser.getUserName())) {
+                return "AccessDeniedView";
+            }
+            UserUpdateDto updateDto = this.modelMapper.map(targetUser, UserUpdateDto.class);
+            model.addAttribute("user", updateDto);
+            return "UpdateUserView";
+        } catch (EntityNotFoundException e) {
+            return "NotFoundView";
+        }
+    }
+
+//    @PostMapping("/{id}/update")
+//    public String updateUser(@Valid @PathVariable Long id, @ModelAttribute("user") UserUpdateDto dto,
+//                             BindingResult bindingResult,
+//                             HttpSession session) {
+//        User loggedUser;
+//        try {
+//            loggedUser = authenticationHelper.tryGetUser(session);
+//        } catch (AuthenticationFailureException e) {
+//            return "redirect:/auth/login";
+//        }
+//
+//        try {
+//            User targetUser = this.userService.getById(id);
+//            UserUpdateDto updateDto = this.modelMapper.map(targetUser, UserUpdateDto.class);
+//            model.addAttribute("user", updateDto);
+//            return "UpdateUserView";
+//        } catch (EntityNotFoundException e) {
+//            return "NotFoundView";
+//        }
+//    }
+
     @PostMapping("{id}/avatar")
     public String uploadImage(@PathVariable Long id, @RequestParam("file") MultipartFile file, HttpSession session) throws IOException {
         User loggedUser;
@@ -123,7 +170,12 @@ public class UserMvcController {
             return "redirect:/auth/login";
         }
 
-        User targetUser = this.userService.getById(id);
+        User targetUser;
+        try {
+            targetUser = this.userService.getById(id);
+        } catch (EntityNotFoundException e) {
+            return "NotFoundView";
+        }
 
         if (!loggedUser.getRole().equals(UserRole.ADMIN) &&
                 !loggedUser.getUserName().equals(targetUser.getUserName())) {

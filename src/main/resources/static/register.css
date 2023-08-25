@@ -93,6 +93,7 @@ html {
 }
 
 .form input {
+    all:unset;
     border: none;
     max-width: 12rem;
     transition: color ease-in-out .1s;
