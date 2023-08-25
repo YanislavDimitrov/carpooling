@@ -9,6 +9,7 @@ import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.dtos.TravelCreationOrUpdateDto;
 import com.example.carpooling.models.dtos.TravelFrontEndView;
+import com.example.carpooling.models.enums.TravelRequestStatus;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.services.contracts.TravelRequestService;
@@ -16,7 +17,6 @@ import com.example.carpooling.services.contracts.TravelService;
 import com.example.carpooling.services.contracts.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -107,13 +107,6 @@ public class TravelMvcController {
         return "UserTravelsView";
     }
 
-    @GetMapping("/latest")
-    public String getLatestTravels(Model model) {
-        List<Travel> latestTravels = travelService.findLatestTravels();
-        model.addAttribute("latestTravels", latestTravels);
-        return "";
-    }
-
     @GetMapping("/completed")
     public String viewCompletedTravels(Model model, HttpSession session) {
         try {
@@ -140,7 +133,7 @@ public class TravelMvcController {
         model.addAttribute("startDestination", travelFrontEndView.getDeparturePoint());
         model.addAttribute("endDestination", travelFrontEndView.getArrivalPoint());
         model.addAttribute("travel", travelFrontEndView);
-        model.addAttribute("passengers",travelService.getAllPassengersForTravel(travelService.getById(id)));
+        model.addAttribute("passengers", travelService.getAllPassengersForTravel(travelService.getById(id)));
         return "TravelView";
     }
 
@@ -266,17 +259,30 @@ public class TravelMvcController {
         try {
             User loggedUser = authenticationHelper.tryGetUser(session);
             Travel travel = travelService.getById(id);
+            if (travelRequestService.existsTravelRequestByTravelAndPassengerAndStatus(travel,
+                    loggedUser,
+                    TravelRequestStatus.PENDING)) {
+                travelRequestService.delete(travelRequestService.findByTravelIsAndPassengerIsAndStatus(
+                        travel, loggedUser, TravelRequestStatus.PENDING).getId(), loggedUser
+                );
+                return "redirect:/travels/" + travel.getId();
+            }
             travelRequestService.createRequest(travel, loggedUser);
-            return "RequestSentView";
-        } catch (AuthenticationFailureException e) {
+            return "redirect:/travels/" + travel.getId();
+        } catch (
+                AuthenticationFailureException e) {
             return "redirect:/auth/login";
-        } catch (EntityNotFoundException e) {
+        } catch (
+                EntityNotFoundException e) {
             return "NotFoundView";
-        } catch (VehicleIsFullException e) {
+        } catch (
+                VehicleIsFullException e) {
             return "VehicleIsFullView";
-        } catch (InvalidOperationException | DuplicateEntityException e) {
+        } catch (InvalidOperationException |
+                 DuplicateEntityException e) {
             return "InvalidOperationView";
         }
+
     }
 
     @GetMapping("{id}/reject")
@@ -308,6 +314,11 @@ public class TravelMvcController {
     @ModelAttribute("travelRequests")
     public List<TravelRequest> populateTravelRequests() {
         return travelRequestService.get();
+    }
+
+    @ModelAttribute("latestTravels")
+    public List<Travel> populateLatestTravels() {
+        return travelService.findLatestTravels();
     }
 
     @ModelAttribute("users")

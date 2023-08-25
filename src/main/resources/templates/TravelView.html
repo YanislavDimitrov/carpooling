@@ -46,6 +46,7 @@
                             class="fa-solid fa-pencil"></i></a>
                     <a class="btn delete" href="#" th:href="@{/travels/{id}/delete(id=${travel.getId()})}"><i
                             class="fa-solid fa-trash-can"></i></a>
+
                 </td>
                 <td th:if="${travel.getDriverName().equals(session.currentUser)}">
                     <a class="btn edit" href="#" th:href="@{/travels/{id}/update(id=${travel.getId()})}"><i
@@ -53,6 +54,12 @@
                     <a class="btn delete" href="#" th:href="@{/travels/{id}/delete(id=${travel.getId()})}"><i
                             class="fa-solid fa-trash-can"></i></a>
                 </td>
+                <td th:if="${!travel.getDriverName().equals(session.currentUser)}">
+                    <a href="#"  th:href="@{/travels/{id}/apply(id=${travel.getId()})}">
+                    <button id="dynamic-button" onclick="toggleLabel()">Apply for Travel</button>
+                    </a>
+                </td>
+
             </tr>
             </tbody>
         </table>
@@ -90,6 +97,16 @@
         }
         isInfoVisible = !isInfoVisible;
     });
+</script>
+<script>
+    function toggleLabel() {
+        var button = document.getElementById("dynamic-button");
+        if (button.innerHTML === "Apply for travel") {
+            button.innerHTML = "Cancel your request";
+        } else {
+            button.innerHTML = "Apply for travel";
+        }
+    }
 </script>
 
 <script type="text/javascript">

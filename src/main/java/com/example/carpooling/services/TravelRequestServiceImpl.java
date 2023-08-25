@@ -68,6 +68,11 @@ public class TravelRequestServiceImpl implements TravelRequestService {
         return travelRequestRepository.findByTravelIs(travel);
     }
 
+    @Override
+    public TravelRequest findByTravelIsAndPassengerIsAndStatus(Travel travel, User passenger, TravelRequestStatus status) {
+        return travelRequestRepository.findByTravelIsAndPassengerIsAndStatus(travel,passenger,status);
+    }
+
     /**
      * @param id this parameter is used to identify if there is a travel reques with this id and if there is
      *           to return its value
@@ -158,7 +163,7 @@ public class TravelRequestServiceImpl implements TravelRequestService {
             throw new EntityNotFoundException(USER_NOT_FOUND, editor.getId());
         }
 
-        TravelRequest travelRequest = travelRequestRepository.findByTravelIsAndPassengerIs(travel, editor);
+        TravelRequest travelRequest = travelRequestRepository.findByTravelIsAndPassengerIsAndStatus(travel, editor,TravelRequestStatus.PENDING);
         travelRequest.setStatus(TravelRequestStatus.CANCELLED);
         travelRequestRepository.save(travelRequest);
     }
@@ -208,10 +213,7 @@ public class TravelRequestServiceImpl implements TravelRequestService {
         } else {
             throw new InvalidOperationException("Invalid operation!You cannot reject travel request if you are not the driver!");
         }
-
-
     }
-
     public boolean haveTravelInTheList(User user, Travel travel) {
         for (TravelRequest travelRequest : user.getTravelsAsPassenger()) {
             if (travelRequest.getTravel().equals(travel) && travelRequest.getStatus() == TravelRequestStatus.APPROVED) {
@@ -219,6 +221,9 @@ public class TravelRequestServiceImpl implements TravelRequestService {
             }
         }
         return false;
-
+    }
+    @Override
+    public boolean existsTravelRequestByTravelAndPassengerAndStatus(Travel travel, User user, TravelRequestStatus status) {
+        return travelRequestRepository.existsTravelRequestByTravelAndPassengerAndStatus(travel,user,status);
     }
 }
