@@ -1,5 +1,6 @@
 package com.example.carpooling.models.dtos;
 
+import com.example.carpooling.models.Vehicle;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -18,10 +19,20 @@ public class TravelCreationOrUpdateDto {
     @NotNull(message = "The departure time field cannot be empty!")
     @FutureOrPresent(message = "The date should be valid!")
     private LocalDateTime departureTime;
+    @NotNull(message = "Vehicle field cannot be null")
+    private Vehicle vehicle;
     private String comment;
 
 
     public TravelCreationOrUpdateDto() {
+    }
+
+    public Vehicle getVehicle() {
+        return vehicle;
+    }
+
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
     }
 
     public String getDeparturePoint() {

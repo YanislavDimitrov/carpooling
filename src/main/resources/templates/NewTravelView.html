@@ -49,6 +49,16 @@
                     <input type="text" th:field="*{comment}" placeholder="Comment">
                 </label>
             </div>
+            <div class="field-container">
+                <label th:text="#{travel.label.vehicle}">Vehicle</label>
+                <select th:field="*{vehicle}">
+                    <option th:each="vehicle : ${vehicles}"
+                            th:value="${vehicle.getId()}"
+                            th:text="${vehicle.getMake() +' ' } + ${vehicle.getModel()}">
+                    </option>
+                </select>
+                <label class="error" th:errors="*{vehicle}">Vehicle error placeholder</label>
+            </div>
             <input type="submit" value="Create Travel">
         </form>
     </div>

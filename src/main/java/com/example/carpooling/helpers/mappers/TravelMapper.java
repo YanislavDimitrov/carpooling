@@ -70,6 +70,7 @@ public class TravelMapper {
         travel.setDepartureTime(travelCreationOrUpdateDto.getDepartureTime());
         travel.setComment(travelCreationOrUpdateDto.getComment());
         travel.setFreeSpots(travelCreationOrUpdateDto.getFreeSpots());
+        travel.setVehicle(travelCreationOrUpdateDto.getVehicle());
         return travel;
     }
 
