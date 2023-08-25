@@ -92,6 +92,7 @@
                 <td th:text="${travelRequest.passenger.getUserName()}"></td>
                 <td>
                     <a th:href="@{/travels/{id}/approve/user/{userId}(id=${travel.getId()},userId=${travelRequest.getPassenger().getId()})}">Approve</a>
+                    <a th:href="@{/travels/{id}/reject/user/{userId}(id=${travel.getId()},userId=${travelRequest.getPassenger().getId()})}">Reject</a>
                 </td>
             </tr>
         </table>

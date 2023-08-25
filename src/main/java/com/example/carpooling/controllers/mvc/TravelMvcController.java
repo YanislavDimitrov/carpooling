@@ -133,13 +133,13 @@ public class TravelMvcController {
         List<TravelRequest> travelRequests = travelService.getById(id)
                 .getTravelRequests()
                 .stream()
-                .filter(travelRequest -> travelRequest.getStatus()==TravelRequestStatus.PENDING)
+                .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.PENDING)
                 .toList();
         model.addAttribute("startDestination", travelFrontEndView.getDeparturePoint());
         model.addAttribute("endDestination", travelFrontEndView.getArrivalPoint());
         model.addAttribute("travel", travelFrontEndView);
         model.addAttribute("passengers", travelService.getAllPassengersForTravel(travelService.getById(id)));
-        model.addAttribute("travelRequestForThisTravel",travelRequests);
+        model.addAttribute("travelRequestForThisTravel", travelRequests);
         return "TravelView";
     }
 
@@ -290,14 +290,15 @@ public class TravelMvcController {
         }
 
     }
+
     @GetMapping("{id}/approve/user/{userId}")
-    public String approveRequest(@PathVariable Long id ,@PathVariable Long userId , HttpSession session) {
+    public String approveRequest(@PathVariable Long id, @PathVariable Long userId, HttpSession session) {
         try {
             User loggedUser = authenticationHelper.tryGetUser(session);
             User requestCreator = userService.getById(userId);
             Travel travel = travelService.getById(id);
-            travelRequestService.approveRequest(travel,loggedUser,requestCreator);
-            return "redirect:/travels/"+travel.getId();
+            travelRequestService.approveRequest(travel, loggedUser, requestCreator);
+            return "redirect:/travels/" + travel.getId();
         } catch (EntityNotFoundException e) {
             return "NotFoudView";
         } catch (VehicleIsFullException e) {
@@ -307,13 +308,14 @@ public class TravelMvcController {
         }
     }
 
-    @GetMapping("{id}/reject")
-    public String rejectRequest(@PathVariable Long id, HttpSession session) {
+    @GetMapping("{id}/reject/user/{userId}")
+    public String rejectRequest(@PathVariable Long id, @PathVariable Long userId, HttpSession session) {
         try {
             User loggedUser = authenticationHelper.tryGetUser(session);
             Travel travel = travelService.getById(id);
-            travelRequestService.rejectRequest(travel, loggedUser);
-            return "redirect:/";
+            User requestCreator = userService.getById(userId);
+            travelRequestService.rejectRequest(travel,loggedUser,requestCreator);
+            return "redirect:/travels/"+travel.getId();
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         } catch (AuthorizationException e) {

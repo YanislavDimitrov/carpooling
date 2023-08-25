@@ -17,7 +17,8 @@ public interface TravelRequestService {
     void update(TravelRequest travelRequest, User editor);
     void delete(Long id,User editor);
     void approveRequest(Travel travel, User editor , User requestCreator);
-    void rejectRequest(Travel travel, User editor);
+    void rejectRequest(Travel travel , User editor , User requestCreator);
+    void rejectRequestWhenUserIsAlreadyPassenger(Travel travel  , User user , User editor);
     void rejectWhenAlreadyPassenger(Long id , User editor , Travel travel);
     boolean existsTravelRequestByTravelAndPassengerAndStatus(Travel travel, User user, TravelRequestStatus status);
 

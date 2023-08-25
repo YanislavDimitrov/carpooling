@@ -105,12 +105,13 @@ public class TravelRequestRestController {
         }
     }
 
-    @PostMapping("/reject/{id}")
-    public String rejectRequest(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
+    @PostMapping("/reject/travel/{travelId}/user/{userId}")
+    public String rejectRequest(@PathVariable Long travelId, @PathVariable Long userId, @RequestHeader HttpHeaders headers) {
         try {
-            Travel travel = travelService.getById(id);
-            User user = authenticationHelper.tryGetUser(headers);
-            travelRequestService.rejectRequest(travel, user);
+            Travel travel = travelService.getById(travelId);
+            User editor = authenticationHelper.tryGetUser(headers);
+            User requestCreator = userService.getById(userId);
+            travelRequestService.rejectRequest(travel, editor,requestCreator);
             return "Your request for travel was rejected by the driver!";
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
