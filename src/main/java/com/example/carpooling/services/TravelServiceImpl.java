@@ -13,6 +13,7 @@ import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.repositories.contracts.PassengerRepository;
 import com.example.carpooling.repositories.contracts.TravelRepository;
 import com.example.carpooling.services.contracts.TravelService;
+import com.example.carpooling.services.contracts.UserService;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -38,12 +39,14 @@ public class TravelServiceImpl implements TravelService {
     public static final String YOU_CAN_UPDATE_ONLY_PLANNED_TRAVELS = "You can update only planned travels!";
     private final TravelRepository travelRepository;
     private final PassengerRepository passengerRepository;
+    private final UserService userService;
 
     private final BingMapsService bingMapsService;
 
-    public TravelServiceImpl(TravelRepository travelRepository, PassengerRepository passengerRepository, BingMapsService bingMapsService) {
+    public TravelServiceImpl(TravelRepository travelRepository, PassengerRepository passengerRepository, UserService userService, BingMapsService bingMapsService) {
         this.travelRepository = travelRepository;
         this.passengerRepository = passengerRepository;
+        this.userService = userService;
         this.bingMapsService = bingMapsService;
     }
 
@@ -322,6 +325,16 @@ public class TravelServiceImpl implements TravelService {
                 .stream()
                 .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.APPROVED)
                 .toList();
+    }
+
+    public void completeActiveTravels(User user) {
+        List<Travel> travels = user.getTravelsAsDriver();
+        for (int i = 0; i < travels.size(); i++) {
+            travels.get(i).setStatus(TravelStatus.COMPLETED);
+            travels.get(i).setDeleted(true);
+        }
+        userService.delete(user.getId(), user);
+
     }
 
     @Override

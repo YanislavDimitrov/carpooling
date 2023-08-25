@@ -45,6 +45,8 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
             LocalDateTime departureTime,
             Short freeSpots
     );
+
+
     List<Travel> findByStatusAndDepartureTimeBefore(TravelStatus status, LocalDateTime departureTime);
     @Modifying
     @Query("UPDATE Travel AS t SET t.isDeleted=true WHERE t.id = :id")
