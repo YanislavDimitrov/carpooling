@@ -70,7 +70,7 @@ public class TravelRequestServiceImpl implements TravelRequestService {
 
     @Override
     public TravelRequest findByTravelIsAndPassengerIsAndStatus(Travel travel, User passenger, TravelRequestStatus status) {
-        return travelRequestRepository.findByTravelIsAndPassengerIsAndStatus(travel,passenger,status);
+        return travelRequestRepository.findByTravelIsAndPassengerIsAndStatus(travel, passenger, status);
     }
 
     /**
@@ -125,22 +125,24 @@ public class TravelRequestServiceImpl implements TravelRequestService {
         }
     }
 
-    /**
-     * @param id this parameter is used to identify if there is valid request with this ID and if there is one
-     *           to approve the request of the user
-     * @throws EntityNotFoundException if a travel request with this ID is not existing
-     */
-    //ToDo add validation if the driver is approving the request
+
     @Override
-    public void approveRequest(Long id, User editor) {
-        TravelRequest request = travelRequestRepository
-                .findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format(TRAVEL_REQUEST_NOT_FOUND, id)));
+    public void approveRequest(Travel travel, User editor, User requestCreator) {
+        TravelRequest request = travelRequestRepository.findByTravelIsAndPassengerIsAndStatus(travel, requestCreator, TravelRequestStatus.PENDING);
         if (request.getTravel().getDriver() != editor) {
             throw new AuthorizationException(OPERATION_DENIED);
         }
         if (request.getTravel().getFreeSpots() == 0) {
             throw new VehicleIsFullException(VEHICLE_IS_FULL);
+        }
+        if (!travelRepository.existsById(travel.getId())) {
+            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, travel.getId()));
+        }
+        if (!userRepository.existsById(editor.getId())) {
+            throw new EntityNotFoundException(String.format(USER_NOT_FOUND, editor.getId()));
+        }
+        if (!userRepository.existsById(requestCreator.getId())) {
+            throw new EntityNotFoundException(String.format(USER_NOT_FOUND, requestCreator.getId()));
         }
         request.setStatus(TravelRequestStatus.APPROVED);
         short freeSpots = (short) (request.getTravel().getFreeSpots() - 1);
@@ -163,7 +165,7 @@ public class TravelRequestServiceImpl implements TravelRequestService {
             throw new EntityNotFoundException(USER_NOT_FOUND, editor.getId());
         }
 
-        TravelRequest travelRequest = travelRequestRepository.findByTravelIsAndPassengerIsAndStatus(travel, editor,TravelRequestStatus.PENDING);
+        TravelRequest travelRequest = travelRequestRepository.findByTravelIsAndPassengerIsAndStatus(travel, editor, TravelRequestStatus.PENDING);
         travelRequest.setStatus(TravelRequestStatus.CANCELLED);
         travelRequestRepository.save(travelRequest);
     }
@@ -214,6 +216,7 @@ public class TravelRequestServiceImpl implements TravelRequestService {
             throw new InvalidOperationException("Invalid operation!You cannot reject travel request if you are not the driver!");
         }
     }
+
     public boolean haveTravelInTheList(User user, Travel travel) {
         for (TravelRequest travelRequest : user.getTravelsAsPassenger()) {
             if (travelRequest.getTravel().equals(travel) && travelRequest.getStatus() == TravelRequestStatus.APPROVED) {
@@ -222,8 +225,9 @@ public class TravelRequestServiceImpl implements TravelRequestService {
         }
         return false;
     }
+
     @Override
     public boolean existsTravelRequestByTravelAndPassengerAndStatus(Travel travel, User user, TravelRequestStatus status) {
-        return travelRequestRepository.existsTravelRequestByTravelAndPassengerAndStatus(travel,user,status);
+        return travelRequestRepository.existsTravelRequestByTravelAndPassengerAndStatus(travel, user, status);
     }
 }

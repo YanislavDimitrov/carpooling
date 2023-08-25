@@ -41,23 +41,11 @@
                 <td th:if="${isAdmin} and ${!travel.getDriverName().equals(session.currentUser)}">
                     <a class="btn view" href="#" th:href="@{/travels/{id}(id=${travel.getId()})}"><i
                             class="fa-solid fa-eye fa-beat"></i></a>
-                    <a class="btn edit" href="#" th:href="@{/travels/{id}/update(id=${travel.getId()})}"><i
-                            class="fa-solid fa-pencil"></i></a>
-                    <a class="btn delete" href="#" th:href="@{/travels/{id}/delete(id=${travel.getId()})}"><i
-                            class="fa-solid fa-trash-can"></i></a>
                 </td>
-<td th:if="${!travel.getDriverName().equals(session.currentUser)}">
-    <a  class="btn view" href="#" th:href="@{/travels/{id}/apply(id=${travel.getId()})}"><i class="fa-solid fa-plus"></i></a>
-    <a  class="btn view" href="#" th:href="@{/travels/{id}/reject(id=${travel.getId()})}"><i class="fa-solid fa-ban"></i></a>
-</td>
                 <td th:if="${travel.getDriverName().equals(session.currentUser)}">
 
                     <a class="btn view" href="#" th:href="@{/travels/{id}(id=${travel.getId()})}"><i
                             class="fa-solid fa-eye fa-beat"></i></a>
-                    <a class="btn edit" href="#" th:href="@{/travels/{id}/update(id=${travel.getId()})}"><i
-                            class="fa-solid fa-pencil"></i></a>
-                    <a class="btn delete" href="#" th:href="@{/travels/{id}/delete(id=${travel.getId()})}"><i
-                            class="fa-solid fa-trash-can"></i></a>
                 </td>
                 <td th:if="${!travel.getDriverName().equals(session.currentUser)} and !${isAdmin}">
                     <a class="btn view" href="#" th:href="@{/travels/{id}(id=${travel.getId()})}"><i

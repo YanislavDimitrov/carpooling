@@ -130,10 +130,16 @@ public class TravelMvcController {
             return "redirect:/auth/login";
         }
         TravelFrontEndView travelFrontEndView = travelMapper.fromTravelToFrontEnd(travelService.getById(id));
+        List<TravelRequest> travelRequests = travelService.getById(id)
+                .getTravelRequests()
+                .stream()
+                .filter(travelRequest -> travelRequest.getStatus()==TravelRequestStatus.PENDING)
+                .toList();
         model.addAttribute("startDestination", travelFrontEndView.getDeparturePoint());
         model.addAttribute("endDestination", travelFrontEndView.getArrivalPoint());
         model.addAttribute("travel", travelFrontEndView);
         model.addAttribute("passengers", travelService.getAllPassengersForTravel(travelService.getById(id)));
+        model.addAttribute("travelRequestForThisTravel",travelRequests);
         return "TravelView";
     }
 
@@ -283,6 +289,22 @@ public class TravelMvcController {
             return "InvalidOperationView";
         }
 
+    }
+    @GetMapping("{id}/approve/user/{userId}")
+    public String approveRequest(@PathVariable Long id ,@PathVariable Long userId , HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            User requestCreator = userService.getById(userId);
+            Travel travel = travelService.getById(id);
+            travelRequestService.approveRequest(travel,loggedUser,requestCreator);
+            return "redirect:/travels/"+travel.getId();
+        } catch (EntityNotFoundException e) {
+            return "NotFoudView";
+        } catch (VehicleIsFullException e) {
+            return "VehicleIsFullView";
+        } catch (AuthorizationException e) {
+            return "AccessDeniedView";
+        }
     }
 
     @GetMapping("{id}/reject")

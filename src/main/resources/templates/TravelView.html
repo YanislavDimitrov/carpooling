@@ -55,8 +55,8 @@
                             class="fa-solid fa-trash-can"></i></a>
                 </td>
                 <td th:if="${!travel.getDriverName().equals(session.currentUser)}">
-                    <a href="#"  th:href="@{/travels/{id}/apply(id=${travel.getId()})}">
-                    <button id="dynamic-button" onclick="toggleLabel()">Apply for Travel</button>
+                    <a href="#" th:href="@{/travels/{id}/apply(id=${travel.getId()})}">
+                        <button id="dynamic-button" onclick="toggleLabel()">Apply for Travel</button>
                     </a>
                 </td>
 
@@ -65,50 +65,40 @@
         </table>
     </div>
 
-    <button  class="btn" id="toggleButton">Show passengers<i id="show-hide-icon"
-                                  class="fa-solid fa-angle-down"></i></button>
+    <button class="btn" id="toggleButton">Show passengers<i id="show-hide-icon"
+                                                            class="fa-solid fa-angle-down"></i></button>
     <div id="infoContainer" class="info">
         <div th:if="${passengers.isEmpty()}">
             <h1>No passengers to show for this travel</h1>
         </div>
         <table th:unless="${passengers.isEmpty()}">
             <tr th:each="passenger : ${passengers}">
-                <th>username</th>
+                <th>Username:</th>
                 <td th:text="${passenger.getUserName()}">Username</td>
 
+        </table>
+    </div>
+
+    <button th:if="${travel.getDriverName().equals(session.currentUser)}" class="btn" id="toggle">Show Travel Requests
+        <i id="show-hide-ico"
+           class="fa-solid fa-angle-down"></i></button>
+    <div id="information-container" class="info">
+        <div th:if="${travelRequestForThisTravel.isEmpty()}">
+            <h1>No travel request to show</h1>
+        </div>
+        <table th:unless="${travelRequestForThisTravel.isEmpty()}">
+            <tr th:each="travelRequest : ${travelRequestForThisTravel}">
+                <th>Username:</th>
+                <td th:text="${travelRequest.passenger.getUserName()}"></td>
+                <td>
+                    <a th:href="@{/travels/{id}/approve/user/{userId}(id=${travel.getId()},userId=${travelRequest.getPassenger().getId()})}">Approve</a>
+                </td>
+            </tr>
         </table>
     </div>
     <div id="mapContainer" style="width: 100%; height: 800px;"></div>
     <footer th:replace="index.html :: footer"></footer>
 </section>
-<script>
-    const toggleButton = document.getElementById('toggleButton');
-    const infoContainer = document.getElementById('infoContainer');
-
-    let isInfoVisible = false;
-
-    toggleButton.addEventListener('click', () => {
-        if (isInfoVisible) {
-            infoContainer.style.display = 'none';
-            toggleButton.textContent = 'Show Information';
-        } else {
-            infoContainer.style.display = 'block';
-            toggleButton.textContent = 'Hide Information';
-        }
-        isInfoVisible = !isInfoVisible;
-    });
-</script>
-<script>
-    function toggleLabel() {
-        var button = document.getElementById("dynamic-button");
-        if (button.innerHTML === "Apply for travel") {
-            button.innerHTML = "Cancel your request";
-        } else {
-            button.innerHTML = "Apply for travel";
-        }
-    }
-</script>
-
 <script type="text/javascript">
     function loadMap() {
         var start = '[[${startDestination}]]';
@@ -135,5 +125,11 @@
         Microsoft.Maps.loadModule('Microsoft.Maps.Directions', {callback: loadMap});
     };
 </script>
+<script type="text/javascript" src="../static/js/applyForTravelButton.js"
+        th:src="@{/js/applyForTravelButton.js}"></script>
+<script type="text/javascript" src="../static/js/showTravelRequests.js"
+        th:src="@{/js/showTravelRequests.js}"></script>
+<script type="text/javascript" src="../static/js/showPassengers.js"
+        th:src="@{/js/showPassengers.js}"></script>
 </body>
 </html>
