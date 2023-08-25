@@ -179,8 +179,8 @@ public class UserMvcController {
         model.addAttribute("changePasswordInfo", new UserChangePasswordDto());
         return "ChangePasswordView";
     }
-    @GetMapping("/{id}/complete-travels")
-    public String completeTravelsAndDelete(@PathVariable Long id, HttpSession session) {
+    @GetMapping("/complete-travels")
+    public String completeTravelsAndDelete(HttpSession session) {
         User loggedUser;
         try {
             loggedUser = authenticationHelper.tryGetUser(session);
