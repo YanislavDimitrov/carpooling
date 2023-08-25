@@ -12,19 +12,14 @@ import com.example.carpooling.repositories.contracts.TokenRepository;
 import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.repositories.contracts.VehicleRepository;
 import com.example.carpooling.services.contracts.UserService;
+import com.example.carpooling.services.contracts.ValidationService;
 import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeBodyPart;
-import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Sort;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -39,14 +34,16 @@ public class UserServiceImpl implements UserService {
     private final VehicleRepository vehicleRepository;
     private final TokenRepository tokenRepository;
     private final JavaMailSender javaMailSender;
+    private final ValidationService validationService;
 
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, VehicleRepository vehicleRepository, TokenRepository tokenRepository, JavaMailSender javaMailSender) {
+    public UserServiceImpl(UserRepository userRepository, VehicleRepository vehicleRepository, TokenRepository tokenRepository, JavaMailSender javaMailSender, ValidationService validationService) {
         this.userRepository = userRepository;
         this.vehicleRepository = vehicleRepository;
         this.tokenRepository = tokenRepository;
         this.javaMailSender = javaMailSender;
+        this.validationService = validationService;
     }
 
     @Override
@@ -87,41 +84,9 @@ public class UserServiceImpl implements UserService {
         checkForDuplicateUser(user);
         this.userRepository.save(user);
 
-        VerificationToken verificationToken = new VerificationToken(user);
-        tokenRepository.save(verificationToken);
-        String verificationLink = "http://localhost:8080/verify?token=" + verificationToken.getToken();
-        String htmlContent = readHtmlFromFile();
-        htmlContent = htmlContent.replace("verificationLinkPlaceholder", verificationLink);
-        sendVerificationEmail(user.getEmail(), htmlContent);
-
+        this.validationService.validate(user);
 
         return user;
-    }
-
-    private void sendVerificationEmail(String emailAddress, String content) throws MessagingException {
-        MimeMessage message = javaMailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
-        ClassPathResource imageResource = new ClassPathResource("src/main/resources/static/images/CoverPicture.svg");
-        helper.addInline("image123", imageResource);
-
-        helper.setFrom("carpoolingalpha@gmail.com");
-        helper.setTo(emailAddress);
-        helper.setSubject("Carpool Email Verification");
-        helper.setText(content, true);
-
-        javaMailSender.send(message);
-    }
-
-    private static String readHtmlFromFile() throws IOException {
-        StringBuilder content = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(CONFIRMATION_EMAIL_TEMPLATE_PATH))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                content.append(line);
-            }
-        }
-        return content.toString();
     }
 
     @Override
@@ -278,6 +243,12 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void validate(Long id) {
         this.userRepository.validate(id);
+    }
+
+    @Override
+    @Transactional
+    public void invalidate(Long id) {
+        this.userRepository.invalidate(id);
     }
 
 

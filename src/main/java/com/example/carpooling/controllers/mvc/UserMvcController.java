@@ -6,7 +6,6 @@ import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.models.Image;
 import com.example.carpooling.models.User;
-import com.example.carpooling.models.dtos.LoginDto;
 import com.example.carpooling.models.dtos.UserChangePasswordDto;
 import com.example.carpooling.models.dtos.UserUpdateDto;
 import com.example.carpooling.models.dtos.UserViewDto;
@@ -16,6 +15,8 @@ import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.services.contracts.ImageService;
 import com.example.carpooling.services.contracts.TravelService;
 import com.example.carpooling.services.contracts.UserService;
+import com.example.carpooling.services.contracts.ValidationService;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
@@ -37,8 +38,9 @@ public class UserMvcController {
     private final ImageService imageService;
     private final ImageRepository imageRepository;
     private final TravelService travelService;
+    private final ValidationService validationService;
 
-    public UserMvcController(AuthenticationHelper authenticationHelper, UserService userService, UserRepository userRepository, ModelMapper modelMapper, ImageService imageService, ImageRepository imageRepository, TravelService travelService) {
+    public UserMvcController(AuthenticationHelper authenticationHelper, UserService userService, UserRepository userRepository, ModelMapper modelMapper, ImageService imageService, ImageRepository imageRepository, TravelService travelService, ValidationService validationService) {
         this.authenticationHelper = authenticationHelper;
         this.userService = userService;
         this.userRepository = userRepository;
@@ -46,6 +48,7 @@ public class UserMvcController {
         this.imageService = imageService;
         this.imageRepository = imageRepository;
         this.travelService = travelService;
+        this.validationService = validationService;
     }
 
     @ModelAttribute("isAuthenticated")
@@ -137,32 +140,40 @@ public class UserMvcController {
             }
             UserUpdateDto updateDto = this.modelMapper.map(targetUser, UserUpdateDto.class);
             model.addAttribute("user", updateDto);
+            model.addAttribute("userId", id);
             return "UpdateUserView";
         } catch (EntityNotFoundException e) {
             return "NotFoundView";
         }
     }
 
-//    @PostMapping("/{id}/update")
-//    public String updateUser(@Valid @PathVariable Long id, @ModelAttribute("user") UserUpdateDto dto,
-//                             BindingResult bindingResult,
-//                             HttpSession session) {
-//        User loggedUser;
-//        try {
-//            loggedUser = authenticationHelper.tryGetUser(session);
-//        } catch (AuthenticationFailureException e) {
-//            return "redirect:/auth/login";
-//        }
-//
-//        try {
-//            User targetUser = this.userService.getById(id);
-//            UserUpdateDto updateDto = this.modelMapper.map(targetUser, UserUpdateDto.class);
-//            model.addAttribute("user", updateDto);
-//            return "UpdateUserView";
-//        } catch (EntityNotFoundException e) {
-//            return "NotFoundView";
-//        }
-//    }
+    @PostMapping("/{id}/update")
+    public String updateUser(@Valid @PathVariable Long id, @ModelAttribute("user") UserUpdateDto dto,
+                             BindingResult bindingResult,
+                             HttpSession session) throws MessagingException, IOException {
+        User loggedUser;
+        try {
+            loggedUser = authenticationHelper.tryGetUser(session);
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        }
+
+        if (bindingResult.hasErrors()) {
+            return "UpdateUserView";
+        }
+
+        User targetUser = this.userService.getById(id);
+
+        boolean revalidationRequired = !targetUser.getEmail().equals(dto.getEmail());
+        userService.update(id, dto, loggedUser);
+
+        if (revalidationRequired) {
+            userService.invalidate(id);
+            this.validationService.validate(targetUser);
+            return "VerificationLinkView";
+        }
+        return String.format("redirect:/users/%d", id);
+    }
 
     @PostMapping("{id}/avatar")
     public String uploadImage(@PathVariable Long id, @RequestParam("file") MultipartFile file, HttpSession session) throws IOException {
@@ -231,6 +242,7 @@ public class UserMvcController {
         model.addAttribute("changePasswordInfo", new UserChangePasswordDto());
         return "ChangePasswordView";
     }
+
     @GetMapping("/complete-travels")
     public String completeTravelsAndDelete(HttpSession session) {
         User loggedUser;
@@ -240,7 +252,7 @@ public class UserMvcController {
             return "redirect:/auth/login";
         }
         try {
-           travelService.completeActiveTravels(loggedUser);
+            travelService.completeActiveTravels(loggedUser);
             return "redirect:/auth/logout";
         } catch (EntityNotFoundException e) {
             return "NotFoundView";

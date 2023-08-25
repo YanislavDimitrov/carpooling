@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TravelServiceImpl implements TravelService {
@@ -329,13 +330,15 @@ public class TravelServiceImpl implements TravelService {
 
     public void completeActiveTravels(User user) {
         List<Travel> travels = user.getTravelsAsDriver();
-        travels.stream().filter(travel -> travel.getStatus() == TravelStatus.ACTIVE);
+        travels = travels.stream()
+                .filter(travel -> travel.getStatus() == TravelStatus.ACTIVE)
+                .collect(Collectors.toList());
+
         for (Travel travel : travels) {
             travel.setStatus(TravelStatus.COMPLETED);
             travel.setDeleted(true);
         }
         userService.delete(user.getId(), user);
-
     }
 
     @Override

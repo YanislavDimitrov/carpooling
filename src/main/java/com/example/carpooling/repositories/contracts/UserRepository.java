@@ -1,17 +1,13 @@
 package com.example.carpooling.repositories.contracts;
 
-import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.models.User;
-import com.example.carpooling.models.Vehicle;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -57,4 +53,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying
     @Query("UPDATE User AS u SET u.isValidated = true WHERE  u.id = :id")
     void validate(Long id);
+    @Modifying
+    @Query("UPDATE User AS u SET u.isValidated = false WHERE  u.id = :id")
+    void invalidate(Long id);
 }
