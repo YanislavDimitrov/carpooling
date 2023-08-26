@@ -328,7 +328,7 @@ public class TravelServiceImpl implements TravelService {
                 .toList();
     }
 
-    public void completeActiveTravels(User user) {
+    public void completeActiveTravelsAndDeleteUser(User user) {
         List<Travel> travels = user.getTravelsAsDriver();
         travels = travels.stream()
                 .filter(travel -> travel.getStatus() == TravelStatus.ACTIVE)

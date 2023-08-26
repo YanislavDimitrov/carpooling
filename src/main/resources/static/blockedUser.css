@@ -22,3 +22,27 @@ html {
     display: inline-block;
     width: 20%;
 }
+
+.main .options-container{
+    display: flex;
+    gap: 2rem;
+}
+.btn {
+    padding: 0.2rem 1rem;
+    font-weight: 600;
+    background-color: rgb(65, 89, 96);
+    border: none;
+    border-radius: 0.8rem;
+    color: white;
+    transition: ease-in-out .1s;
+    text-decoration: none;
+}
+
+.btn:hover{
+    cursor: pointer;
+    background-color: rgb(53, 74, 82);
+}
+
+.btn i{
+    padding-right: .5rem;
+}

@@ -4,7 +4,6 @@ import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.TravelStatus;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
@@ -35,7 +34,7 @@ public interface TravelService {
     List<Travel> findAll(Sort sort);
 
     List<Travel> findTravelByUser(User user);
-    void completeActiveTravels(User user);
+    void completeActiveTravelsAndDeleteUser(User user);
 
     List<TravelRequest> findTravelsAsPassengerByUser(User user);
 
