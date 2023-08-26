@@ -153,4 +153,23 @@ public class VehicleMvcController {
         }
         return String.format("redirect:/users/%d", loggedUser.getId());
     }
+
+    @GetMapping("{id}/delete")
+    public String deleteVehicle(@PathVariable Long id, HttpSession session) {
+        User loggedUser;
+        try {
+            loggedUser = authenticationHelper.tryGetUser(session);
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        }
+
+        try {
+            this.vehicleService.delete(id,loggedUser);
+        } catch (EntityNotFoundException e) {
+            return "NotFoundView";
+        } catch (AuthorizationException e) {
+            return "AccessDeniedView";
+        }
+        return String.format("redirect:/users/%d", loggedUser.getId());
+    }
 }

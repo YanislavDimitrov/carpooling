@@ -84,7 +84,7 @@
                 <i class="fa-solid fa-plus"></i>
             </a>
             <h2 class="section-title">Vehicles</h2>
-            <div th:each="vehicle :${user.getVehicles()}" class="vehicle-container">
+            <div th:unless="${vehicle.isDeleted()}" th:each="vehicle :${user.getVehicles()}" class="vehicle-container">
                 <div class="vehicle-info">
                     <h3 class="vehicle" th:text="${vehicle.getMake()+' '+vehicle.getModel()}">BMW 3 Series</h3>
                     <p class="color" th:text="${vehicle.getColor()}">White</p>
@@ -95,7 +95,7 @@
                         <i class="fa-regular fa-pen-to-square"></i>
                     </a>
                     <a th:if="${isAdmin} or ${user.getUserName().equals(session.currentUser)}" class="btn delete-vehicle"
-                       th:href="@{'/vehicles/' + ${vehicle.getId()} + '/update'}">
+                       th:href="@{'/vehicles/' + ${vehicle.getId()} + '/delete'}">
                         <i class="fa-solid fa-trash-can"></i>
                     </a>
                 </div>
