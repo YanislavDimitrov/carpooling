@@ -75,7 +75,9 @@
             <div class="validation-container">
                 <h3 class="validation-label">Validated:</h3>
                 <i th:if="${user.isValidated()}" class="fa-solid fa-circle-check"></i>
-                <i th:unless="${user.isValidated()}" class="fa-solid fa-circle-xmark"></i>
+                <a th:unless="${user.isValidated()}" th:href="@{${user.id}+'/verify'}">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </a>
             </div>
         </li>
         <li th:unless="${user.getVehicles().isEmpty()}" class="vehicles">
@@ -94,7 +96,8 @@
                        th:href="@{'/vehicles/' + ${vehicle.getId()} + '/update'}">
                         <i class="fa-regular fa-pen-to-square"></i>
                     </a>
-                    <a th:if="${isAdmin} or ${user.getUserName().equals(session.currentUser)}" class="btn delete-vehicle"
+                    <a th:if="${isAdmin} or ${user.getUserName().equals(session.currentUser)}"
+                       class="btn delete-vehicle"
                        th:href="@{'/vehicles/' + ${vehicle.getId()} + '/delete'}">
                         <i class="fa-solid fa-trash-can"></i>
                     </a>

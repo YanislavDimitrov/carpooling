@@ -3,7 +3,6 @@ package com.example.carpooling.services.contracts;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.Vehicle;
 import com.example.carpooling.models.dtos.UserUpdateDto;
-import com.example.carpooling.models.dtos.VehicleViewDto;
 import jakarta.mail.MessagingException;
 import org.springframework.data.domain.Sort;
 
@@ -42,6 +41,6 @@ public interface UserService {
 
     void downgrade(Long id, User loggedUser);
 
-    void validate(Long id);
-    void invalidate(Long id);
+    void unverify(Long id);
+    void verify(Long id);
 }

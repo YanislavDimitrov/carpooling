@@ -175,7 +175,7 @@ public class UserMvcController {
         userService.update(id, dto, loggedUser);
 
         if (revalidationRequired) {
-            userService.invalidate(id);
+            userService.unverify(id);
             this.validationService.validate(targetUser);
             return "VerificationLinkView";
         }
@@ -271,5 +271,26 @@ public class UserMvcController {
         } catch (EntityNotFoundException e) {
             return "NotFoundView";
         }
+    }
+
+    @GetMapping("{id}/verify")
+    public String verifyUser(@PathVariable Long id, HttpSession session) throws MessagingException, IOException {
+        User loggedUser;
+        try {
+            loggedUser = authenticationHelper.tryGetUser(session);
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        }
+
+        if (!loggedUser.getRole().equals(UserRole.ADMIN) && (!loggedUser.getId().equals(id))) {
+            return "AccessDeniedView";
+        }
+
+        try {
+            this.validationService.validate(this.userService.getById(id));
+        } catch (EntityNotFoundException e) {
+            return "NotFoundView";
+        }
+        return "VerificationLinkView";
     }
 }

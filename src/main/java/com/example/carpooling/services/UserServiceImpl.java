@@ -245,13 +245,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void validate(Long id) {
+    public void verify(Long id) {
+        Optional<User> optionalUserToValidate = this.userRepository.findById(id);
+
+        if (optionalUserToValidate.isEmpty()) {
+            throw new EntityNotFoundException("User", id);
+        }
+
         this.userRepository.validate(id);
+
     }
 
     @Override
     @Transactional
-    public void invalidate(Long id) {
+    public void unverify(Long id) {
+        Optional<User> optionalUserToInvalidate = this.userRepository.findById(id);
+
+        if (optionalUserToInvalidate.isEmpty()) {
+            throw new EntityNotFoundException("User", id);
+        }
+
         this.userRepository.invalidate(id);
     }
 
@@ -365,6 +378,4 @@ public class UserServiceImpl implements UserService {
         }
 
     }
-
-
 }
