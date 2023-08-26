@@ -74,6 +74,15 @@ public class VehicleServiceImpl implements VehicleService {
         }
     }
 
+    @Override
+    public Vehicle getById(Long id) {
+        Optional<Vehicle> optionalVehicle = this.vehicleRepository.findById(id);
+        if (optionalVehicle.isEmpty()) {
+            throw new EntityNotFoundException("Vehicle");
+        }
+        return optionalVehicle.get();
+    }
+
     private boolean isAdmin(User loggedUser) {
         return loggedUser.getRole().equals(UserRole.ADMIN);
     }

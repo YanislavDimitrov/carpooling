@@ -8,4 +8,7 @@ public interface VehicleService {
     void delete(Long id, User loggedUser);
 
     Vehicle update(Long id, VehicleUpdateDto payloadVehicle, User loggedUser);
+
+    Vehicle getById(Long id);
+
 }
