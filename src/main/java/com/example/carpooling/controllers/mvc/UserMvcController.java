@@ -177,7 +177,7 @@ public class UserMvcController {
         if (revalidationRequired) {
             userService.unverify(id);
             this.validationService.validate(targetUser);
-            return "VerificationLinkView";
+            return "VerificationLinkSentView";
         }
         return String.format("redirect:/users/%d", id);
     }
@@ -291,6 +291,6 @@ public class UserMvcController {
         } catch (EntityNotFoundException e) {
             return "NotFoundView";
         }
-        return "VerificationLinkView";
+        return "VerificationLinkSentView";
     }
 }

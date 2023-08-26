@@ -2,7 +2,6 @@ package com.example.carpooling.controllers.mvc;
 
 import com.example.carpooling.exceptions.AuthenticationFailureException;
 import com.example.carpooling.exceptions.duplicate.DuplicateEmailException;
-import com.example.carpooling.exceptions.duplicate.DuplicateEntityException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.exceptions.duplicate.DuplicatePhoneNumberException;
 import com.example.carpooling.exceptions.duplicate.DuplicateUsernameException;
@@ -128,7 +127,7 @@ public class AuthenticationController {
         try {
             User user = this.modelMapper.map(registerDto, User.class);
             this.userService.create(user);
-            return "VerificationLinkView";
+            return "VerificationLinkSentView";
         } catch (DuplicateUsernameException e) {
             bindingResult.rejectValue("userName",
                     "username_error",
