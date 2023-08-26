@@ -1,63 +1,22 @@
 package com.example.carpooling.models.dtos;
 
-import com.example.carpooling.models.enums.VehicleType;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
 public class VehicleCreateDto {
     private String make;
     private String model;
     private String licencePlateNumber;
+    @NotEmpty(message = "Vehicle color must not be empty")
     private String color;
-    private VehicleType type;
+    @NotEmpty(message = "Vehicle type must not be empty")
+    private String type;
+    @Pattern(regexp = "^(19\\d\\d|20[0-9]{2})$",message = "Production year must be between 1900 and 2099")
     private String yearOfProduction;
-
-    public VehicleCreateDto() {
-    }
-
-    public String getMake() {
-        return make;
-    }
-
-    public void setMake(String make) {
-        this.make = make;
-    }
-
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
-    }
-
-    public String getLicencePlateNumber() {
-        return licencePlateNumber;
-    }
-
-    public void setLicencePlateNumber(String licencePlateNumber) {
-        this.licencePlateNumber = licencePlateNumber;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
-    }
-
-    public VehicleType getType() {
-        return type;
-    }
-
-    public void setType(VehicleType type) {
-        this.type = type;
-    }
-
-    public String getYearOfProduction() {
-        return yearOfProduction;
-    }
-
-    public void setYearOfProduction(String yearOfProduction) {
-        this.yearOfProduction = yearOfProduction;
-    }
 }

@@ -23,7 +23,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-mysql'
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
+
+    compileOnly 'org.projectlombok:lombok'
     //  implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -38,7 +39,7 @@ dependencies {
     implementation group: 'com.sun.mail', name: 'jakarta.mail', version: '2.0.1'
     implementation group: 'com.cloudinary', name: 'cloudinary-http44', version: '1.32.0'
     implementation group: 'com.cloudinary', name: 'cloudinary-core', version: '1.32.0'
-
+    annotationProcessor 'org.projectlombok:lombok'
 
 }
 

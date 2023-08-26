@@ -10,6 +10,7 @@ import com.example.carpooling.models.dtos.UserChangePasswordDto;
 import com.example.carpooling.models.dtos.UserUpdateDto;
 import com.example.carpooling.models.dtos.UserViewDto;
 import com.example.carpooling.models.enums.UserRole;
+import com.example.carpooling.models.enums.UserStatus;
 import com.example.carpooling.repositories.contracts.ImageRepository;
 import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.services.contracts.ImageService;
@@ -88,14 +89,19 @@ public class UserMvcController {
 
     @GetMapping("/{id}")
     public String getUserById(@PathVariable Long id, Model model, HttpSession session) {
+        User loggedUser;
         try {
-            authenticationHelper.tryGetUser(session);
+            loggedUser = authenticationHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         }
 
         try {
             User user = userService.getById(id);
+            if (user.getStatus().equals(UserStatus.DELETED) &&
+                    !loggedUser.getRole().equals(UserRole.ADMIN)) {
+                return "NotFoundView";
+            }
             UserViewDto userNewViewDto = this.modelMapper.map(user, UserViewDto.class);
             model.addAttribute("user", userNewViewDto);
             model.addAttribute("userId", userNewViewDto.getId());
@@ -106,7 +112,7 @@ public class UserMvcController {
     }
 
     @GetMapping("/{id}/delete")
-    public String deleteUser(@PathVariable Long id, HttpSession session) {
+    public String deleteUser(@PathVariable Long id, Model model, HttpSession session) {
         User loggedUser;
         try {
             loggedUser = authenticationHelper.tryGetUser(session);
@@ -120,6 +126,7 @@ public class UserMvcController {
         } catch (EntityNotFoundException e) {
             return "NotFoundView";
         } catch (ActiveTravelException e) {
+            model.addAttribute("userId", id);
             return "ActiveTravelsView";
         }
     }
@@ -243,23 +250,26 @@ public class UserMvcController {
         return "ChangePasswordView";
     }
 
-    @GetMapping("/complete-travels")
-    public String completeTravelsAndDelete(HttpSession session) {
+    @GetMapping("{id}/complete-travels-delete")
+    public String completeActiveTravelsAndDeleteUser(@PathVariable Long id, HttpSession session) {
         User loggedUser;
         try {
             loggedUser = authenticationHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         }
+
+        User targetUser = this.userService.getById(id);
+
+        if (!loggedUser.getUserName().equals(targetUser.getUserName())) {
+            return "AccessDeniedView";
+        }
+
         try {
-            travelService.completeActiveTravels(loggedUser);
+            travelService.completeActiveTravelsAndDeleteUser(loggedUser);
             return "redirect:/auth/logout";
         } catch (EntityNotFoundException e) {
             return "NotFoundView";
-        } catch (ActiveTravelException e) {
-            return "ActiveTravelsView";
         }
     }
-
-
 }

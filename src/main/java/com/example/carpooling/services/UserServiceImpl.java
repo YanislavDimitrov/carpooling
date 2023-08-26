@@ -149,8 +149,12 @@ public class UserServiceImpl implements UserService {
             throw new EntityNotFoundException("User", id);
         }
 
+        User userToRestore = optionalUserToRestore.get();
+
         if (areSameUser(loggedUser, optionalUserToRestore.get())) {
             this.userRepository.restore(id);
+            recoverUserFeedbacks(userToRestore);
+            recoverUserTravels(userToRestore);
         } else {
             throw new AuthorizationException(
                     String.format(DELETE_USER_AUTHORIZATION_MESSAGE

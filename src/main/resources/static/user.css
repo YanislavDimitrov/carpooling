@@ -61,9 +61,10 @@ input[type=file]::file-selector-button:hover {
     top: 1rem;
     right: 1rem;
 }
-.main .buttons a{
-    padding: .6rem;
+.main a{
+    padding: .4rem;
 }
+
 
 .main .names {
     display: flex;
@@ -169,6 +170,9 @@ input[type=file]::file-selector-button:hover {
 .main .vehicles .color {
     font-size: 0.9rem;
     color: #414040;
+}
+.main .vehicles{
+    position: relative;
 }
 
 .main .section-title {
