@@ -100,7 +100,7 @@ public class TravelMapper {
         travelFrontEndView.setArrivalTime(travel.getEstimatedTimeOfArrival());
         travelFrontEndView.setComment(travel.getComment());
         travelFrontEndView.setDistance(travel.getDistance());
-
+travelFrontEndView.setDeleted(travel.isDeleted());
         int wholeNumberIndex = travel.getTravelDuration().indexOf(" ");
         double durationAsDouble = Double.parseDouble(travel.getTravelDuration().substring(0, wholeNumberIndex));
         int hours ;

@@ -29,6 +29,15 @@ public class TravelFrontEndView {
     private LocalDateTime arrivalTime;
     private String comment;
     private TravelStatus status;
+    private boolean isDeleted;
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        isDeleted = deleted;
+    }
 
     public Long getId() {
         return id;

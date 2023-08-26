@@ -90,6 +90,7 @@ public class TravelMvcController {
         List<TravelFrontEndView> travels = new ArrayList<>(travelService.findTravelByUser(user)
                 .stream()
                 .map(travelMapper::fromTravelToFrontEnd)
+                .filter(travelFrontEndView -> !travelFrontEndView.isDeleted())
                 .toList());
         List<TravelFrontEndView> travelsAsPassenger = travelService.findTravelsAsPassengerByUser(user)
                 .stream()
@@ -124,6 +125,9 @@ public class TravelMvcController {
             return "redirect:/auth/login";
         }
         TravelFrontEndView travelFrontEndView = travelMapper.fromTravelToFrontEnd(travelService.getById(id));
+        if(travelFrontEndView.isDeleted()) {
+            return "DeletedSourceView";
+        }
         List<TravelRequest> travelRequests = travelService.getById(id)
                 .getTravelRequests()
                 .stream()
@@ -335,6 +339,20 @@ public class TravelMvcController {
             return "InvalidOperationView";
         }
     }
+    @GetMapping("/{id}/complete")
+    public String completeTravel( @PathVariable Long id  ,HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            Travel travel = travelService.getById(id);
+            travelService.completeTravel(id,loggedUser);
+            return "redirect:/";
+        }catch (AuthenticationFailureException e ) {
+            return "redirect:/auth/login";
+        } catch (EntityNotFoundException e) {
+            return "NotFoundView";
+        }
+    }
+
 
     @ModelAttribute("isAdmin")
     public boolean populateIsAdmin(HttpSession session) {

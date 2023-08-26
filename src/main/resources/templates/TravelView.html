@@ -59,6 +59,11 @@
                         <button id="dynamic-button" onclick="toggleLabel()">Apply for Travel</button>
                     </a>
                 </td>
+                <td th:if="${travel.getDriverName().equals(session.currentUser)} and ${travel.status != T(com.example.carpooling.models.enums.TravelStatus).COMPLETED}">
+                    <a  class="btn delete" href="#" th:href="@{/travels/{id}/complete(id=${travel.getId()})}">
+                        <i class="fa-solid fa-check"></i></a>
+                </td>
+
 
             </tr>
             </tbody>
