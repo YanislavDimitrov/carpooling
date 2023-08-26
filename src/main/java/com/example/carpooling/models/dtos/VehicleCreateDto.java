@@ -1,13 +1,19 @@
 package com.example.carpooling.models.dtos;
 
-import com.example.carpooling.models.enums.VehicleType;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 public class VehicleCreateDto {
     private String make;
     private String model;
     private String licencePlateNumber;
+    @NotEmpty(message = "Vehicle color must not be empty")
     private String color;
-    private VehicleType type;
+    @NotEmpty(message = "Vehicle type must not be empty")
+    private String type;
+//    @Size(min = 4, max = 4, message = )
+//    @Pattern(regexp = "[0-9]")
     private String yearOfProduction;
 
     public VehicleCreateDto() {
@@ -45,11 +51,11 @@ public class VehicleCreateDto {
         this.color = color;
     }
 
-    public VehicleType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(VehicleType type) {
+    public void setType(String type) {
         this.type = type;
     }
 
