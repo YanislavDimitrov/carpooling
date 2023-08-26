@@ -140,7 +140,6 @@ public class UserMvcController {
             }
             UserUpdateDto updateDto = this.modelMapper.map(targetUser, UserUpdateDto.class);
             model.addAttribute("user", updateDto);
-            model.addAttribute("userId", id);
             return "UpdateUserView";
         } catch (EntityNotFoundException e) {
             return "NotFoundView";
@@ -148,8 +147,9 @@ public class UserMvcController {
     }
 
     @PostMapping("/{id}/update")
-    public String updateUser(@Valid @PathVariable Long id, @ModelAttribute("user") UserUpdateDto dto,
+    public String updateUser(@Valid @ModelAttribute("user") UserUpdateDto dto,
                              BindingResult bindingResult,
+                             @PathVariable Long id,
                              HttpSession session) throws MessagingException, IOException {
         User loggedUser;
         try {

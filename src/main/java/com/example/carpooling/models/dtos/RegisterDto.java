@@ -1,8 +1,7 @@
 package com.example.carpooling.models.dtos;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
+import org.modelmapper.internal.bytebuddy.implementation.bind.annotation.Empty;
 
 public class RegisterDto {
     @Size(min = 2, max = 20, message = "Firstname must be between 2 and 20 symbols.")
@@ -14,9 +13,10 @@ public class RegisterDto {
     @Pattern(regexp = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&*!])[A-Za-z\\d@#$%^&*!]{8,}$", message = "Password must be at least 8 symbols and should contain capital letter, digit and special symbol.")
     private String password;
     private String confirmPassword;
-    @Email
+    @NotEmpty(message = "Email cannot be empty")
+    @Email(message = "Incorrect mail format.")
     private String email;
-    @Size(min = 10,max = 10)
+    @Size(min = 10, max = 10, message = "Phone number must be exactly 10 symbols.")
     private String phoneNumber;
 
     public RegisterDto() {

@@ -115,7 +115,7 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public String handleRegister(@Valid @ModelAttribute("register") RegisterDto registerDto,
-                                 BindingResult bindingResult, HttpSession session) throws MessagingException {
+                                 BindingResult bindingResult) throws MessagingException {
         if (bindingResult.hasErrors()) {
             return "RegisterView";
         }

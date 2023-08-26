@@ -92,10 +92,12 @@ html {
     border-left: 1px rgba(65, 89, 96, 0.51) solid;
 }
 
-.form input {
-    all:unset;
+.form input[type="text"],
+.form input[type="password"],
+.form input[type="email"]{
+    all: unset;
     border: none;
-    max-width: 12rem;
+    width: 100%;
     transition: color ease-in-out .1s;
 }
 
@@ -118,7 +120,13 @@ html {
 }
 
 .form .field-container.checkbox {
+    display: inline-block;
     margin: 0 1rem;
+    text-align: left;
+}
+
+.form input[type="checkbox"] {
+
 }
 
 button {

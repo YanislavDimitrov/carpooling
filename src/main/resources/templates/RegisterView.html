@@ -82,12 +82,17 @@
             <label class="error" th:errors="*{confirmPassword}">Password error placeholder</label>
         </div>
 
-        <button type="submit" id="search">Register</button>
+        <button onclick="myFunction()" type="submit" id="search">Register</button>
     </form>
 </section>
 <!--FOOTER-->
 <header th:replace="index.html :: footer"></header>
 <script type="text/javascript" src="../static/js/showHidePass.js" th:src="@{/js/showHidePass.js}"></script>
 <script type="text/javascript" src="../static/js/showDropdown.js" th:src="@{/js/showDropdown.js}"></script>
+<script>
+    function myFunction() {
+        document.getElementById("terms").required = true;
+    }
+</script>
 </body>
 </html>
