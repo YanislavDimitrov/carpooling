@@ -9,9 +9,10 @@
     <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">
 </head>
 <body>
+<!--HEADER-->
+<header th:replace="index.html :: header"></header>
 <section class="main">
-    <!--HEADER-->
-    <header th:replace="index.html :: header"></header>
+
     <div id="content">
         <h1 class="form-title">Create New Travel</h1>
         <form class="form" th:action="@{/travels/new}" th:object="${travel}" action="#" method="post">
@@ -62,9 +63,10 @@
             <input type="submit" value="Create Travel">
         </form>
     </div>
-    <!--FOOTER-->
-    <footer th:replace="index.html :: footer"></footer>
+
 </section>
+<!--FOOTER-->
+<footer th:replace="index.html :: footer"></footer>
 <script type="text/javascript" src="../static/js/showDropdown.js" th:src="@{/js/showDropdown.js}"></script>
 
 </body>

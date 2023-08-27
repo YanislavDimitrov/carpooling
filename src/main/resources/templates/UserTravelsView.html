@@ -11,10 +11,10 @@
 </head>
 <body>
 <h1>Travel Details</h1>
-
+<!--HEADER-->
+<header th:replace="index.html :: header"></header>
 <section class="main">
-    <!--HEADER-->
-    <header th:replace="index.html :: header"></header>
+
     <!--    CONTENT-->
     <div id="content">
         <h1>Travels as driver</h1>
@@ -129,8 +129,9 @@
             </tr>
         </table>
     </div>
-    <footer th:replace="index.html :: footer"></footer>
+
 </section>
+<footer th:replace="index.html :: footer"></footer>
 <script type="text/javascript" src="../static/js/showDropdown.js" th:src="@{/js/showDropdown.js}"></script>
 </body>
 </html>

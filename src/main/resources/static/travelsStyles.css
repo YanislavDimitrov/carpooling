@@ -1,0 +1,81 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f7f7f7;
+    background-image: url('images/CoverPicture.svg');
+}
+.main {
+    padding: 20px;
+}
+
+.travel-card {
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s;
+    cursor: pointer;
+}
+
+.travel-card:hover {
+    transform: scale(1.05);
+}
+
+.travel-info {
+    flex-grow: 1;
+    margin-right: 20px;
+}
+
+.travel-info h2 {
+    margin: 0;
+    font-size: 24px;
+    color: #333;
+}
+
+.travel-info p {
+    margin: 5px 0;
+    color: #777;
+    font-size: 14px;
+}
+
+.travel-status {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    color: white;
+    background-color: #27ae60;
+}
+
+.btn-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+}
+
+.btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn.view {
+    background-color: #3498db;
+    margin-right: 10px;
+}
+
+.btn.delete {
+    background-color: #e74c3c;
+}
