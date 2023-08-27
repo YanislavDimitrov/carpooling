@@ -1,6 +1,7 @@
 package com.example.carpooling.models;
 
 import com.example.carpooling.models.enums.TravelStatus;
+import com.example.carpooling.services.contracts.TravelService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -16,6 +17,8 @@ import java.util.List;
 @Table(name = "travels")
 @Entity
 public class Travel {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id",
@@ -54,18 +57,12 @@ public class Travel {
     @Column(name = "is_deleted")
     private boolean isDeleted;
 
-//    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
-//    @JoinTable(name = "users_travels",
-//            joinColumns = @JoinColumn(name = "user_id"),
-//            inverseJoinColumns = @JoinColumn(name = "travel_id"))
-//    private List<User> passengers;
+
 
     public Travel() {
         travelRequests = new ArrayList<>();
         status = TravelStatus.PLANNED;
     }
-
-
 
     public boolean isDeleted() {
         return isDeleted;

@@ -137,8 +137,9 @@ public class TravelMvcController {
 
     @GetMapping("/{id}")
     public String viewTravel(@PathVariable Long id, Model model, HttpSession session) {
+        User loggedUser;
         try {
-            authenticationHelper.tryGetUser(session);
+            loggedUser = authenticationHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         }
@@ -151,11 +152,13 @@ public class TravelMvcController {
                 .stream()
                 .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.PENDING)
                 .toList();
+        boolean isRequestedByUser = travelService.isRequestedByUser(id,loggedUser);
         model.addAttribute("startDestination", travelFrontEndView.getDeparturePoint());
         model.addAttribute("endDestination", travelFrontEndView.getArrivalPoint());
         model.addAttribute("travel", travelFrontEndView);
         model.addAttribute("passengers", travelService.getAllPassengersForTravel(travelService.getById(id)));
         model.addAttribute("travelRequestForThisTravel", travelRequests);
+        model.addAttribute("isRequestedByUser",isRequestedByUser);
         return "TravelView";
     }
 

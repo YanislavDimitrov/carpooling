@@ -55,6 +55,7 @@ public interface TravelService {
     void cancelTravel(Long id, User editor);
 
     void updateTravelStatus();
+    boolean isRequestedByUser(Long travelId, User user);
 
     Long count();
 

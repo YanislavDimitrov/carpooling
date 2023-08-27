@@ -21,5 +21,6 @@ public interface TravelRequestService {
     void rejectRequestWhenUserIsAlreadyPassenger(Travel travel  , User user , User editor);
     void rejectWhenAlreadyPassenger(Long id , User editor , Travel travel);
     boolean existsTravelRequestByTravelAndPassengerAndStatus(Travel travel, User user, TravelRequestStatus status);
+    boolean existsByTravelAndPassenger(Travel travel , User user);
 
 }

@@ -285,6 +285,11 @@ public class TravelServiceImpl implements TravelService {
         userService.delete(user.getId(), user);
     }
 
+    public boolean isRequestedByUser(Long travelId, User user) {
+        Travel travel = travelRepository.findById(travelId).orElse(null);
+        return travel != null && travel.getTravelRequests().stream().anyMatch(request -> request.getPassenger().equals(user));
+    }
+
     private static void checkIfTheTravelTimeFrameIsValid(Travel travel, User driver) {
         for (Travel travelToCheck : driver.getTravelsAsDriver()) {
             if (travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime())
@@ -355,6 +360,7 @@ public class TravelServiceImpl implements TravelService {
         LocalDateTime arrivalTime = travel.getDepartureTime().plusSeconds(secondsToAdd);
         travel.setEstimatedTimeOfArrival(arrivalTime);
     }
+
 
     @Override
     @Scheduled(fixedRate = 60000)

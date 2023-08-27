@@ -252,4 +252,9 @@ public class TravelRequestServiceImpl implements TravelRequestService {
     public boolean existsTravelRequestByTravelAndPassengerAndStatus(Travel travel, User user, TravelRequestStatus status) {
         return travelRequestRepository.existsTravelRequestByTravelAndPassengerAndStatus(travel, user, status);
     }
+
+    @Override
+    public boolean existsByTravelAndPassenger(Travel travel, User user) {
+        return travelRequestRepository.existsByTravelAndPassenger(travel,user);
+    }
 }
