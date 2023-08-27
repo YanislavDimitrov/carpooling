@@ -57,14 +57,20 @@
         <div>
             <div class="input-container">
                 <div>
+                    <a class="password show-password">
+                        <i class="fa-solid fa-eye"></i>
+                    </a>
                     <i class="fa-solid fa-lock"></i>
-                    <input type="password" th:field="*{password}" placeholder="Password">
+                    <input id="password" type="password" th:field="*{password}" placeholder="Password">
                 </div>
             </div>
             <div class="input-container">
                 <div>
+                    <a class="password show-confirm-password">
+                        <i class="fa-solid fa-eye"></i>
+                    </a>
                     <i class="fa-solid fa-lock"></i>
-                    <input type="password" th:field="*{confirmPassword}" placeholder="Confirm password">
+                    <input id="confirm-password" class="confirm-password" type="password" th:field="*{confirmPassword}" placeholder="Confirm password">
                 </div>
             </div>
         </div>
@@ -87,7 +93,7 @@
 </section>
 <!--FOOTER-->
 <header th:replace="index.html :: footer"></header>
-<script type="text/javascript" src="../static/js/showHidePass.js" th:src="@{/js/showHidePass.js}"></script>
+<script type="text/javascript" src="../static/js/showHidePassOnRegister.js" th:src="@{/js/showHidePassOnRegister.js}"></script>
 <script type="text/javascript" src="../static/js/showDropdown.js" th:src="@{/js/showDropdown.js}"></script>
 <script>
     function myFunction() {

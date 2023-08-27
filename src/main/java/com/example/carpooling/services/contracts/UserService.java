@@ -2,6 +2,7 @@ package com.example.carpooling.services.contracts;
 
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.Vehicle;
+import com.example.carpooling.models.dtos.UserChangePasswordDto;
 import com.example.carpooling.models.dtos.UserUpdateDto;
 import jakarta.mail.MessagingException;
 import org.springframework.data.domain.Sort;
@@ -43,4 +44,6 @@ public interface UserService {
 
     void unverify(Long id);
     void verify(Long id);
+
+    void changePassword(User targetUser, UserChangePasswordDto dto, User loggedUser);
 }

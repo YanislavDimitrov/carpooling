@@ -180,6 +180,28 @@ input[type=file]::file-selector-button:hover {
     margin-bottom: 2rem;
 }
 
+@keyframes beat {
+    0%, 100% {
+        scale: 1;
+    }
+    50% {
+        scale: 1.1;
+    }
+}
+
+.main .resend-link{
+    animation: beat 1s infinite;
+    text-decoration: none;
+    color: rgb(65, 89, 96);
+    font-weight: 500;
+    font-size: 1.2rem;
+}
+.main .not-validated{
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
 .main ul {
     max-width: 1200px;
     margin: auto;

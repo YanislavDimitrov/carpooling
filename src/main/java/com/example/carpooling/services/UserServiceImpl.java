@@ -5,6 +5,7 @@ import com.example.carpooling.exceptions.duplicate.DuplicateEmailException;
 import com.example.carpooling.exceptions.duplicate.DuplicatePhoneNumberException;
 import com.example.carpooling.exceptions.duplicate.DuplicateUsernameException;
 import com.example.carpooling.models.*;
+import com.example.carpooling.models.dtos.UserChangePasswordDto;
 import com.example.carpooling.models.dtos.UserUpdateDto;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.models.enums.UserRole;
@@ -24,7 +25,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.carpooling.helpers.CustomMessages.*;
+import static com.example.carpooling.helpers.ConstantMessages.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -254,6 +255,26 @@ public class UserServiceImpl implements UserService {
 
         this.userRepository.validate(id);
 
+    }
+
+    @Override
+    @Transactional
+    public void changePassword(User targetUser, UserChangePasswordDto dto, User loggedUser) {
+        if (!isAdmin(loggedUser) && !areSameUser(loggedUser, targetUser)) {
+            throw new AuthorizationException(
+                    String.format(UPGRADE_USER_PASSWORD_AUTHORIZATION_MESSAGE
+                            , loggedUser.getUserName()
+                            , targetUser.getId()));
+        }
+        // Check if Old password is the current one
+        if (!targetUser.getPassword().equals(dto.getOldPassword())) {
+            throw new WrongPasswordException(WRONG_PASSWORD_MSG);
+        }
+        // Check if New password matches Confirm New password
+        if (!dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
+            throw new PasswordMismatchException(PASSWORD_MISMATCH_MSG);
+        }
+        this.userRepository.changePassword(targetUser.getId(), dto.getNewPassword());
     }
 
     @Override

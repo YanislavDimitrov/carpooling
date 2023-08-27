@@ -16,11 +16,11 @@
     <ul role="list">
         <li th:if="${user.getUserName().equals(session.currentUser)}" class="buttons">
             <a class="btn edit-profile"
-               th:href="@{'/users/' + ${userId} + '/update'}">
+               th:href="@{'/users/' + ${user.getId()} + '/update'}">
                 <i class="fa-regular fa-pen-to-square"></i>
             </a>
             <a class="btn edit-profile"
-               th:href="@{'/users/' + ${userId} + '/delete'}">
+               th:href="@{'/users/' + ${user.getId()} + '/delete'}">
                 <i class="fa-solid fa-trash-can"></i>
             </a>
         </li>
@@ -73,14 +73,26 @@
                 <span class="role" th:text="${user.getRole()}">USER</span>
             </div>
             <div class="validation-container">
-                <h3 class="validation-label">Validated:</h3>
+                <h3 class="validation-label">Validation status:</h3>
                 <i th:if="${user.isValidated()}" class="fa-solid fa-circle-check"></i>
-                <a th:unless="${user.isValidated()}" th:href="@{${user.id}+'/verify'}">
+                <div class="not-validated" th:unless="${user.isValidated()}">
+                    <a class="resend-link" th:href="@{'/users/' + ${user.getId()} + '/validate'}">
+                        Click to validate
+                    </a>
                     <i class="fa-solid fa-circle-xmark"></i>
-                </a>
+                </div>
+
             </div>
         </li>
-        <li th:unless="${user.getVehicles().isEmpty()}" class="vehicles">
+        <li th:if="${vehiclesCount==0}" class="vehicles">
+            <a th:if="${user.getUserName().equals(session.currentUser)}" class="buttons btn create-vehicle"
+               th:href="@{'/vehicles/create'}">
+                <i class="fa-solid fa-plus fa-bounce"></i>
+            </a>
+            <h2 class="section-title">Vehicles</h2>
+            <h3>Add your first vehicle</h3>
+        </li>
+        <li th:unless="${vehiclesCount==0}" class="vehicles">
             <a th:if="${user.getUserName().equals(session.currentUser)}" class="buttons btn create-vehicle"
                th:href="@{'/vehicles/create'}">
                 <i class="fa-solid fa-plus"></i>

@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static com.example.carpooling.helpers.CustomMessages.*;
+import static com.example.carpooling.helpers.ConstantMessages.*;
 
 @Service
 public class VehicleServiceImpl implements VehicleService {

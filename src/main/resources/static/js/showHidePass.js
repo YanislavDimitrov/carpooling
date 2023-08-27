@@ -1,10 +1,10 @@
 function attachEvents() {
-    const showHideBtn = document.getElementsByClassName("show-password")[0];
+    const showPasswordBtn = document.getElementsByClassName("show-password")[0];
     const passwordInput = document.getElementById("password");
-    console.log(showHideBtn);
-    console.log(passwordInput);
 
-    showHideBtn.addEventListener('click', showHideHandler)
+
+    showPasswordBtn.addEventListener('click', showHideHandler)
+
 
     function showHideHandler(e) {
         if (e) {
@@ -12,14 +12,13 @@ function attachEvents() {
         }
         if (passwordInput.type === 'password') {
             passwordInput.type = 'text';
-            showHideBtn.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
+            showPasswordBtn.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
         } else {
             passwordInput.type = 'password';
-            showHideBtn.innerHTML = '<i class="fa-solid fa-eye"></i>';
+            showPasswordBtn.innerHTML = '<i class="fa-solid fa-eye"></i>';
         }
 
     }
-
 }
 
 attachEvents();

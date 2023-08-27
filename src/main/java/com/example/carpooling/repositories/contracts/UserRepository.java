@@ -56,4 +56,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Modifying
     @Query("UPDATE User AS u SET u.isValidated = false WHERE  u.id = :id")
     void invalidate(Long id);
+
+    @Modifying
+    @Query("UPDATE User as u SET u.password = :newPassword WHERE u.id = :id")
+    void changePassword(Long id, String newPassword);
 }

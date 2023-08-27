@@ -44,7 +44,7 @@ public class VerificationMvcController {
         }
     }
 
-    @GetMapping("verify")
+    @GetMapping("validate")
     public String verifyEmail(@RequestParam("token") String token) {
         VerificationToken verificationToken = tokenService.findByToken(token);
         if (verificationToken != null && !verificationToken.isExpired()) {

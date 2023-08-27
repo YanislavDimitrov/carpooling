@@ -23,7 +23,7 @@ public class VerificationController {
         this.userService = userService;
     }
 
-    @GetMapping("verify")
+    @GetMapping("validate")
     public ResponseEntity<String> verifyEmail(@RequestParam("token") String token) {
         VerificationToken verificationToken = tokenRepository.findByToken(token);
         if (verificationToken != null && !verificationToken.isExpired()) {

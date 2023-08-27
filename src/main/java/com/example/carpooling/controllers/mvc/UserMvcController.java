@@ -2,6 +2,7 @@ package com.example.carpooling.controllers.mvc;
 
 import com.example.carpooling.exceptions.ActiveTravelException;
 import com.example.carpooling.exceptions.AuthenticationFailureException;
+import com.example.carpooling.exceptions.AuthorizationException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.models.Image;
@@ -104,7 +105,7 @@ public class UserMvcController {
             }
             UserViewDto userNewViewDto = this.modelMapper.map(user, UserViewDto.class);
             model.addAttribute("user", userNewViewDto);
-            model.addAttribute("userId", userNewViewDto.getId());
+            model.addAttribute("vehiclesCount", user.getVehiclesCount());
             return "UserView";
         } catch (EntityNotFoundException e) {
             return "NotFoundView";
@@ -247,7 +248,51 @@ public class UserMvcController {
             return "AccessDeniedView";
         }
         model.addAttribute("changePasswordInfo", new UserChangePasswordDto());
+        model.addAttribute("userId",id);
         return "ChangePasswordView";
+    }
+
+    @PostMapping("{id}/change-password")
+    public String changePassword(@Valid @ModelAttribute("changePasswordInfo") UserChangePasswordDto dto,
+                                 BindingResult bindingResult,
+                                 Model model,
+                                 @PathVariable Long id, HttpSession session) {
+        User loggedUser;
+        try {
+            loggedUser = authenticationHelper.tryGetUser(session);
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        }
+        User targetUser;
+        try {
+            targetUser = this.userService.getById(id);
+        } catch (EntityNotFoundException e) {
+            return "NotFoundView";
+        }
+
+        if (!dto.getOldPassword().equals(targetUser.getPassword())) {
+            bindingResult.rejectValue("oldPassword",
+                    "password_error",
+                    "Wrong password");
+        }
+
+        if (!dto.getNewPassword().equals(dto.getConfirmNewPassword())) {
+            bindingResult.rejectValue("confirmNewPassword",
+                    "password_error",
+                    "New password and Confirm New password don't match");
+        }
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("userId",id);
+            return "ChangePasswordView";
+        }
+
+        try {
+            this.userService.changePassword(targetUser, dto, loggedUser);
+        } catch (AuthorizationException e) {
+            return "AccessDeniedView";
+        }
+        return "PasswordChangeSuccessView";
     }
 
     @GetMapping("{id}/complete-travels-delete")
@@ -273,7 +318,7 @@ public class UserMvcController {
         }
     }
 
-    @GetMapping("{id}/verify")
+    @GetMapping("{id}/validate")
     public String verifyUser(@PathVariable Long id, HttpSession session) throws MessagingException, IOException {
         User loggedUser;
         try {
