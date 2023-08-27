@@ -299,10 +299,10 @@ public class TravelMvcController {
                 travelRequestService.delete(travelRequestService.findByTravelIsAndPassengerIsAndStatus(
                         travel, loggedUser, TravelRequestStatus.PENDING).getId(), loggedUser
                 );
-                return "redirect:/travels/" + travel.getId();
+                return "RequestCancelledView";
             }
             travelRequestService.createRequest(travel, loggedUser);
-            return "redirect:/travels/" + travel.getId();
+            return "RequestSentView";
         } catch (
                 AuthenticationFailureException e) {
             return "redirect:/auth/login";

@@ -137,11 +137,20 @@
         Microsoft.Maps.loadModule('Microsoft.Maps.Directions', {callback: loadMap});
     };
 </script>
-<script type="text/javascript" src="../static/js/applyForTravelButton.js"
-        th:src="@{/js/applyForTravelButton.js}"></script>
+<script>
+    function toggleLabel() {
+        var button = document.getElementById("dynamic-button");
+        if (button.innerHTML === "Apply for travel") {
+            button.innerHTML = "Cancel your request";
+        } else {
+            button.innerHTML = "Apply for travel";
+        }
+    }
+</script>
 <script type="text/javascript" src="../static/js/showTravelRequests.js"
         th:src="@{/js/showTravelRequests.js}"></script>
 <script type="text/javascript" src="../static/js/showPassengers.js"
         th:src="@{/js/showPassengers.js}"></script>
+<script type="text/javascript" src="../static/js/showDropdown.js" th:src="@{/js/showDropdown.js}"></script>
 </body>
 </html>

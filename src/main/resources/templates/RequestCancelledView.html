@@ -1,21 +1,36 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Request Sent</title>
+  <title>Carpool</title>
   <link rel="website icon" th:type="png" th:href="@{/images/carpool_simplelogo.png}">
   <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
   <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
   <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">
+  <link rel="stylesheet" href="../static/blockedUser.css" th:href="@{/blockedUser.css}">
 </head>
 <body>
+<!--HEADER-->
 <header th:replace="index.html :: header"></header>
 <section class="main">
-  <h1>Your request was successfully cancelled.</h1>
-  <a href="#" th:href="@{/}">Go back to Home Page</a>
+  <h1 class="title">Request cancelled successfully!</h1>
+  <p>You can either continue browsing through our travels, <br> or go back to our home page.
+  <div class="options-container">
+    <a class="btn"
+       th:href="@{/travels}">
+      <i class="fa-solid fa-flag-checkered"></i>Travels
+    </a>
+    <p>or</p>
+    <a class="btn"
+       th:href="@{/}">
+      <i class="fa-solid fa-magnifying-glass"></i> Home page
+    </a>
+  </div>
+  <img src="../static/images/ActiveTravels.png" th:src="@{/images/ActiveTravels.png}">
 </section>
-<footer th:replace="index.html :: footer"></footer>
+<!--FOOTER-->
+<header th:replace="index.html :: footer"></header>
 <script type="text/javascript" src="../static/js/showDropdown.js" th:src="@{/js/showDropdown.js}"></script>
-
 </body>
 </html>
