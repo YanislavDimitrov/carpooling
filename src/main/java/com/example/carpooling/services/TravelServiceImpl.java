@@ -290,6 +290,11 @@ public class TravelServiceImpl implements TravelService {
         return travel != null && travel.getTravelRequests().stream().anyMatch(request -> request.getPassenger().equals(user));
     }
 
+    @Override
+    public boolean isPassengerInThisTravel(User user, Travel travel) {
+     return passengerRepository.existsByUserAndTravel(user,travel);
+    }
+
     private static void checkIfTheTravelTimeFrameIsValid(Travel travel, User driver) {
         for (Travel travelToCheck : driver.getTravelsAsDriver()) {
             if (travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime())

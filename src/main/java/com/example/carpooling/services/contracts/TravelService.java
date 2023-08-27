@@ -56,6 +56,7 @@ public interface TravelService {
 
     void updateTravelStatus();
     boolean isRequestedByUser(Long travelId, User user);
+    boolean isPassengerInThisTravel (User user , Travel travel);
 
     Long count();
 

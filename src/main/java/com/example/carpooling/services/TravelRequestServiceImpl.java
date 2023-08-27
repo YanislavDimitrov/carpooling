@@ -167,7 +167,7 @@ public class TravelRequestServiceImpl implements TravelRequestService {
         if (!travel.getDriver().equals(editor)) {
             throw new AuthorizationException(NOT_AUTHORIZED);
         }
-        if(travel.getStatus() != TravelStatus.PLANNED) {
+        if (travel.getStatus() != TravelStatus.PLANNED) {
             throw new InvalidOperationException("You cannot remove a passenger if the travel is not in Planned status!");
         }
         TravelRequest travelRequest = findByTravelIsAndPassengerIsAndStatus(travel, user, TravelRequestStatus.APPROVED);
@@ -220,6 +220,24 @@ public class TravelRequestServiceImpl implements TravelRequestService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void deleteByTravelAndAndPassenger(Travel travel, User user) {
+        if (!travelRepository.existsById(travel.getId())) {
+            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, travel.getId()));
+        }
+        if (!userRepository.existsById(user.getId())) {
+            throw new EntityNotFoundException(String.format(USER_NOT_FOUND, user.getId()));
+        }
+        boolean isPassenger = passengerRepository.existsByUserAndTravel(user, travel);
+        Passenger passenger = passengerRepository.findByUserAndTravel(user, travel);
+        if (isPassenger) {
+            travelRequestRepository.deleteByTravelAndAndPassenger(travel, user);
+        }
+        passengerRepository.delete(passenger);
+        travel.setFreeSpots((short) (travel.getFreeSpots() + 1));
+    }
+
+    @Override
     public void rejectWhenAlreadyPassenger(Long id, User editor, Travel travel) {
         if (!userRepository.existsById(id)) {
             throw new EntityNotFoundException(String.format(USER_NOT_FOUND, id));
@@ -255,6 +273,6 @@ public class TravelRequestServiceImpl implements TravelRequestService {
 
     @Override
     public boolean existsByTravelAndPassenger(Travel travel, User user) {
-        return travelRequestRepository.existsByTravelAndPassenger(travel,user);
+        return travelRequestRepository.existsByTravelAndPassenger(travel, user);
     }
 }

@@ -54,7 +54,7 @@
                     <a class="btn delete" href="#" th:href="@{/travels/{id}/delete(id=${travel.getId()})}"><i
                             class="fa-solid fa-trash-can"></i></a>
                 </td>
-                <td th:if="${!travel.getDriverName().equals(session.currentUser)}">
+                <td th:if="${!travel.getDriverName().equals(session.currentUser)} and ${!isPassenger}">
                     <a href="#" th:href="@{/travels/{id}/apply(id=${travel.getId()})}">
                         <button class="toggle-request-button"
                                 th:text="${isRequestedByUser ? 'Cancel Request' : 'Apply for Travel'}"></button>
@@ -62,8 +62,12 @@
                 </td>
 
                 <td th:if="${travel.getDriverName().equals(session.currentUser)} and ${travel.status != T(com.example.carpooling.models.enums.TravelStatus).COMPLETED}">
-                    <a  class="btn delete" href="#" th:href="@{/travels/{id}/complete(id=${travel.getId()})}">
+                    <a class="btn delete" href="#" th:href="@{/travels/{id}/complete(id=${travel.getId()})}">
                         <i class="fa-solid fa-check"></i></a>
+                </td>
+                <td th:if="${isPassenger} and ${travel.getStatus() == T(com.example.carpooling.models.enums.TravelStatus).PLANNED}">
+                    <a class="btn edit" href="#" th:href="@{/travels/{id}/delete-request(id=${travel.getId()})}">Withdraw
+                        your seat</a>
                 </td>
 
 

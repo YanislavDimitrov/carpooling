@@ -30,6 +30,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/travels")
 public class TravelMvcController {
+    public static final String WITHDRAWAL_REJECTED = "You cannot withdraw your request if the travel is not with status 'PLANNED'!";
     private final TravelService travelService;
     private final TravelRequestService travelRequestService;
     private final UserService userService;
@@ -152,13 +153,15 @@ public class TravelMvcController {
                 .stream()
                 .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.PENDING)
                 .toList();
-        boolean isRequestedByUser = travelService.isRequestedByUser(id,loggedUser);
+        boolean isRequestedByUser = travelService.isRequestedByUser(id, loggedUser);
+        boolean isPassenger = travelService.isPassengerInThisTravel(loggedUser, travelService.getById(id));
         model.addAttribute("startDestination", travelFrontEndView.getDeparturePoint());
         model.addAttribute("endDestination", travelFrontEndView.getArrivalPoint());
         model.addAttribute("travel", travelFrontEndView);
         model.addAttribute("passengers", travelService.getAllPassengersForTravel(travelService.getById(id)));
         model.addAttribute("travelRequestForThisTravel", travelRequests);
-        model.addAttribute("isRequestedByUser",isRequestedByUser);
+        model.addAttribute("isRequestedByUser", isRequestedByUser);
+        model.addAttribute("isPassenger", isPassenger);
         return "TravelView";
     }
 
@@ -386,6 +389,29 @@ public class TravelMvcController {
             return "redirect:/auth/login";
         } catch (EntityNotFoundException e) {
             return "NotFoundView";
+        }
+    }
+
+    @GetMapping("/{id}/delete-request")
+    public String withdrawRequest(@PathVariable Long id, HttpSession session) {
+        User loggedUser;
+        try {
+            Travel travel = travelService.getById(id);
+            if (travel.getStatus() != TravelStatus.PLANNED) {
+                throw new InvalidTravelException(WITHDRAWAL_REJECTED);
+            }
+            loggedUser = authenticationHelper.tryGetUser(session);
+            boolean isPassengerInThisTravel = travelService.isPassengerInThisTravel(loggedUser, travel);
+            if (isPassengerInThisTravel) {
+                travelRequestService.deleteByTravelAndAndPassenger(travel, loggedUser);
+            }
+            return "WithDrawRequest";
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        } catch (EntityNotFoundException e) {
+            return "NotFoundView";
+        } catch (InvalidTravelException e) {
+            return "InvalidTravelStatus";
         }
     }
 

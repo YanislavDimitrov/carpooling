@@ -1,5 +1,6 @@
 package com.example.carpooling.repositories.contracts;
 
+import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.models.Passenger;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.User;
@@ -13,4 +14,6 @@ public interface PassengerRepository extends JpaRepository<Passenger, Long> {
 
     List<Passenger> findAllByTravelIs(Travel travel);
     Passenger findByUserAndTravel(User user , Travel travel);
+
+    boolean existsByUserAndTravel(User user , Travel travel);
 }
