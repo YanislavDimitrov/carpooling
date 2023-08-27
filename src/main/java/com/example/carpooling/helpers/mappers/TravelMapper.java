@@ -37,8 +37,8 @@ public class TravelMapper {
         travelViewDto.setDistance(travel.getDistance());
         int wholeNumberIndex = travel.getTravelDuration().indexOf(" ");
         double durationAsDouble = Double.parseDouble(travel.getTravelDuration().substring(0, wholeNumberIndex));
-        int hours ;
-        if(durationAsDouble >= 60) {
+        int hours;
+        if (durationAsDouble >= 60) {
             hours = (int) (durationAsDouble / 60);
             double minutes = durationAsDouble - hours * 60;
             if (hours > 0 && minutes > 0) {
@@ -85,7 +85,7 @@ public class TravelMapper {
 
     public TravelCreationOrUpdateDto fromTravel(Long id) {
         TravelCreationOrUpdateDto travelCreationOrUpdateDto = new TravelCreationOrUpdateDto();
-        Travel travel =  travelService.getById(id);
+        Travel travel = travelService.getById(id);
         travelCreationOrUpdateDto.setArrivalPoint(travel.getArrivalPoint());
         travelCreationOrUpdateDto.setComment(travel.getComment());
         travelCreationOrUpdateDto.setDeparturePoint(travel.getDeparturePoint());
@@ -93,6 +93,7 @@ public class TravelMapper {
         travelCreationOrUpdateDto.setDepartureTime(travel.getDepartureTime());
         return travelCreationOrUpdateDto;
     }
+
     public TravelFrontEndView fromTravelToFrontEnd(Travel travel) {
         TravelFrontEndView travelFrontEndView = new TravelFrontEndView();
         travelFrontEndView.setId(travel.getId());
@@ -100,11 +101,11 @@ public class TravelMapper {
         travelFrontEndView.setArrivalTime(travel.getEstimatedTimeOfArrival());
         travelFrontEndView.setComment(travel.getComment());
         travelFrontEndView.setDistance(travel.getDistance());
-travelFrontEndView.setDeleted(travel.isDeleted());
+        travelFrontEndView.setDeleted(travel.isDeleted());
         int wholeNumberIndex = travel.getTravelDuration().indexOf(" ");
         double durationAsDouble = Double.parseDouble(travel.getTravelDuration().substring(0, wholeNumberIndex));
-        int hours ;
-        if(durationAsDouble >= 60) {
+        int hours;
+        if (durationAsDouble >= 60) {
             hours = (int) (durationAsDouble / 60);
             double minutes = durationAsDouble - hours * 60;
             if (hours > 0 && minutes > 0) {

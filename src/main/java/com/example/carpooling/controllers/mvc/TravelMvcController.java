@@ -7,7 +7,6 @@ import com.example.carpooling.helpers.mappers.TravelMapper;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
-import com.example.carpooling.models.Vehicle;
 import com.example.carpooling.models.dtos.TravelCreationOrUpdateDto;
 import com.example.carpooling.models.dtos.TravelFrontEndView;
 import com.example.carpooling.models.enums.TravelRequestStatus;
@@ -47,6 +46,23 @@ public class TravelMvcController {
         this.authenticationHelper = authenticationHelper;
     }
 
+    @GetMapping
+    public String viewAllTravels(Model model, HttpSession session) {
+        User loggedUser;
+        try {
+            loggedUser = authenticationHelper.tryGetUser(session);
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        }
+        List<TravelFrontEndView> travels = travelService.findAllByStatusPlanned()
+                .stream()
+                .map(travelMapper::fromTravelToFrontEnd)
+                .toList();
+        model.addAttribute("travels", travels);
+        return "TravelsView";
+    }
+
+
     @GetMapping("/search")
     public String searchTravels(
             @RequestParam(required = false) String departurePoint,
@@ -64,20 +80,22 @@ public class TravelMvcController {
         return "TravelsView";
     }
 
-    @GetMapping
-    public String viewAllTravels(Model model, HttpSession session) {
+
+    @GetMapping("/all")
+    public String viewAllTravelsIncludingActive(HttpSession session, Model model) {
         try {
-            authenticationHelper.tryGetUser(session);
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            List<TravelFrontEndView> travels = travelService.get()
+                    .stream()
+                    .map(travelMapper::fromTravelToFrontEnd)
+                    .toList();
+            model.addAttribute("travels", travels);
+            return "TravelsView";
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         }
-        List<TravelFrontEndView> travels = travelService.findAllByStatusPlanned()
-                .stream()
-                .map(travelMapper::fromTravelToFrontEnd)
-                .toList();
-        model.addAttribute("travels", travels);
-        return "TravelsView";
     }
+
 
     @GetMapping("/user")
     public String viewAllTravelsForUser(HttpSession session, Model model) {
@@ -125,7 +143,7 @@ public class TravelMvcController {
             return "redirect:/auth/login";
         }
         TravelFrontEndView travelFrontEndView = travelMapper.fromTravelToFrontEnd(travelService.getById(id));
-        if(travelFrontEndView.isDeleted()) {
+        if (travelFrontEndView.isDeleted()) {
             return "DeletedSourceView";
         }
         List<TravelRequest> travelRequests = travelService.getById(id)
@@ -143,19 +161,21 @@ public class TravelMvcController {
 
     @GetMapping("/new")
     public String showNewTravelPage(Model model, HttpSession session) {
+        User loggedUser;
         try {
-            authenticationHelper.tryGetUser(session);
+            loggedUser = authenticationHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         }
         model.addAttribute("travel", new TravelCreationOrUpdateDto());
+        model.addAttribute("vehicles", loggedUser.getVehicles());
         return "NewTravelView";
     }
 
     @PostMapping("/new")
     public String createTravel(@Valid @ModelAttribute("travel") TravelCreationOrUpdateDto travel,
                                BindingResult errors,
-                               HttpSession session) {
+                               HttpSession session, Model model) {
         User driver;
         try {
             driver = authenticationHelper.tryGetUser(session);
@@ -163,6 +183,7 @@ public class TravelMvcController {
             return "redirect:/auth/login";
         }
         if (errors.hasErrors()) {
+            model.addAttribute("vehicles", driver.getVehicles());
             return "NewTravelView";
         }
         Travel newTravel = travelMapper.toTravelFromTravelCreationDto(travel);
@@ -170,10 +191,12 @@ public class TravelMvcController {
             travelService.create(newTravel, driver);
         } catch (InvalidOperationException e) {
             errors.rejectValue("departureTime", "creation_error", e.getMessage());
+            model.addAttribute("vehicles", driver.getVehicles());
             return "NewTravelView";
         } catch (InvalidLocationException | InvalidTravelException e) {
             errors.rejectValue("departurePoint", "location_error", e.getMessage());
             errors.rejectValue("arrivalPoint", "location_error", e.getMessage());
+            model.addAttribute("vehicles", driver.getVehicles());
             return "NewTravelView";
         }
         return "redirect:/travels/" + newTravel.getId();
@@ -182,8 +205,9 @@ public class TravelMvcController {
     @GetMapping("/{id}/update")
     public String showUpdateTravelPage(@PathVariable Long id, HttpSession session, Model model) {
         Travel travel;
+        User loggedUser;
         try {
-            User loggedUser = this.authenticationHelper.tryGetUser(session);
+            loggedUser = this.authenticationHelper.tryGetUser(session);
             travel = travelService.getById(id);
             if (!loggedUser.getRole().equals(UserRole.ADMIN) && !travel.getDriver().equals(loggedUser)) {
                 return "AccessDeniedView";
@@ -196,6 +220,7 @@ public class TravelMvcController {
         TravelCreationOrUpdateDto travelCreationOrUpdateDto = travelMapper.fromTravel(id);
         model.addAttribute("updateTravel", travelCreationOrUpdateDto);
         model.addAttribute("travelId", id);
+        model.addAttribute("vehicles", loggedUser.getVehicles());
 
         return "UpdateTravelView";
     }
@@ -205,26 +230,33 @@ public class TravelMvcController {
                                @ModelAttribute("updateTravel") TravelCreationOrUpdateDto travelUpdateDto,
                                BindingResult errors,
                                @PathVariable Long id,
-                               HttpSession session
+                               HttpSession session,
+                               Model model
     ) {
         User loggedUser = this.authenticationHelper.tryGetUser(session);
         Travel travel = travelService.getById(id);
         Travel travelUpdate = travelMapper.toTravelFromTravelUpdateSaveDto(travel, travelUpdateDto);
         if (errors.hasErrors()) {
+            model.addAttribute("vehicles", loggedUser.getVehicles());
             return "UpdateTravelView";
         }
 
         try {
             travelService.update(travelUpdate, loggedUser);
-        } catch (AuthorizationException | InvalidOperationException e) {
+        } catch (AuthorizationException e) {
             return "AccessDeniedView";
         } catch (EntityNotFoundException e) {
             return "NotFoundView";
-        } catch (InvalidLocationException e) {
+        } catch (InvalidLocationException | InvalidTravelException e) {
             errors.rejectValue("departurePoint", "location_error", e.getMessage());
             errors.rejectValue("arrivalPoint", "location_error", e.getMessage());
+            model.addAttribute("vehicles", loggedUser.getVehicles());
+        } catch (InvalidOperationException e) {
+            errors.rejectValue("departureTime", "creation_error", e.getMessage());
+            model.addAttribute("vehicles", loggedUser.getVehicles());
+            return "UpdateTravelView";
         }
-        return String.format("redirect:/travels/%d", id);
+        return "redirect:/travels/" + id;
     }
 
     @GetMapping("/{id}/delete")
@@ -339,14 +371,15 @@ public class TravelMvcController {
             return "InvalidOperationView";
         }
     }
+
     @GetMapping("/{id}/complete")
-    public String completeTravel( @PathVariable Long id  ,HttpSession session) {
+    public String completeTravel(@PathVariable Long id, HttpSession session) {
         try {
             User loggedUser = authenticationHelper.tryGetUser(session);
             Travel travel = travelService.getById(id);
-            travelService.completeTravel(id,loggedUser);
+            travelService.completeTravel(id, loggedUser);
             return "redirect:/";
-        }catch (AuthenticationFailureException e ) {
+        } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         } catch (EntityNotFoundException e) {
             return "NotFoundView";
@@ -363,6 +396,7 @@ public class TravelMvcController {
             return false;
         }
     }
+
     @ModelAttribute("travelRequests")
     public List<TravelRequest> populateTravelRequests() {
         return travelRequestService.get();
@@ -382,8 +416,5 @@ public class TravelMvcController {
     public boolean populateIsAuthenticated(HttpSession session) {
         return session.getAttribute("currentUser") != null;
     }
-    @ModelAttribute("vehicles")
-    public List<Vehicle> populateVehicles(HttpSession session) {
-        return authenticationHelper.tryGetUser(session).getVehicles();
-    }
+
 }

@@ -38,6 +38,8 @@ public class TravelServiceImpl implements TravelService {
     public static final String TRAVEL_AT_THIS_TIME = "You already have planned travel for %s , if you want to proceed you should cancel it first!";
     public static final String TRAVEL_AS_PASSENGER = "You have approved request for being passenger on travel from %s to %s , so if you want to create a Travel you should cancel your request for participating in your passenger travel!";
     public static final String YOU_CAN_UPDATE_ONLY_PLANNED_TRAVELS = "You can update only planned travels!";
+    public static final String TRAVEL_PLANNED_IN_THIS_TIME_FRAME = "You are planning to create a travel but you currently have a planned travel which departure time is before your current estimated time of arrival, so reconsider either cancelling your travel travel from %s to %s at %s or change the timeframe for this one";
+    public static final String TRAVEL_IN_THIS_TIME_FRAME = "You have a planned travel which is scheduled for %s from %s to %s , if you want to plan this travel you should either reconsider the departure time or cancel the travel that you have planned , in order not to disappoint potential passengers!";
     private final TravelRepository travelRepository;
     private final PassengerRepository passengerRepository;
     private final UserService userService;
@@ -139,78 +141,19 @@ public class TravelServiceImpl implements TravelService {
      */
     @Override
     public void create(Travel travel, User driver) {
-        for (Travel travelToCheck : driver.getTravelsAsDriver()) {
-            if (travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime())
-                    && travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival())
-                    && travelToCheck.getStatus() == TravelStatus.ACTIVE
-            ) {
-                throw new InvalidOperationException(TRAVEL_CREATION_FAILED);
-            }
-            if (travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime())
-                    && travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival()) && travelToCheck.getStatus() == TravelStatus.PLANNED) {
-                throw new InvalidOperationException(String.format(EXISTING_TRAVEL, travelToCheck.getDeparturePoint(), travelToCheck.getArrivalPoint(), travelToCheck.getDepartureTime()));
-            }
-            if (travel.getDepartureTime().isEqual(travelToCheck.getDepartureTime())) {
-                throw new InvalidOperationException(String.format(TRAVEL_AT_THIS_TIME, travelToCheck.getDepartureTime()));
-            }
-        }
-        List<TravelRequest> travelRequestOfTheDriverAsPassenger = driver.getTravelsAsPassenger()
-                .stream()
-                .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.APPROVED)
-                .toList();
-        List<Travel> travelsOfUserAsPassenger = new ArrayList<>();
-        for (TravelRequest travelRequest : travelRequestOfTheDriverAsPassenger) {
-            travelsOfUserAsPassenger.add(travelRequest.getTravel());
-        }
-        for (Travel travelToCheckAsPassenger : travelsOfUserAsPassenger) {
-            if (travel.getDepartureTime().isAfter(travelToCheckAsPassenger.getDepartureTime())
-                    && travel.getDepartureTime().isBefore(travelToCheckAsPassenger.getEstimatedTimeOfArrival()) && travelToCheckAsPassenger.getStatus() == TravelStatus.ACTIVE) {
-                throw new InvalidOperationException(String.format(TRAVEL_AS_PASSENGER,
-                        travelToCheckAsPassenger.getDeparturePoint(),
-                        travelToCheckAsPassenger.getArrivalPoint()));
-            }
-        }
+        checkIfTheTravelTimeFrameIsValid(travel, driver);
         calculatingDistanceAndDuration(travel);
         travel.setStatus(TravelStatus.PLANNED);
         travel.setDriver(driver);
         travelRepository.save(travel);
     }
-
-
     /**
      * @param travel this parameter is used for extraction of departure address of the travel and arrival address
      *               of the travel and then via methods of Microsoft Bing Maps these addresses are converted to
      *               coordinates and are held to other external API endpoint which calculates the distance and the
      *               estimated time of travelling between the two places the user typed in the input field.
      */
-    private void calculatingDistanceAndDuration(Travel travel) {
-        String departurePoint = bingMapsService.getLocationJson(travel.getDeparturePoint());
-        double[] coordinatesOfDeparturePoint = bingMapsService.parseCoordinates(departurePoint);
-        double departureLatitude = coordinatesOfDeparturePoint[0];
-        double departureLongitude = coordinatesOfDeparturePoint[1];
 
-        String arrivalPoint = bingMapsService.getLocationJson(travel.getArrivalPoint());
-        double[] coordinatesOfArrivalPoint = bingMapsService.parseCoordinates(arrivalPoint);
-        double arrivalLatitude = coordinatesOfArrivalPoint[0];
-        double arrivalLongitude = coordinatesOfArrivalPoint[1];
-
-        String departurePointInCoordinates = String.format("%f,%f", departureLatitude, departureLongitude);
-        String arrivalPointInCoordinates = String.format("%f,%f", arrivalLatitude, arrivalLongitude);
-
-        int intervalBetweenDurationAndDistance = bingMapsService.getTravelDistance(
-                departurePointInCoordinates, arrivalPointInCoordinates).indexOf('m');
-
-        travel.setTravelDuration(bingMapsService.getTravelDistance(
-                        departurePointInCoordinates, arrivalPointInCoordinates)
-                .substring(intervalBetweenDurationAndDistance + 1));
-        travel.setDistance(bingMapsService.getTravelDistance(departurePointInCoordinates, arrivalPointInCoordinates)
-                .substring(0, intervalBetweenDurationAndDistance + 1));
-        int indexOfMinutes = travel.getTravelDuration().indexOf('m');
-        double minutesToAdd = Double.parseDouble(travel.getTravelDuration().substring(0, indexOfMinutes - 1));
-        long secondsToAdd = (long) (minutesToAdd * 60);
-        LocalDateTime arrivalTime = travel.getDepartureTime().plusSeconds(secondsToAdd);
-        travel.setEstimatedTimeOfArrival(arrivalTime);
-    }
 
     /**
      * @param travel this parameter is the travel which was held by the controller class and it is with already refactored
@@ -221,6 +164,7 @@ public class TravelServiceImpl implements TravelService {
      */
     @Override
     public Travel update(Travel travel, User editor) {
+        checkIfTheTravelTimeFrameIsValid(travel, editor);
         if (!travel.getDriver().equals(editor)) {
             throw new AuthorizationException(UPDATE_CANCELLED);
         }
@@ -339,6 +283,77 @@ public class TravelServiceImpl implements TravelService {
             travel.setDeleted(true);
         }
         userService.delete(user.getId(), user);
+    }
+
+    private static void checkIfTheTravelTimeFrameIsValid(Travel travel, User driver) {
+        for (Travel travelToCheck : driver.getTravelsAsDriver()) {
+            if (travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime())
+                    && travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival())
+                    && travelToCheck.getStatus() == TravelStatus.ACTIVE
+            ) {
+                throw new InvalidOperationException(TRAVEL_CREATION_FAILED);
+            }
+            if (travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival()) &&
+                    travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime()) &&
+                    travelToCheck.getStatus() == TravelStatus.PLANNED) {
+                throw new InvalidOperationException(String.format(TRAVEL_IN_THIS_TIME_FRAME,
+                        travelToCheck.getDepartureTime(),
+                        travelToCheck.getDeparturePoint(),
+                        travelToCheck.getArrivalPoint()));
+            }
+            if (travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime())
+                    && travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival()) && travelToCheck.getStatus() == TravelStatus.PLANNED) {
+                throw new InvalidOperationException(String.format(EXISTING_TRAVEL, travelToCheck.getDeparturePoint(), travelToCheck.getArrivalPoint(), travelToCheck.getDepartureTime()));
+            }
+            if (travel.getDepartureTime().isEqual(travelToCheck.getDepartureTime())) {
+                throw new InvalidOperationException(String.format(TRAVEL_AT_THIS_TIME, travelToCheck.getDepartureTime()));
+            }
+        }
+        List<TravelRequest> travelRequestOfTheDriverAsPassenger = driver.getTravelsAsPassenger()
+                .stream()
+                .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.APPROVED)
+                .toList();
+        List<Travel> travelsOfUserAsPassenger = new ArrayList<>();
+        for (TravelRequest travelRequest : travelRequestOfTheDriverAsPassenger) {
+            travelsOfUserAsPassenger.add(travelRequest.getTravel());
+        }
+        for (Travel travelToCheckAsPassenger : travelsOfUserAsPassenger) {
+            if (travel.getDepartureTime().isAfter(travelToCheckAsPassenger.getDepartureTime())
+                    && travel.getDepartureTime().isBefore(travelToCheckAsPassenger.getEstimatedTimeOfArrival()) && travelToCheckAsPassenger.getStatus() == TravelStatus.ACTIVE) {
+                throw new InvalidOperationException(String.format(TRAVEL_AS_PASSENGER,
+                        travelToCheckAsPassenger.getDeparturePoint(),
+                        travelToCheckAsPassenger.getArrivalPoint()));
+            }
+        }
+    }
+
+    private void calculatingDistanceAndDuration(Travel travel) {
+        String departurePoint = bingMapsService.getLocationJson(travel.getDeparturePoint());
+        double[] coordinatesOfDeparturePoint = bingMapsService.parseCoordinates(departurePoint);
+        double departureLatitude = coordinatesOfDeparturePoint[0];
+        double departureLongitude = coordinatesOfDeparturePoint[1];
+
+        String arrivalPoint = bingMapsService.getLocationJson(travel.getArrivalPoint());
+        double[] coordinatesOfArrivalPoint = bingMapsService.parseCoordinates(arrivalPoint);
+        double arrivalLatitude = coordinatesOfArrivalPoint[0];
+        double arrivalLongitude = coordinatesOfArrivalPoint[1];
+
+        String departurePointInCoordinates = String.format("%f,%f", departureLatitude, departureLongitude);
+        String arrivalPointInCoordinates = String.format("%f,%f", arrivalLatitude, arrivalLongitude);
+
+        int intervalBetweenDurationAndDistance = bingMapsService.getTravelDistance(
+                departurePointInCoordinates, arrivalPointInCoordinates).indexOf('m');
+
+        travel.setTravelDuration(bingMapsService.getTravelDistance(
+                        departurePointInCoordinates, arrivalPointInCoordinates)
+                .substring(intervalBetweenDurationAndDistance + 1));
+        travel.setDistance(bingMapsService.getTravelDistance(departurePointInCoordinates, arrivalPointInCoordinates)
+                .substring(0, intervalBetweenDurationAndDistance + 1));
+        int indexOfMinutes = travel.getTravelDuration().indexOf('m');
+        double minutesToAdd = Double.parseDouble(travel.getTravelDuration().substring(0, indexOfMinutes - 1));
+        long secondsToAdd = (long) (minutesToAdd * 60);
+        LocalDateTime arrivalTime = travel.getDepartureTime().plusSeconds(secondsToAdd);
+        travel.setEstimatedTimeOfArrival(arrivalTime);
     }
 
     @Override

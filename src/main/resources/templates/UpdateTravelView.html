@@ -43,6 +43,16 @@
                 <textarea id="comment-content" cols="10" rows="5" th:field="*{comment}"
                           placeholder="Comment"></textarea>
             </div>
+            <div class="field-container">
+                <label th:text="#{travel.label.vehicle}">Vehicle</label>
+                <select th:field="*{vehicle}">
+                    <option th:each="vehicle : ${vehicles}"
+                            th:value="${vehicle.getId()}"
+                            th:text="${vehicle.getMake() +' ' } + ${vehicle.getModel()}">
+                    </option>
+                </select>
+                <label class="error" th:errors="*{vehicle}">Vehicle error placeholder</label>
+            </div>
             <input type="submit" value="Update Travel">
         </form>
     </div>
