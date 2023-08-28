@@ -1,0 +1,256 @@
+
+.user .user-img-container{
+    overflow: hidden;
+    width: 200px;
+    border-radius: 100%;
+    aspect-ratio: 1/1;
+}
+
+.user .profile-picture{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.main .user-operations{
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.main .user-operations div > *{
+    display: block;
+}
+
+.main{
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    min-height: 84vh;
+    padding: 2rem 18rem;
+}
+.main .users-container{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+
+.main .user{
+    padding: 1rem;
+    min-width: 350px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-wrap: nowrap;
+    gap: 2rem;
+    border: 2px solid #f1f1f1;
+    border-radius: 1rem;
+}
+
+.fa-circle-check {
+    color: green;
+}
+
+.fa-circle-xmark{
+    color: darkred;
+}
+
+.main .user h3{
+    display: inline-block;
+    font-weight: 500;
+}
+.main .user h2{
+    font-size: 2rem;
+}
+
+/*SET Browser background Autocomplete to background color*/
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #060e1a inset !important;
+    -webkit-text-fill-color: black !important;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+.form i{
+    width: 1rem;
+    color: rgb(65, 89, 96);
+}
+
+/*BTNs*/
+.main .btn {
+    all: unset;
+    text-align: center;
+    background-color: #174456;
+    color: rgb(255, 255, 255);
+    padding: 0.25rem .6rem;
+    border-radius: 3rem;
+    transition: background-color 300ms ease;
+}
+
+
+
+.btn:hover {
+    cursor: pointer;
+    background-color: #0b2b3a;
+    border: none;
+    color: white;
+}
+
+/*GLOBAL*/
+
+body {
+    font-family: "Poppins", sans-serif;
+    animation: fadeInAnimation ease 0.3s;
+    animation-iteration-count: 1;
+    animation-fill-mode: revert;
+}
+
+html {
+    font-size: 14px;
+    /*background-color: #060e1a;*/
+}
+
+
+#content .form-title {
+    font-size: 2.5rem;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    margin-bottom: 2rem;
+}
+
+
+.filter-buttons {
+    padding-top: 2rem;
+    text-align: right;
+}
+
+.form input[type="text"],
+.form input[type="password"],
+.form input[type="email"]{
+    all: unset;
+    border: none;
+    width: 95%;
+    transition: color ease-in-out .1s;
+}
+
+select{
+    border: none;
+    outline: none;
+    background-color: transparent;
+    color: rgb(65, 89, 96);
+    /*width: 100%;*/
+}
+
+.form input:focus::placeholder {
+    color: transparent;
+}
+
+.form input::placeholder{
+    color: rgb(65, 89, 96);
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+}
+
+
+
+.form .inputs-container{
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.form .select label{
+    font-size: 1.2rem;
+    color: rgb(65, 89, 96);
+    font-weight: 500;
+    position: absolute;
+    top: 0;
+    left: 4rem;
+    transform: translate(-50%, -50%);
+}
+
+.form .input-container {
+    /*overflow: hidden;*/
+    position: relative;
+    background-color: white;
+    min-width: 22%;
+    white-space: nowrap;
+    padding: .9rem 1rem;
+    border-radius: 1rem;
+    box-shadow: 3px 3px 5px 2px rgba(0, 0, 0, 0.2);
+}
+@keyframes fadeInAnimation {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.form {
+    animation: fadeInAnimation .6s linear;
+}
+
+.form button {
+    background-color: rgb(65, 89, 96);
+    border: none;
+    padding: .6rem 1.6rem;
+    border-radius: 1rem;
+    color: #fff;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+.form .reset{
+    background-color: #562317;
+}
+
+.form .reset:hover{
+    background-color: #3f1910;
+    border: none;
+    color: white;
+}
+
+.form button:hover {
+    background-color: rgb(43, 60, 65);
+    border: none;
+    color: white;
+}
+
+.form button:hover {
+    cursor: pointer;
+}
+
+/*HIDE placeholder text when FOCUSED*/
+input:focus::placeholder {
+    color: #060e1a;
+}
+
+textarea:focus::placeholder {
+    color: #060e1a;
+}
+
+/*NAVIGATION hover effects*/
+.main .header .logo:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+}
+
+.main .links .nav-link:hover {
+    cursor: pointer;
+    transform: scale(1.2);
+}

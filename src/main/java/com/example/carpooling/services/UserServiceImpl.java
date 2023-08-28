@@ -6,6 +6,7 @@ import com.example.carpooling.exceptions.duplicate.DuplicatePhoneNumberException
 import com.example.carpooling.exceptions.duplicate.DuplicateUsernameException;
 import com.example.carpooling.models.*;
 import com.example.carpooling.models.dtos.UserChangePasswordDto;
+import com.example.carpooling.models.dtos.UserPreviewDto;
 import com.example.carpooling.models.dtos.UserUpdateDto;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.models.enums.UserRole;
@@ -16,6 +17,8 @@ import com.example.carpooling.services.contracts.UserService;
 import com.example.carpooling.services.contracts.ValidationService;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -175,7 +178,7 @@ public class UserServiceImpl implements UserService {
 
         User userToBlock = optionalUserToBlock.get();
 
-        if (isAdmin(loggedUser) && !areSameUser(loggedUser, userToBlock)) {
+        if (isAdmin(loggedUser)) {
             this.userRepository.block(id);
             deleteUserFeedbacks(userToBlock);
             deleteUserTravels(userToBlock);
@@ -275,6 +278,12 @@ public class UserServiceImpl implements UserService {
             throw new PasswordMismatchException(PASSWORD_MISMATCH_MSG);
         }
         this.userRepository.changePassword(targetUser.getId(), dto.getNewPassword());
+    }
+
+    @Override
+    public Page<User> getItemsByPage(int page, int size, String firstName, String lastName, String username, String email, String phoneNumber, Sort sort) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return userRepository.findAll(pageRequest,firstName,lastName,username,email,phoneNumber,sort);
     }
 
     @Override

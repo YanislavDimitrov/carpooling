@@ -107,4 +107,8 @@ public class User {
     public Long getVehiclesCount() {
         return this.vehicles.stream().filter(v -> !v.isDeleted()).count();
     }
+
+    public boolean isAdmin() {
+        return this.role.equals(UserRole.ADMIN);
+    }
 }

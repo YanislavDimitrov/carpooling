@@ -128,7 +128,7 @@ public class UserMvcController {
             return "NotFoundView";
         } catch (ActiveTravelException e) {
             model.addAttribute("userId", id);
-            return "ActiveTravelsView";
+            return "ActiveTravelsOnDeleteView";
         }
     }
 

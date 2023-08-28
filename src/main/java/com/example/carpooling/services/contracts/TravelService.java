@@ -35,6 +35,7 @@ public interface TravelService {
 
     List<Travel> findTravelByUser(User user);
     void completeActiveTravelsAndDeleteUser(User user);
+    void completeActiveTravelsAndBlockUser(Long id, User user);
 
     List<TravelRequest> findTravelsAsPassengerByUser(User user);
 
@@ -61,4 +62,6 @@ public interface TravelService {
     Long count();
 
     Long countCompleted();
+
+
 }

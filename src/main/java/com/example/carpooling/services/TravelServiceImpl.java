@@ -273,16 +273,15 @@ public class TravelServiceImpl implements TravelService {
     }
 
     public void completeActiveTravelsAndDeleteUser(User user) {
-        List<Travel> travels = user.getTravelsAsDriver();
-        travels = travels.stream()
-                .filter(travel -> travel.getStatus() == TravelStatus.ACTIVE)
-                .collect(Collectors.toList());
-
-        for (Travel travel : travels) {
-            travel.setStatus(TravelStatus.COMPLETED);
-            travel.setDeleted(true);
-        }
+        completeActiveTravels(user);
         userService.delete(user.getId(), user);
+    }
+
+
+    @Override
+    public void completeActiveTravelsAndBlockUser(Long id, User user) {
+        completeActiveTravels(this.userService.getById(id));
+        userService.block(id, user);
     }
 
     public boolean isRequestedByUser(Long travelId, User user) {
@@ -292,7 +291,7 @@ public class TravelServiceImpl implements TravelService {
 
     @Override
     public boolean isPassengerInThisTravel(User user, Travel travel) {
-     return passengerRepository.existsByUserAndTravel(user,travel);
+        return passengerRepository.existsByUserAndTravel(user, travel);
     }
 
     private static void checkIfTheTravelTimeFrameIsValid(Travel travel, User driver) {
@@ -376,6 +375,18 @@ public class TravelServiceImpl implements TravelService {
                 travel.setStatus(TravelStatus.ACTIVE);
                 travelRepository.save(travel);
             }
+        }
+    }
+
+    private static void completeActiveTravels(User user) {
+        List<Travel> travels = user.getTravelsAsDriver();
+        travels = travels.stream()
+                .filter(travel -> travel.getStatus() == TravelStatus.ACTIVE)
+                .collect(Collectors.toList());
+
+        for (Travel travel : travels) {
+            travel.setStatus(TravelStatus.COMPLETED);
+            travel.setDeleted(true);
         }
     }
 }
