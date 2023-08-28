@@ -82,7 +82,8 @@
                      src="https://res.cloudinary.com/dqq0hqmgs/image/upload/v1693052525/yanidim.jpg">
             </div>
             <div class="user-info-container">
-                <h2 class="user-names" th:text="${currentUser.getFirstName()}+' '+${currentUser.getLastName()}+' ('+${currentUser.getUserName()}+')'">
+                <h2 class="user-names"
+                    th:text="${currentUser.getFirstName()}+' '+${currentUser.getLastName()}+' ('+${currentUser.getUserName()}+')'">
                     Yanislav
                     Dimitrov (yanidim)</h2>
                 <h3 class="user-username" th:text="${currentUser.getEmail()}">yanidim@gmail.com</h3>
@@ -105,7 +106,7 @@
                 </div>
             </div>
             <div th:if="${!session.currentUser.equals(currentUser.getUserName())}" class="user-operations">
-<!--                <h3>Actions:</h3>-->
+                <!--                <h3>Actions:</h3>-->
                 <div class="promotion">
                     <a th:if="${!currentUser.isAdmin()}"
                        class="btn make-admin"
@@ -139,16 +140,11 @@
     </div>
     <!-- Pagination controls -->
 
-    <a th:if="${userPage.getNumber()>0}" th:href="@{'/admin/users' +'?page='+${userPage.getNumber()-1}}" th:text="Prev"></a>
-    <a th:if="${userPage.getNumber()<userPage.getTotalPages()-1}" th:href="@{'/admin/users' +'?page='+${userPage.getNumber()+1}}" th:text="Next"></a>
-<!--    <div th:if="${userPage.getTotalPages() > 1}">-->
-<!--        <ul class="pagination">-->
-<!--            <li th:each="pageNumber : ${#numbers.sequence(0, userPage.totalPages - 1)}">-->
-<!--                &lt;!&ndash; Create pagination links with page parameter &ndash;&gt;-->
-<!--                <a th:href="@{'/admin/users' +'?page='+${pageNumber}}" th:text="${pageNumber + 1}"></a>-->
-<!--            </li>-->
-<!--        </ul>-->
-<!--    </div>-->
+    <a th:if="${userPage.getNumber()>0}" th:href="@{'/admin/users' +'?page='+${userPage.getNumber()-1}+${filterParams}}"
+       th:text="Prev"></a>
+    <a th:if="${userPage.getNumber()<userPage.getTotalPages()-1}"
+       th:href="@{'/admin/users' +'?page='+${userPage.getNumber()+1}+${filterParams}}" th:text="Next"></a>
+
 </section>
 <!--FOOTER-->
 <header th:replace="index.html :: footer"></header>

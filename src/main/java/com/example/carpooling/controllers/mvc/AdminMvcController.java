@@ -12,7 +12,9 @@ import com.example.carpooling.models.dtos.UserPreviewDto;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.services.contracts.TravelService;
 import com.example.carpooling.services.contracts.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,6 +26,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -82,7 +85,8 @@ public class AdminMvcController {
                            @RequestParam(defaultValue = "2") int size,
                            @ModelAttribute("filter") UserFilterDto filter,
                            Model model,
-                           HttpSession session) {
+                           HttpSession session,
+                           HttpServletRequest request) {
         User loggedUser;
         try {
 
@@ -133,13 +137,26 @@ public class AdminMvcController {
 //
 //        Page<UserPreviewDto> itemsByPage
 //                = new PageImpl<UserPreviewDto>(users.subList(start, end), pageRequest, users.size());
-
+        Map<String, String[]> parameterMap = request.getParameterMap();
+        String parameters = extractParametersSection(parameterMap);
         model.addAttribute("filter", filter);
         model.addAttribute("userPage", users);
-        System.out.println(users.getTotalPages());
-//        model.addAttribute("users", users);
+        model.addAttribute("filterParams", parameters);
 
+
+//        model.addAttribute("users", users);
         return "UsersView";
+    }
+
+    private String extractParametersSection(Map<String, String[]> parameterMap) {
+        StringBuilder builder = new StringBuilder();
+        for (String key : parameterMap.keySet()) {
+                String value = parameterMap.get(key)[0];
+            if(!value.trim().isEmpty()) {
+                builder.append("&").append(key).append("=").append(value);
+            }
+        }
+        return builder.toString();
     }
 
     @GetMapping("/{id}/upgrade")
