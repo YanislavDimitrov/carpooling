@@ -16,6 +16,8 @@ import java.util.List;
 
 @Table(name = "travels")
 @Entity
+@Getter
+@Setter
 public class Travel {
 
 
@@ -57,123 +59,8 @@ public class Travel {
     @Column(name = "is_deleted")
     private boolean isDeleted;
 
-
-
     public Travel() {
         travelRequests = new ArrayList<>();
         status = TravelStatus.PLANNED;
     }
-
-    public boolean isDeleted() {
-        return isDeleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        isDeleted = deleted;
-    }
-
-    public LocalDateTime getEstimatedTimeOfArrival() {
-        return estimatedTimeOfArrival;
-    }
-
-    public void setEstimatedTimeOfArrival(LocalDateTime estimatedTimeOfArrival) {
-        this.estimatedTimeOfArrival = estimatedTimeOfArrival;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getDeparturePoint() {
-        return departurePoint;
-    }
-
-    public void setDeparturePoint(String departurePoint) {
-        this.departurePoint = departurePoint;
-    }
-
-    public String getArrivalPoint() {
-        return arrivalPoint;
-    }
-
-    public void setArrivalPoint(String arrivalPoint) {
-        this.arrivalPoint = arrivalPoint;
-    }
-
-    public Short getFreeSpots() {
-        return freeSpots;
-    }
-
-    public void setFreeSpots(Short freeSpots) {
-        this.freeSpots = freeSpots;
-    }
-
-    public LocalDateTime getDepartureTime() {
-        return departureTime;
-    }
-
-    public void setDepartureTime(LocalDateTime departureTime) {
-        this.departureTime = departureTime;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public User getDriver() {
-        return driver;
-    }
-
-    public void setDriver(User driver) {
-        this.driver = driver;
-    }
-
-    public Vehicle getVehicle() {
-        return vehicle;
-    }
-
-    public void setVehicle(Vehicle vehicle) {
-        this.vehicle = vehicle;
-    }
-
-    public TravelStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(TravelStatus status) {
-        this.status = status;
-    }
-
-    public String getDistance() {
-        return distance;
-    }
-
-    public void setDistance(String distance) {
-        this.distance = distance;
-    }
-
-    public String getTravelDuration() {
-        return travelDuration;
-    }
-
-    public void setTravelDuration(String travelDuration) {
-        this.travelDuration = travelDuration;
-    }
-
-    public List<TravelRequest> getTravelRequests() {
-        return travelRequests;
-    }
-
-    public void setTravelRequests(List<TravelRequest> travelRequests) {
-        this.travelRequests = travelRequests;
-    }
-
 }

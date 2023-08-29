@@ -1,0 +1,212 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css");
+
+/*SET Browser background Autocomplete to background color*/
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+    /*-webkit-box-shadow: 0 0 0 1000px #060e1a inset !important;*/
+    /*-webkit-text-fill-color: white !important;*/
+}
+button {
+    border: none;
+    background-color: #00aff5;
+    color: white;
+    text-align: center;
+    height: 3.6rem;
+    transition: ease-in-out .1s;
+    border-radius: 1rem;
+}
+body {
+    height: 85vh;
+    text-align: center;
+    background-image: url(images/CoverPicture.svg);
+    background-size:cover;
+}
+.form{
+    position: marker;
+    width: 60rem;
+    height: 80vh;
+    background-image: url(images/CoverPicture.svg);
+    background-size:cover;
+    padding: 50px 220px 100px;
+    box-sizing: border-box;
+    border: 0px solid whitesmoke;
+    border-radius: 150px;
+    box-shadow: inset 0 0 1px white;
+}
+
+.main {
+    padding: 0px 30rem;
+    height: 85vh;
+}
+
+.main .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px white solid;
+}
+
+.main .header .links {
+    display: flex;
+    gap: 1.6rem;
+    align-items: center;
+    transition: scale 300ms ease;
+}
+
+.main .header .link {
+    font-size: 1.1rem;
+    align-content: center;
+    padding: .2rem;
+}
+
+.main .header .logo {
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+    transition: ease-in-out .2s;
+}
+
+.login-links-container {
+    display: flex;
+    gap: .8rem;
+    align-items: center;
+}
+
+.main .links .link a {
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+}
+
+
+.main .links .nav-link {
+    transition: ease-in-out .2s;
+    padding: 1rem;
+}
+
+.btn {
+    all: unset;
+    text-align: center;
+    background-color: #174456;
+    color: rgb(255, 255, 255);
+    padding: 0.25rem 1.75rem;
+    border-radius: 3rem;
+    transition: background-color 300ms ease;
+}
+
+.btn:hover {
+    cursor: pointer;
+    background-color: #0b2b3a;
+    border: none;
+    color: white;
+}
+
+body {
+    font-family: "Poppins", sans-serif;
+    animation: fadeInAnimation ease 0.3s;
+    animation-iteration-count: 1;
+    animation-fill-mode: revert;
+}
+
+html {
+    font-size: 14px;
+    background-color: blue;
+}
+#content .title{
+    font-size: 2.5rem;
+    text-align: center;
+    color:whitesmoke;
+    font-weight: bold;
+    margin: auto;
+}
+
+.form button{
+    background-color: #ae4237;
+    border: none;
+    padding: 9px 22px;
+    border-radius: 20px;
+    color: #fff;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+.form button{
+
+    background: linear-gradient(to left, dodgerblue 50%, royalblue 50%);
+    border: none;
+    padding: 9px 22px;
+    border-radius: 20px;
+    color: #fff;
+    font-size: 1.1rem;
+}
+.form button:hover{
+    background-color: #0e3a0b;
+    border: none;
+    color: white;
+}
+input:focus {
+    color: white;
+    box-shadow: blue;
+    background: linear-gradient(white,dodgerblue);
+    animation: glow 0.8s ease-out infinite alternate;
+}
+@keyframes glow {
+    0% {
+        border-color: dodgerblue;
+    }
+    100%
+    {
+        border-color: dodgerblue;
+        box-shadow: dodgerblue;
+    }
+}
+
+.field-container {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.field-container label {
+    font-size: 18px;
+    color: ghostwhite;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.field-container input,
+.field-container select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 30px;
+}
+
+.error {
+    color: #ff0000;
+    font-size: 12px;
+    display: none;
+}
+
+.form-title {
+    color: white;
+    font-size: 35px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+button[type="submit"] {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: black;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+}
+.footer {
+   background-color: white;
+    height: 7vh !important;
+}

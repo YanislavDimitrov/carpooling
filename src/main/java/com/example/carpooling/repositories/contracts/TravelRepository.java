@@ -21,6 +21,7 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
     List<Travel> getAllByStatusIs(TravelStatus status);
 
     List<Travel> findTop5ByOrderByDepartureTimeDesc();
+    List<Travel> findByDriver_Id(Long id);
 
     @Query("select t from Travel t where" +
             "(:driver is null or t.driver.userName like %:driver%) " +

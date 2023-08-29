@@ -379,16 +379,19 @@ public class TravelMvcController {
     }
 
     @GetMapping("/{id}/complete")
-    public String completeTravel(@PathVariable Long id, HttpSession session) {
+    public String completeTravel(@PathVariable Long id, HttpSession session, Model model) {
         try {
             User loggedUser = authenticationHelper.tryGetUser(session);
             Travel travel = travelService.getById(id);
             travelService.completeTravel(id, loggedUser);
+            model.addAttribute("id", id);
             return "redirect:/";
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         } catch (EntityNotFoundException e) {
             return "NotFoundView";
+        } catch (InvalidTravelException e) {
+            return "UnableToCompleteView";
         }
     }
 

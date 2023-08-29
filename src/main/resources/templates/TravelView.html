@@ -12,10 +12,9 @@
     <link rel="stylesheet" href="../static/travelStyles.css" th:href="@{/travelStyles.css}">
 </head>
 <body>
+<header th:replace="index.html :: header"></header>
 <section class="main" id="main">
-    <!--HEADER-->
-    <header th:replace="index.html :: header"></header>
-    <!--    CONTENT-->
+
     <div id="content">
         <table>
             <thead>
@@ -62,9 +61,12 @@
                     </a>
                 </td>
 
-                <td th:if="${travel.getDriverName().equals(session.currentUser)} and ${travel.status != T(com.example.carpooling.models.enums.TravelStatus).COMPLETED}">
+                <td th:if="${travel.getDriverName().equals(session.currentUser)} and ${travel.status == T(com.example.carpooling.models.enums.TravelStatus).ACTIVE}">
                     <a class="btn delete" href="#" th:href="@{/travels/{id}/complete(id=${travel.getId()})}">
                         <i class="fa-solid fa-check"></i></a>
+                </td>
+                <td th:if="${travel.getDriverName().equals(session.currentUser)} and ${travel.status ==T(com.example.carpooling.models.enums.TravelStatus).PLANNED}">
+                    <a  class="btn" href="#" th:href="@{/travels/{id}/cancel(id=${travel.getId()})}">Cancel Travel</a>
                 </td>
                 <td th:if="${isPassenger} and ${travel.getStatus() == T(com.example.carpooling.models.enums.TravelStatus).PLANNED}">
                     <a class="btn edit" href="#" th:href="@{/travels/{id}/delete-request(id=${travel.getId()})}">Withdraw
@@ -81,18 +83,24 @@
         Show passengers<i id="show-hide-icon"
                           class="fa-solid fa-angle-down"></i></button>
     <div th:if="${travel.getDriverName().equals(session.currentUser)} or ${isAdmin}" id="infoContainer" class="info">
-        <div th:if="${passengers.isEmpty()}">
+        <div th:if="${passengers.isEmpty()}" id="no-passengers">
             <h1>No passengers to show</h1>
         </div>
         <table th:unless="${passengers.isEmpty()}">
+            <tr>
+                <th>Passengers:</th>
+            </tr>
             <tr th:each="passenger : ${passengers}">
-                <th>Username:</th>
-                <td th:text="${passenger.getUserName()}">Username</td>
-                <td th:if="${travel.getDriverName().equals(session.currentUser)}">
-                    <a href="#"
-                       th:href="@{/travels/{id}/remove/user/{userId}(id=${travel.getId()},userId=${passenger.getId()})}">Remove</a>
+                <td>
+                    <span th:text="${passenger.firstName} + ' ' + ${passenger.lastName} + ' (' + ${passenger.userName} + ')'"></span>
+                    <span th:if="${travel.getDriverName().equals(session.currentUser)}">
+                <a class="btn"  th:href="@{/travels/{id}/remove/user/{userId}(id=${travel.getId()},userId=${passenger.getId()})}"><i class="fa-sharp fa-solid fa-trash"></i></a>
+            </span>
                 </td>
+            </tr>
         </table>
+
+
     </div>
 
     <button th:if="${travel.getDriverName().equals(session.currentUser)} or ${isAdmin}" class="btn" id="toggle">Show
@@ -101,23 +109,23 @@
            class="fa-solid fa-angle-down"></i></button>
     <div th:if="${travel.getDriverName().equals(session.currentUser)} or ${isAdmin}" id="information-container"
          class="info">
-        <div th:if="${travelRequestForThisTravel.isEmpty()}">
+        <div th:if="${travelRequestForThisTravel.isEmpty()}" id="no-requests">
             <h1>No travel requests to show</h1>
         </div>
         <table th:unless="${travelRequestForThisTravel.isEmpty()}">
+            <th>Name:</th>
             <tr th:each="travelRequest : ${travelRequestForThisTravel}">
-                <th>Username:</th>
-                <td th:text="${travelRequest.passenger.getUserName()}"></td>
+                <td th:text="${travelRequest.passenger.firstName} + ' ' ${travelRequest.passenger.lastName}"></td>
                 <td th:if="${travel.getDriverName().equals(session.currentUser)}">
-                    <a th:href="@{/travels/{id}/approve/user/{userId}(id=${travel.getId()},userId=${travelRequest.getPassenger().getId()})}">Approve</a>
-                    <a th:href="@{/travels/{id}/reject/user/{userId}(id=${travel.getId()},userId=${travelRequest.getPassenger().getId()})}">Reject</a>
+                    <a class="btn"  th:href="@{/travels/{id}/approve/user/{userId}(id=${travel.getId()},userId=${travelRequest.getPassenger().getId()})}"><i class="fa-solid fa-check"></i></a>
+                    <a  class="btn" th:href="@{/travels/{id}/reject/user/{userId}(id=${travel.getId()},userId=${travelRequest.getPassenger().getId()})}"><i class="fa-solid fa-xmark-large"></i></a>
                 </td>
             </tr>
         </table>
     </div>
     <div id="mapContainer"></div>
-    <footer th:replace="index.html :: footer"></footer>
 </section>
+<footer th:replace="index.html :: footer"></footer>
 <script type="text/javascript">
     function loadMap() {
         var start = '[[${startDestination}]]';

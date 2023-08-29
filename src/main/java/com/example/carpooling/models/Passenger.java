@@ -1,9 +1,15 @@
 package com.example.carpooling.models;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "passengers_travels")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Passenger {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,30 +22,4 @@ public class Passenger {
     @JoinColumn(name = "travel_id")
     private Travel travel;
 
-    public Passenger() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public Travel getTravel() {
-        return travel;
-    }
-
-    public void setTravel(Travel travel) {
-        this.travel = travel;
-    }
 }
