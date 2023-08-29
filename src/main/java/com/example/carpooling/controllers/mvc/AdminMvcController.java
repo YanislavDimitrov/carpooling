@@ -111,50 +111,16 @@ public class AdminMvcController {
                 filter.getUserStatus(),
                 sort);
 
-
-//        List<UserPreviewDto> users = this.userService.findAll(
-//                        filter.getFirstName(),
-//                        filter.getLastName(),
-//                        filter.getUsername(),
-//                        filter.getEmail(),
-//                        filter.getPhoneNumber(),
-//                        sort)
-//                .stream()
-//                .map(user -> {
-//                    UserPreviewDto dto = this.modelMapper.map(user, UserPreviewDto.class);
-//                    dto.setFullName(String.format("%s %s", user.getFirstName(), user.getLastName()));
-//                    return dto;
-//                })
-//                .collect(Collectors.toList());
-
-//        PageRequest pageRequest = PageRequest.of(page, size);
-//        int start = (int) pageRequest.getOffset();
-//        int end = Math.min((start + pageRequest.getPageSize()), users.size());
-//
-//        Page<UserPreviewDto> itemsByPage
-//                = new PageImpl<UserPreviewDto>(users.subList(start, end), pageRequest, users.size());
         Map<String, String[]> parameterMap = request.getParameterMap();
         String parameters = extractParametersSection(parameterMap);
+
         model.addAttribute("filter", filter);
         model.addAttribute("userPage", users);
         model.addAttribute("filterParams", parameters);
 
-
-//        model.addAttribute("users", users);
         return "UsersView";
     }
 
-    private String extractParametersSection(Map<String, String[]> parameterMap) {
-        StringBuilder builder = new StringBuilder();
-        for (String key : parameterMap.keySet()) {
-            String value = parameterMap.get(key)[0];
-            if (value.trim().isEmpty() || key.equals("page")) {
-                continue;
-            }
-            builder.append("&").append(key).append("=").append(value);
-        }
-        return builder.toString();
-    }
 
     @GetMapping("/{id}/upgrade")
     public String upgradeUser(@PathVariable Long id, HttpSession session) {
@@ -258,5 +224,16 @@ public class AdminMvcController {
         } catch (AuthorizationException e) {
             return "AccessDeniedView";
         }
+    }
+    private String extractParametersSection(Map<String, String[]> parameterMap) {
+        StringBuilder builder = new StringBuilder();
+        for (String key : parameterMap.keySet()) {
+            String value = parameterMap.get(key)[0];
+            if (value.trim().isEmpty() || key.equals("page")) {
+                continue;
+            }
+            builder.append("&").append(key).append("=").append(value);
+        }
+        return builder.toString();
     }
 }

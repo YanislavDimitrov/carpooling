@@ -2,30 +2,20 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Carpool</title>
+  <title>Deleted User</title>
   <link rel="website icon" th:type="png" th:href="@{/images/carpool_simplelogo.png}">
   <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
   <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
   <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">
-  <link rel="stylesheet" href="../static/blockedUser.css" th:href="@{/blockedUser.css}">
+  <link rel="stylesheet" href="../static/deletedUser.css" th:href="@{/deletedUser.css}">
 </head>
 <body>
 <!--HEADER-->
 <header th:replace="index.html :: header"></header>
 <section class="main">
-  <h1 class="title">Active travels!</h1>
-  <p>User <span th:text="${user.getUserName()}"></span> has travels that are still Active.<br>You can proceed by:</p>
-  <div class="options-container">
-    <a class="btn"
-       th:href="@{'/admin/' + ${user.getId()} + '/complete-travels-block'}">
-      <i class="fa-solid fa-flag-checkered"></i>Complete and Block
-    </a>
-    <p>or</p>
-    <a class="btn"
-       th:href="@{'/admin/users'}">Cancel
-    </a>
-  </div>
-  <img src="../static/images/ActiveTravels.png" th:src="@{/images/ActiveTravels.png}">
+  <h1 class="title">Recovered account!</h1>
+  <p>Your account was recovered after deletion.</p>
+  <img src="../static/images/RecoveredUser.png" th:src="@{/images/RecoveredUser.png}">
 </section>
 <!--FOOTER-->
 <header th:replace="index.html :: footer"></header>

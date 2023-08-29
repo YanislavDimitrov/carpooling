@@ -115,7 +115,7 @@
         <table th:unless="${travelRequestForThisTravel.isEmpty()}">
             <th>Name:</th>
             <tr th:each="travelRequest : ${travelRequestForThisTravel}">
-                <td th:text="${travelRequest.passenger.firstName} + ' ' ${travelRequest.passenger.lastName}"></td>
+                <td th:text="${travelRequest.passenger.firstName} + ' ' + ${travelRequest.passenger.lastName}"></td>
                 <td th:if="${travel.getDriverName().equals(session.currentUser)}">
                     <a class="btn"  th:href="@{/travels/{id}/approve/user/{userId}(id=${travel.getId()},userId=${travelRequest.getPassenger().getId()})}"><i class="fa-solid fa-check"></i></a>
                     <a  class="btn" th:href="@{/travels/{id}/reject/user/{userId}(id=${travel.getId()},userId=${travelRequest.getPassenger().getId()})}"><i class="fa-solid fa-xmark-large"></i></a>

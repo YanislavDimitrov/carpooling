@@ -87,6 +87,7 @@ public class AuthenticationController {
 
             if (user.getStatus() == UserStatus.DELETED) {
                 userService.restore(user.getId(), user);
+                return "DeletedUserView";
             }
 
             session.setAttribute("currentUser", dto.getUserName());

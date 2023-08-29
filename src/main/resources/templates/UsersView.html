@@ -100,10 +100,11 @@
                      src="https://res.cloudinary.com/dqq0hqmgs/image/upload/v1693052525/yanidim.jpg">
             </div>
             <div class="user-info-container">
-                <h2 class="user-names"
+                <a class="user-names"
+                   th:href="@{'/users/' + ${currentUser.getId()}}"
                     th:text="${currentUser.getFirstName()}+' '+${currentUser.getLastName()}+' ('+${currentUser.getUserName()}+')'">
                     Yanislav
-                    Dimitrov (yanidim)</h2>
+                    Dimitrov (yanidim)</a>
                 <h3 class="user-username" th:text="${currentUser.getEmail()}">yanidim@gmail.com</h3>
                 <br>
                 <h3 class="user-phone" th:text="${currentUser.getPhoneNumber()}">0899220228</h3>
