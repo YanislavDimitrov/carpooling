@@ -48,7 +48,7 @@ public interface TravelService {
 
     void create(Travel travel, User driver);
 
-    Travel update(Travel travel, User editor);
+    Travel update(Travel travelToUpdate, User editor);
 
     void delete(Long id, User editor);
 
@@ -63,6 +63,7 @@ public interface TravelService {
     Long count();
 
     Long countCompleted();
+
 
 
 }

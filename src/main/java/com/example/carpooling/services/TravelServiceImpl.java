@@ -149,36 +149,24 @@ public class TravelServiceImpl implements TravelService {
         travel.setDriver(driver);
         travelRepository.save(travel);
     }
-    /**
-     * @param travel this parameter is used for extraction of departure address of the travel and arrival address
-     *               of the travel and then via methods of Microsoft Bing Maps these addresses are converted to
-     *               coordinates and are held to other external API endpoint which calculates the distance and the
-     *               estimated time of travelling between the two places the user typed in the input field.
-     */
 
 
-    /**
-     * @param travel this parameter is the travel which was held by the controller class and it is with already refactored
-     *               fields so this is the new travel to be persisted in the database
-     * @param editor this parameters refers to the person who is trying to update the travel
-     * @return updated Travel
-     * @throws AuthorizationException if the editor is not the driver of the travel.
-     */
+
     @Override
-    public Travel update(Travel travel, User editor) {
-        checkIfTheTravelTimeFrameIsValid(travel, editor);
-        if (!travel.getDriver().equals(editor)) {
+    public Travel update(Travel travelToUpdate, User editor) {
+      //  checkIfTheTravelTimeFrameIsValid(travelToUpdate, editor);
+        if (!travelToUpdate.getDriver().equals(editor)) {
             throw new AuthorizationException(UPDATE_CANCELLED);
         }
-        if (!travelRepository.existsById(travel.getId())) {
-            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, travel.getId()));
+        if (!travelRepository.existsById(travelToUpdate.getId())) {
+            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, travelToUpdate.getId()));
         }
-        if (travel.getStatus() != TravelStatus.PLANNED) {
+        if (travelToUpdate.getStatus() != TravelStatus.PLANNED) {
             throw new InvalidOperationException(YOU_CAN_UPDATE_ONLY_PLANNED_TRAVELS);
         }
-        calculatingDistanceAndDuration(travel);
-        travelRepository.save(travel);
-        return travel;
+        calculatingDistanceAndDuration(travelToUpdate);
+        travelRepository.save(travelToUpdate);
+        return travelToUpdate;
     }
 
     /**
@@ -304,6 +292,50 @@ public class TravelServiceImpl implements TravelService {
         return passengerRepository.existsByUserAndTravel(user, travel);
     }
 
+    public static void checkIfTheTravelTimeFrameIsValid( Travel oldTravel ,Travel travel, User driver) {
+       List<Travel> travelsToCheck = driver.getTravelsAsDriver();
+       travelsToCheck.remove(oldTravel);
+
+        for (Travel travelToCheck : travelsToCheck) {
+            if (travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime())
+                    && travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival())
+                    && travelToCheck.getStatus() == TravelStatus.ACTIVE
+            ) {
+                throw new InvalidOperationException(TRAVEL_CREATION_FAILED);
+            }
+            if (travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival()) &&
+                    travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime()) &&
+                    travelToCheck.getStatus() == TravelStatus.PLANNED) {
+                throw new InvalidOperationException(String.format(TRAVEL_IN_THIS_TIME_FRAME,
+                        travelToCheck.getDepartureTime(),
+                        travelToCheck.getDeparturePoint(),
+                        travelToCheck.getArrivalPoint()));
+            }
+            if (travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime())
+                    && travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival()) && travelToCheck.getStatus() == TravelStatus.PLANNED) {
+                throw new InvalidOperationException(String.format(EXISTING_TRAVEL, travelToCheck.getDeparturePoint(), travelToCheck.getArrivalPoint(), travelToCheck.getDepartureTime()));
+            }
+            if (travel.getDepartureTime().isEqual(travelToCheck.getDepartureTime())) {
+                throw new InvalidOperationException(String.format(TRAVEL_AT_THIS_TIME, travelToCheck.getDepartureTime()));
+            }
+        }
+        List<TravelRequest> travelRequestOfTheDriverAsPassenger = driver.getTravelsAsPassenger()
+                .stream()
+                .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.APPROVED)
+                .toList();
+        List<Travel> travelsOfUserAsPassenger = new ArrayList<>();
+        for (TravelRequest travelRequest : travelRequestOfTheDriverAsPassenger) {
+            travelsOfUserAsPassenger.add(travelRequest.getTravel());
+        }
+        for (Travel travelToCheckAsPassenger : travelsOfUserAsPassenger) {
+            if (travel.getDepartureTime().isAfter(travelToCheckAsPassenger.getDepartureTime())
+                    && travel.getDepartureTime().isBefore(travelToCheckAsPassenger.getEstimatedTimeOfArrival()) && travelToCheckAsPassenger.getStatus() == TravelStatus.ACTIVE) {
+                throw new InvalidOperationException(String.format(TRAVEL_AS_PASSENGER,
+                        travelToCheckAsPassenger.getDeparturePoint(),
+                        travelToCheckAsPassenger.getArrivalPoint()));
+            }
+        }
+    }
     private static void checkIfTheTravelTimeFrameIsValid(Travel travel, User driver) {
         for (Travel travelToCheck : driver.getTravelsAsDriver()) {
             if (travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime())

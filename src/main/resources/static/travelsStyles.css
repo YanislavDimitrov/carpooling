@@ -114,23 +114,25 @@
 /*    opacity: 0.5; !* Adjust opacity as desired *!*/
 /*    z-index: -1;*/
 /*}*/
+/*body {*/
+/*    margin: 0;*/
+/*    overflow: hidden; !* Prevent body from scrolling *!*/
+/*    position: fixed;*/
+/*    top: 0;*/
+/*    left: 0;*/
+/*    width: 100%;*/
+/*    height: 100%;*/
+/*    background-image: url('images/CoverPicture.svg');*/
+/*    background-size: cover;*/
+/*}*/
 body {
-    margin: 0;
-    overflow: hidden; /* Prevent body from scrolling */
+    height: 85vh;
+    text-align: center;
+    background-image: url(images/CoverPicture.svg);
+    background-size:cover;
 }
 
-.background-image {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('images/CoverPicture.svg');
-    background-position: center center;
-    background-size: cover;
-    opacity: 0.5; /* Adjust opacity as desired */
-    z-index: -1;
-}
+
 
 /* Header and Footer Styles */
 header, .footer {
@@ -141,12 +143,15 @@ header, .footer {
 }
 
 /* Main Content */
+/*.main {*/
+/*    padding: 0px 12rem;*/
+/*    min-height: 100%; !* Allow content to expand *!*/
+/*    margin-top: 100px; !* Adjust the value to push content below header *!*/
+/*    margin-bottom: 100px; !* Adjust the value to push content above footer *!*/
+/*}*/
 .main {
-    padding: 0px 12rem;
-    min-height: 100%; /* Allow content to expand */
-    background-color: rgba(255, 255, 255, 0.8); /* Adjust as needed */
-    margin-top: 100px; /* Adjust the value to push content below header */
-    margin-bottom: 100px; /* Adjust the value to push content above footer */
+    padding: 0px 30rem;
+    height: 85vh;
 }
 
 /* Content Container */
@@ -181,12 +186,20 @@ header, .footer {
 #no-travels-to-show {
     text-align: center;
     margin: 0 auto;
+    color: white;
+    font-size: 30px;
+}
+.travel-card-content {
+    color: ghostwhite;
 }
 
 /* Travel Info */
 .travel-info {
     flex-grow: 1;
     margin-right: 20px;
+}
+.text {
+    color: ghostwhite;
 }
 
 .travel-info h2 {
@@ -240,6 +253,9 @@ header, .footer {
 }
 
 /* Footer */
-.footer {
-    background-color: white !important;
+footer {
+    background-color: white;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
 }

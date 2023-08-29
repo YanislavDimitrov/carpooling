@@ -12,6 +12,7 @@ import com.example.carpooling.models.dtos.TravelFrontEndView;
 import com.example.carpooling.models.enums.TravelRequestStatus;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.models.enums.UserRole;
+import com.example.carpooling.services.TravelServiceImpl;
 import com.example.carpooling.services.contracts.TravelRequestService;
 import com.example.carpooling.services.contracts.TravelService;
 import com.example.carpooling.services.contracts.UserService;
@@ -241,7 +242,18 @@ public class TravelMvcController {
     ) {
         User loggedUser = this.authenticationHelper.tryGetUser(session);
         Travel travel = travelService.getById(id);
+        Travel travelToCheckIfValid = travelMapper.fromTravelCreateToTestDepartureTime(travelUpdateDto);
+
+        try {
+            TravelServiceImpl.checkIfTheTravelTimeFrameIsValid(travel,travelToCheckIfValid,loggedUser);
+
+        } catch (InvalidOperationException e) {
+            errors.rejectValue("departureTime","creation_error",e.getMessage());
+            return "PlannedTravelErrorView";
+        }
+
         Travel travelUpdate = travelMapper.toTravelFromTravelUpdateSaveDto(travel, travelUpdateDto);
+
         if (errors.hasErrors()) {
             model.addAttribute("vehicles", loggedUser.getVehicles());
             return "UpdateTravelView";
@@ -260,7 +272,7 @@ public class TravelMvcController {
         } catch (InvalidOperationException e) {
             errors.rejectValue("departureTime", "creation_error", e.getMessage());
             model.addAttribute("vehicles", loggedUser.getVehicles());
-            return "UpdateTravelView";
+            return "PlannedTravelErrorView";
         }
         return "redirect:/travels/" + id;
     }

@@ -7,21 +7,23 @@
     <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
     <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
     <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">
+    <link rel="stylesheet" href="../static/newTravelStyles.css" th:href="@{/newTravelStyles.css}">
 </head>
 <body>
-<!--HEADER-->
+
 <header th:replace="index.html :: header"></header>
 <section class="main">
-
-    <div id="content">
-        <h1 class="title">Update Travel</h1>
-        <form class="form" th:action="@{/travels/{id}/update(id=${travelId})}" th:object="${updateTravel}" action="#"
-              method="post">
+    <h1 class="form-title">Update Travel</h1>
+    <form class="form" th:action="@{/travels/{id}/update(id=${travelId})}" th:object="${updateTravel}" action="#"
+          method="post">
+        <div class="names-container">
             <div class="field-container">
                 <label th:text="#{travel.label.departure-point}">Departure Point</label>
                 <input type="text" id="title" th:field="*{departurePoint}" placeholder="Start Destination">
                 <label class="error" th:errors="*{departurePoint}">Departure point cannot be empty field!></label>
             </div>
+        </div>
+        <div class="names-container">
             <div class="field-container">
                 <div class="content-characters">
                     <label th:text="#{travel.label.arrival-point}">Arrival point </label>
@@ -29,21 +31,29 @@
                     <label class="error" th:errors="*{arrivalPoint}">Arrival point field cannot be empty!</label>
                 </div>
             </div>
+        </div>
+        <div class="names-container">
             <div class="field-container">
                 <label th:text="#{travel.label.free-spots}">Free Spots</label>
-                <input type="number" th:field="*{freeSpots}"  placeholder="Free Spots ">
+                <input type="number" th:field="*{freeSpots}" placeholder="Free Spots ">
             </div>
+        </div>
+        <div class="names-container">
             <div class="field-container">
                 <label th:text="#{travel.label.departure-time}">Departure Time</label>
                 <input type="datetime-local" th:field="*{departureTime}" placeholder="Departure Time">
                 <label class="error" th:errors="*{departureTime}">Departure time should be present or future
                     date!></label>
             </div>
+        </div>
+        <div class="names-container">
             <div class="field-container">
                 <label th:text="#{travel.label.comment}">Comment</label>
-                <textarea id="comment-content" cols="10" rows="5" th:field="*{comment}"
-                          placeholder="Comment"></textarea>
+                <input type="text" th:field="*{comment}"
+                       placeholder="Comment">
             </div>
+        </div>
+        <div class="names-container">
             <div class="field-container">
                 <label th:text="#{travel.label.vehicle}">Vehicle</label>
                 <select th:field="*{vehicle}">
@@ -54,12 +64,10 @@
                 </select>
                 <label class="error" th:errors="*{vehicle}">Vehicle error placeholder</label>
             </div>
-            <input type="submit" value="Update Travel">
-        </form>
-    </div>
-
+        </div>
+        <button type="submit" value="Update Travel">Update Travel</button>
+    </form>
 </section>
-<!--FOOTER-->
 <footer th:replace="index.html :: footer"></footer>
 <script type="text/javascript" src="../static/js/showDropdown.js" th:src="@{/js/showDropdown.js}"></script>
 </body>
