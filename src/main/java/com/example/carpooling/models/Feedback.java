@@ -7,7 +7,8 @@ import lombok.Setter;
 
 @Table(name = "feedbacks")
 @Entity(name = "Feedback")
-
+@Getter
+@Setter
 public class Feedback {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,63 +35,4 @@ public class Feedback {
         isDeleted = false;
     }
 
-    public boolean isDeleted() {
-        return isDeleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        isDeleted = deleted;
-    }
-
-    public User getRecipient() {
-        return recipient;
-    }
-
-    public void setRecipient(User recipient) {
-        this.recipient = recipient;
-    }
-
-    public void setRating(Short rating) {
-        this.rating = rating;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getCreator() {
-        return creator;
-    }
-
-    public void setCreator(User creator) {
-        this.creator = creator;
-    }
-
-    public Travel getTravel() {
-        return travel;
-    }
-
-    public void setTravel(Travel travel) {
-        this.travel = travel;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public short getRating() {
-        return rating;
-    }
-
-    public void setRating(short rating) {
-        this.rating = rating;
-    }
 }
