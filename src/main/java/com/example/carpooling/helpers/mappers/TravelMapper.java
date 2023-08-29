@@ -135,5 +135,14 @@ public class TravelMapper {
         travel = travelRequest.getTravel();
         return travel;
     }
-
+public Travel fromTravelCreateToTestDepartureTime(TravelCreationOrUpdateDto travelCreationOrUpdateDto) {
+        Travel travel = new Travel();
+        travel.setDepartureTime(travelCreationOrUpdateDto.getDepartureTime());
+        travel.setDeparturePoint(travelCreationOrUpdateDto.getDeparturePoint());
+        travel.setArrivalPoint(travelCreationOrUpdateDto.getArrivalPoint());
+        travel.setComment(travelCreationOrUpdateDto.getComment());
+        travel.setFreeSpots(travelCreationOrUpdateDto.getFreeSpots());
+        travel.setVehicle(travelCreationOrUpdateDto.getVehicle());
+        return travel;
+}
 }
