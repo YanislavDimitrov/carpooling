@@ -11,16 +11,23 @@ body, h1, h2, h3, p, ul, ol, li, table, td, th {
 }
 
 /* Set a background color and font for the body */
+/*body {*/
+/*    background-color: dodgerblue;*/
+/*    background-image: url('images/CoverPicture.svg');*/
+/*    background-size: cover;*/
+/*    background-repeat: no-repeat;*/
+/*    background-attachment: fixed;*/
+/*}*/
 body {
-    background-color: dodgerblue;
+    margin: 0;
     background-image: url('images/CoverPicture.svg');
-    background-size: cover;
-    background-repeat: no-repeat;
+    background-position: center center;
     background-attachment: fixed;
+    background-size: cover;
 }
 
 #main {
-    padding: 0px 12rem;
+    padding: 0px 5rem;
 }
 
 /* Style the main content */
@@ -81,9 +88,8 @@ th {
 
 /* Style the info container */
 .info {
-    margin-top: 20px;
-    padding: 10px;
     border-radius: 20%;
+    margin-bottom: 5px;
 }
 
 /* Style the oval-shaped map container */

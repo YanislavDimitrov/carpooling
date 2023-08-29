@@ -3,6 +3,7 @@ package com.example.carpooling.services;
 import com.example.carpooling.exceptions.AuthorizationException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.exceptions.InvalidOperationException;
+import com.example.carpooling.exceptions.InvalidTravelException;
 import com.example.carpooling.models.Passenger;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.TravelRequest;
@@ -40,6 +41,7 @@ public class TravelServiceImpl implements TravelService {
     public static final String YOU_CAN_UPDATE_ONLY_PLANNED_TRAVELS = "You can update only planned travels!";
     public static final String TRAVEL_PLANNED_IN_THIS_TIME_FRAME = "You are planning to create a travel but you currently have a planned travel which departure time is before your current estimated time of arrival, so reconsider either cancelling your travel travel from %s to %s at %s or change the timeframe for this one";
     public static final String TRAVEL_IN_THIS_TIME_FRAME = "You have a planned travel which is scheduled for %s from %s to %s , if you want to plan this travel you should either reconsider the departure time or cancel the travel that you have planned , in order not to disappoint potential passengers!";
+    public static final String INVALID_STATUS = "You cannot complete travel unless it is active , if your travel is planned, consider cancelling it instead!";
     private final TravelRepository travelRepository;
     private final PassengerRepository passengerRepository;
     private final UserService userService;
@@ -222,6 +224,9 @@ public class TravelServiceImpl implements TravelService {
         if (travel.isDeleted()) {
             throw new InvalidOperationException(DELETE_TRAVEL_ERROR);
         }
+        if (travel.getStatus() != TravelStatus.ACTIVE) {
+            throw new InvalidTravelException(INVALID_STATUS);
+        }
         travelRepository.completeTravel(id);
     }
 
@@ -242,7 +247,7 @@ public class TravelServiceImpl implements TravelService {
         if (travel.getDriver() != editor) {
             throw new AuthorizationException(OPERATION_DENIED);
         }
-        if (travel.getStatus() == TravelStatus.COMPLETED || travel.isDeleted()) {
+        if (travel.getStatus() != TravelStatus.PLANNED || travel.isDeleted()) {
             throw new InvalidOperationException(COMPLETED_OR_DELETED_TRAVEL_ERROR);
         }
         travel.setStatus(TravelStatus.CANCELED);
@@ -263,6 +268,11 @@ public class TravelServiceImpl implements TravelService {
 
     public List<Travel> findTravelByUser(User user) {
         return user.getTravelsAsDriver();
+    }
+
+    @Override
+    public List<Travel> findByDriverId(Long id) {
+        return travelRepository.findByDriver_Id(id);
     }
 
     public List<TravelRequest> findTravelsAsPassengerByUser(User user) {

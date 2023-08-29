@@ -1,16 +1,162 @@
+/*body {*/
+/*    margin: 0;*/
+/*    background-image: url('images/CoverPicture.svg');*/
+/*    background-position: center center;*/
+/*    background-attachment: fixed;*/
+/*    background-size: cover;*/
+/*}*/
+/*.main {*/
+/*    padding: 0px 12rem;*/
+/*    height: 84vh;*/
+/*}*/
+
+/*.travel-card {*/
+/*    !*background-color: white;*!*/
+/*    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);*/
+/*    border-radius: 8px;*/
+/*    padding: 20px;*/
+/*    margin: 20px;*/
+/*    display: flex;*/
+/*    justify-content: space-between;*/
+/*    align-items: center;*/
+/*    position: relative;*/
+/*    overflow: hidden;*/
+/*    transition: transform 0.3s;*/
+/*    cursor: pointer;*/
+/*}*/
+/*#driver-title,*/
+/*#passenger-title {*/
+/*    text-align: center;*/
+/*    margin: 0 auto;*/
+/*}*/
+/*#no-travels-as-passenger,*/
+/*#no-travels-to-show {*/
+/*    text-align: center;*/
+/*    margin-top: 10px;*/
+/*}*/
+
+/*.travel-card:hover {*/
+/*    transform: scale(1.05);*/
+/*}*/
+
+/*.travel-info {*/
+/*    flex-grow: 1;*/
+/*    margin-right: 20px;*/
+/*}*/
+
+/*.travel-info h2 {*/
+/*    margin: 0;*/
+/*    font-size: 24px;*/
+/*    color: #333;*/
+/*}*/
+
+/*.travel-info p {*/
+/*    margin: 5px 0;*/
+/*    color: #777;*/
+/*    font-size: 14px;*/
+/*}*/
+
+/*.travel-status {*/
+/*    position: absolute;*/
+/*    top: 0;*/
+/*    right: 0;*/
+/*    padding: 6px 12px;*/
+/*    border-radius: 4px;*/
+/*    font-size: 14px;*/
+/*    color: white;*/
+/*    background-color: #27ae60;*/
+/*}*/
+
+/*.btn-container {*/
+/*    display: flex;*/
+/*    justify-content: flex-end;*/
+/*    margin-top: 15px;*/
+/*}*/
+
+/*.btn {*/
+/*    padding: 6px 12px;*/
+/*    border: none;*/
+/*    border-radius: 4px;*/
+/*    color: white;*/
+/*    cursor: pointer;*/
+/*    transition: background-color 0.3s;*/
+/*}*/
+
+/*.btn.view {*/
+/*    background-color: #3498db;*/
+/*    margin-right: 10px;*/
+/*}*/
+
+/*.btn.delete {*/
+/*    background-color: #e74c3c;*/
+/*}*/
+/*.footer {*/
+/*    background-color: white !important;*/
+/*}*/
+/* Global Styles */
+/*body {*/
+/*    margin: 0;*/
+/*    !*background-image: url('images/CoverPicture.svg');*!*/
+/*    !*background-position: center center;*!*/
+/*    !*background-attachment: fixed;*!*/
+/*    !*background-size: cover;*!*/
+/*    overflow: hidden;*/
+/*}*/
+/*.background-image {*/
+/*    position: fixed;*/
+/*    top: 0;*/
+/*    left: 0;*/
+/*    width: 100%;*/
+/*    height: 100%;*/
+/*    background-image: url('images/CoverPicture.svg');*/
+/*    background-position: center center;*/
+/*    background-size: cover;*/
+/*    opacity: 0.5; !* Adjust opacity as desired *!*/
+/*    z-index: -1;*/
+/*}*/
 body {
-    font-family: Arial, sans-serif;
     margin: 0;
-    padding: 0;
-    background-color: #f7f7f7;
-    background-image: url('images/CoverPicture.svg');
-}
-.main {
-    padding: 20px;
+    overflow: hidden; /* Prevent body from scrolling */
 }
 
-.travel-card {
+.background-image {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('images/CoverPicture.svg');
+    background-position: center center;
+    background-size: cover;
+    opacity: 0.5; /* Adjust opacity as desired */
+    z-index: -1;
+}
+
+/* Header and Footer Styles */
+header, .footer {
+    position: fixed;
+    width: 100%;
     background-color: white;
+    /* Other header and footer styles */
+}
+
+/* Main Content */
+.main {
+    padding: 0px 12rem;
+    min-height: 100%; /* Allow content to expand */
+    background-color: rgba(255, 255, 255, 0.8); /* Adjust as needed */
+    margin-top: 100px; /* Adjust the value to push content below header */
+    margin-bottom: 100px; /* Adjust the value to push content above footer */
+}
+
+/* Content Container */
+.main {
+    padding: 0px 12rem;
+    height: 84vh;
+}
+
+/* Travel Card */
+.travel-card {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
     padding: 20px;
@@ -28,6 +174,16 @@ body {
     transform: scale(1.05);
 }
 
+/* Titles and Messages */
+#driver-title,
+#passenger-title,
+#no-travels-as-passenger,
+#no-travels-to-show {
+    text-align: center;
+    margin: 0 auto;
+}
+
+/* Travel Info */
 .travel-info {
     flex-grow: 1;
     margin-right: 20px;
@@ -45,6 +201,7 @@ body {
     font-size: 14px;
 }
 
+/* Travel Status */
 .travel-status {
     position: absolute;
     top: 0;
@@ -56,12 +213,14 @@ body {
     background-color: #27ae60;
 }
 
+/* Button Container */
 .btn-container {
     display: flex;
     justify-content: flex-end;
     margin-top: 15px;
 }
 
+/* Buttons */
 .btn {
     padding: 6px 12px;
     border: none;
@@ -78,4 +237,9 @@ body {
 
 .btn.delete {
     background-color: #e74c3c;
+}
+
+/* Footer */
+.footer {
+    background-color: white !important;
 }

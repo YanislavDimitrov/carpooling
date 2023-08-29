@@ -30,6 +30,7 @@ public interface TravelService {
     );
 
     List<Travel> findLatestTravels();
+    List<Travel> findByDriverId(Long id);
 
     List<Travel> findAll(Sort sort);
 

@@ -61,9 +61,12 @@
                     </a>
                 </td>
 
-                <td th:if="${travel.getDriverName().equals(session.currentUser)} and ${travel.status != T(com.example.carpooling.models.enums.TravelStatus).COMPLETED}">
+                <td th:if="${travel.getDriverName().equals(session.currentUser)} and ${travel.status == T(com.example.carpooling.models.enums.TravelStatus).ACTIVE}">
                     <a class="btn delete" href="#" th:href="@{/travels/{id}/complete(id=${travel.getId()})}">
                         <i class="fa-solid fa-check"></i></a>
+                </td>
+                <td th:if="${travel.getDriverName().equals(session.currentUser)} and ${travel.status ==T(com.example.carpooling.models.enums.TravelStatus).PLANNED}">
+                    <a  class="btn" href="#" th:href="@{/travels/{id}/cancel(id=${travel.getId()})}">Cancel Travel</a>
                 </td>
                 <td th:if="${isPassenger} and ${travel.getStatus() == T(com.example.carpooling.models.enums.TravelStatus).PLANNED}">
                     <a class="btn edit" href="#" th:href="@{/travels/{id}/delete-request(id=${travel.getId()})}">Withdraw
