@@ -82,7 +82,7 @@ public class AdminMvcController {
 
     @GetMapping("/users")
     public String getUsers(@RequestParam(defaultValue = "0") int page,
-                           @RequestParam(defaultValue = "2") int size,
+                           @RequestParam(defaultValue = "5") int size,
                            @ModelAttribute("filter") UserFilterDto filter,
                            Model model,
                            HttpSession session,
@@ -151,10 +151,11 @@ public class AdminMvcController {
     private String extractParametersSection(Map<String, String[]> parameterMap) {
         StringBuilder builder = new StringBuilder();
         for (String key : parameterMap.keySet()) {
-                String value = parameterMap.get(key)[0];
-            if(!value.trim().isEmpty()) {
-                builder.append("&").append(key).append("=").append(value);
+            String value = parameterMap.get(key)[0];
+            if (value.trim().isEmpty() || key.equals("page")) {
+                continue;
             }
+            builder.append("&").append(key).append("=").append(value);
         }
         return builder.toString();
     }

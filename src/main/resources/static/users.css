@@ -1,43 +1,74 @@
 
-.user .user-img-container{
+.user .user-img-container {
     overflow: hidden;
     width: 200px;
     border-radius: 100%;
     aspect-ratio: 1/1;
 }
 
-.user .profile-picture{
+.user .profile-picture {
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center;
 }
 
-.main .user-operations{
+.main .user-operations {
     display: flex;
     justify-content: center;
     gap: 1rem;
 }
 
-.main .user-operations div > *{
+.main .user-operations div > * {
     display: block;
 }
 
-.main{
+.main {
     display: flex;
     flex-direction: column;
     gap: 2rem;
     min-height: 84vh;
     padding: 2rem 18rem;
 }
-.main .users-container{
+
+.main .users-container {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
 
+.main .pagination {
+    padding: .6rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-.main .user{
+.main .pagination a {
+    text-decoration: none;
+    font-size: 2rem;
+    padding: 0 1rem;
+}
+
+.main .pagination .dots{
+    font-size: 2rem;
+}
+.main .pagination .edge-page{
+    color: inherit;
+}
+
+.main .pagination .disabled *{
+    pointer-events: none;
+    color: #bebebe;
+}
+.main .pagination a:visited{
+    color: inherit;
+}
+.main .pagination .current-page{
+    font-size: 2.8rem;
+}
+
+.main .user {
     padding: 1rem;
     min-width: 350px;
     display: flex;
@@ -53,15 +84,16 @@
     color: green;
 }
 
-.fa-circle-xmark{
+.fa-circle-xmark {
     color: darkred;
 }
 
-.main .user h3{
+.main .user h3 {
     display: inline-block;
     font-weight: 500;
 }
-.main .user h2{
+
+.main .user h2 {
     font-size: 2rem;
 }
 
@@ -76,7 +108,8 @@ select:-webkit-autofill {
 ::-webkit-scrollbar {
     display: none;
 }
-.form i{
+
+.form i {
     width: 1rem;
     color: rgb(65, 89, 96);
 }
@@ -91,7 +124,6 @@ select:-webkit-autofill {
     border-radius: 3rem;
     transition: background-color 300ms ease;
 }
-
 
 
 .btn:hover {
@@ -132,14 +164,14 @@ html {
 
 .form input[type="text"],
 .form input[type="password"],
-.form input[type="email"]{
+.form input[type="email"] {
     all: unset;
     border: none;
     width: 95%;
     transition: color ease-in-out .1s;
 }
 
-select{
+select {
     border: none;
     outline: none;
     background-color: transparent;
@@ -151,7 +183,7 @@ select{
     color: transparent;
 }
 
-.form input::placeholder{
+.form input::placeholder {
     color: rgb(65, 89, 96);
 }
 
@@ -163,8 +195,7 @@ input:-webkit-autofill:active {
 }
 
 
-
-.form .inputs-container{
+.form .inputs-container {
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
@@ -172,7 +203,7 @@ input:-webkit-autofill:active {
     align-items: center;
 }
 
-.form .select label{
+.form .select label {
     font-size: 1.2rem;
     color: rgb(65, 89, 96);
     font-weight: 500;
@@ -192,6 +223,7 @@ input:-webkit-autofill:active {
     border-radius: 1rem;
     box-shadow: 3px 3px 5px 2px rgba(0, 0, 0, 0.2);
 }
+
 @keyframes fadeInAnimation {
     0% {
         opacity: 0;
@@ -215,11 +247,11 @@ input:-webkit-autofill:active {
     text-align: center;
 }
 
-.form .reset{
+.form .reset {
     background-color: #562317;
 }
 
-.form .reset:hover{
+.form .reset:hover {
     background-color: #3f1910;
     border: none;
     color: white;

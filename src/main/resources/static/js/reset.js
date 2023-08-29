@@ -1,22 +1,13 @@
 function attachEvents() {
-    const resetBtn = document.getElementById("reset");
-    const inputFields = document.querySelectorAll(".form input");
-    const selectFields = document.querySelectorAll(".form select");
+    const pageSpans = document.querySelectorAll("#middle-pages span")
 
-
-    resetBtn.addEventListener("click", resetFields)
-
-    function resetFields(e) {
+    for (let i = 0; i < pageSpans.length; i++) {
         debugger
-        if (e) {
-            e.preventDefault();
-        }
-        console.log("reset")
-        for (const inputField of inputFields) {
-            inputField.value = "";
-        }
-        for (const selectField of selectFields) {
-            selectField.selectedIndex = 0;
+        let currentSpan = pageSpans[i];
+        if (currentSpan.classList.contains("dots")) {
+            if (i < pageSpans.length - 1 && pageSpans[i + 1].classList.contains("dots")) {
+                currentSpan.remove();
+            }
         }
     }
 }

@@ -139,11 +139,46 @@
         </div>
     </div>
     <!-- Pagination controls -->
+    <ul role="list" class="pagination">
+        <!-- First Page -->
+        <li th:class="${userPage.first ? 'disabled' : 'edge-page'}">
+            <a th:href="@{'/admin/users' +'?page=0'+${filterParams}}">
+                <i class="fa-solid fa-angles-left"></i></a>
+        </li>
+        <!-- Previous Page -->
+        <li th:class="${userPage.first ? 'disabled' : 'edge-page'}">
+            <a
+                    th:href="@{'/admin/users' +'?page='+${userPage.getNumber()-1}+${filterParams}}"><i
+                    class="fa-solid fa-angle-left"></i></a>
+        </li>
+        <!-- Middle Pages -->
+        <li id="middle-pages" th:each="pageNumber : ${#numbers.sequence(0, userPage.totalPages - 1)}">
+            <span th:if="${pageNumber == 0 or pageNumber == userPage.totalPages - 1 or
+            (pageNumber >= userPage.number - 1 and pageNumber <= userPage.number + 1)}">
+                <a class="current-page" th:if="${pageNumber == userPage.number}" th:text="${pageNumber + 1}"></a>
+                <a th:if="${pageNumber != userPage.number}"
+                   th:href="@{'/admin/users' +'?page='+${pageNumber}+${filterParams}}"
+                   th:text="${pageNumber + 1}">1</a>
+            </span>
+            <span class="dots" th:unless="${pageNumber == 0 or pageNumber == userPage.totalPages - 1 or
+            (pageNumber >= userPage.number - 1 and pageNumber <= userPage.number + 1)}">
+                ...
+            </span>
+        </li>
+        <!-- Next Page -->
+        <li th:class="${userPage.last ? 'disabled' : 'edge-page'}">
+            <a
+               th:href="@{'/admin/users' +'?page='+${userPage.getNumber()+1}+${filterParams}}"><i
+                    class="fa-solid fa-chevron-right"></i></a>
+        </li>
+        <!-- Last Page -->
+        <li th:class="${userPage.last ? 'disabled' : 'edge-page'}">
+            <a th:href="@{'/admin/users' +'?page='+${userPage.getTotalPages()-1}+${filterParams}}">
+                <i class="fa-solid fa-angles-right"></i>
+            </a>
+        </li>
+    </ul>
 
-    <a th:if="${userPage.getNumber()>0}" th:href="@{'/admin/users' +'?page='+${userPage.getNumber()-1}+${filterParams}}"
-       th:text="Prev"></a>
-    <a th:if="${userPage.getNumber()<userPage.getTotalPages()-1}"
-       th:href="@{'/admin/users' +'?page='+${userPage.getNumber()+1}+${filterParams}}" th:text="Next"></a>
 
 </section>
 <!--FOOTER-->
@@ -151,5 +186,6 @@
 
 <script type="text/javascript" src="../static/js/showDropdown.js" th:src="@{/js/showDropdown.js}"></script>
 <script type="text/javascript" src="../static/js/reset.js" th:src="@{/js/reset.js}"></script>
+<script type="text/javascript" src="../static/js/displayDots.js" th:src="@{/js/displayDots.js}"></script>
 </body>
 </html>
