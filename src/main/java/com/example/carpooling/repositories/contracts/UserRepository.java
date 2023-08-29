@@ -1,7 +1,8 @@
 package com.example.carpooling.repositories.contracts;
 
 import com.example.carpooling.models.User;
-import com.example.carpooling.models.dtos.UserPreviewDto;
+import com.example.carpooling.models.enums.UserRole;
+import com.example.carpooling.models.enums.UserStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -19,6 +20,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "AND (:lastName IS NULL OR :lastName = '' OR u.lastName LIKE %:lastName%) " +
             "AND (:username IS NULL OR :username = '' OR u.userName LIKE %:username%) " +
             "AND (:email IS NULL OR :email = '' OR u.email LIKE :email) " +
+            "AND (:userRole IS NULL OR :userRole = '' OR u.role = :userRole) " +
+            "AND (:userStatus IS NULL OR :userStatus = '' OR u.status = :userStatus) " +
             "AND (:phoneNumber IS NULL OR :phoneNumber = '' OR u.phoneNumber = :phoneNumber) ")
     List<User> findByCriteria(
             String firstName,
@@ -26,6 +29,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
             String username,
             String email,
             String phoneNumber,
+            String userRole,
+            String userStatus,
             Sort sort
     );
 
@@ -72,13 +77,17 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "AND (:lastName IS NULL OR :lastName = '' OR u.lastName LIKE %:lastName%) " +
             "AND (:username IS NULL OR :username = '' OR u.userName LIKE %:username%) " +
             "AND (:email IS NULL OR :email = '' OR u.email LIKE :email) " +
+            "AND (:role IS NULL OR u.role = :role) " +
+            "AND (:status IS NULL OR u.status = :status) " +
             "AND (:phoneNumber IS NULL OR :phoneNumber = '' OR u.phoneNumber = :phoneNumber) ")
-    Page<User> findAll(
+    Page<User> findAllPaginated(
             PageRequest pageRequest,
             String firstName,
             String lastName,
             String username,
             String email,
             String phoneNumber,
+            UserRole role,
+            UserStatus status,
             Sort sort);
 }

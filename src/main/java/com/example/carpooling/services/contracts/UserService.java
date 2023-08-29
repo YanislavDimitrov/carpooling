@@ -3,7 +3,6 @@ package com.example.carpooling.services.contracts;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.Vehicle;
 import com.example.carpooling.models.dtos.UserChangePasswordDto;
-import com.example.carpooling.models.dtos.UserPreviewDto;
 import com.example.carpooling.models.dtos.UserUpdateDto;
 import jakarta.mail.MessagingException;
 import org.springframework.data.domain.Page;
@@ -15,7 +14,8 @@ import java.util.List;
 public interface UserService {
     List<User> findAll(Sort sort);
 
-    List<User> findAll(String firstName, String lastName, String username, String email, String phoneNumber, Sort sort);
+    List<User> findAll(String firstName, String lastName, String username, String email, String phoneNumber, String userRole, String userStatus, Sort sort);
+
     List<User> getAll();
 
     User getById(Long id);
@@ -45,9 +45,10 @@ public interface UserService {
     void downgrade(Long id, User loggedUser);
 
     void unverify(Long id);
+
     void verify(Long id);
 
     void changePassword(User targetUser, UserChangePasswordDto dto, User loggedUser);
 
-    Page<User> getItemsByPage(int page, int size, String firstName, String lastName, String username, String email, String phoneNumber, Sort sort);
+    Page<User> findAllPaginated(int page, int size, String firstName, String lastName, String username, String email, String phoneNumber, String userRole, String userStatus, Sort sort);
 }

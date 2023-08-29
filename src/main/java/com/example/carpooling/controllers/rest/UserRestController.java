@@ -56,7 +56,9 @@ public class UserRestController {
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String phoneNumber,
             @RequestParam(required = false, defaultValue = "id") String sortBy,
-            @RequestParam(required = false, defaultValue = "asc") String sortOrder
+            @RequestParam(required = false, defaultValue = "asc") String sortOrder,
+            @RequestParam(required = false) String userRole,
+            @RequestParam(required = false) String userStatus
     ) {
         Sort sort;
         if (sortOrder.equalsIgnoreCase("desc")) {
@@ -67,8 +69,8 @@ public class UserRestController {
 
         List<User> filteredUsers;
 
-        if (firstName != null || lastName != null || username != null || email != null || phoneNumber != null) {
-            filteredUsers = userService.findAll(firstName, lastName, username, email, phoneNumber, sort);
+        if (firstName != null || lastName != null || username != null || email != null || phoneNumber != null || userRole != null || userStatus != null) {
+            filteredUsers = userService.findAll(firstName, lastName, username, email, phoneNumber, userRole, userStatus, sort);
         } else {
             filteredUsers = userService.findAll(sort);
         }

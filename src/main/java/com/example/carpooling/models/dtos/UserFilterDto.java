@@ -15,4 +15,6 @@ public class UserFilterDto {
     private String phoneNumber;
     private String sortBy = "id";
     private String sortOrder = "asc";
+    private String userStatus;
+    private String userRole;
 }

@@ -8,26 +8,20 @@ import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.models.Image;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.dtos.UserFilterDto;
-import com.example.carpooling.models.dtos.UserPreviewDto;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.services.contracts.TravelService;
 import com.example.carpooling.services.contracts.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
@@ -105,7 +99,7 @@ public class AdminMvcController {
         } else {
             sort = Sort.by(Sort.Direction.ASC, filter.getSortBy());
         }
-        Page<User> users = userService.getItemsByPage(
+        Page<User> users = userService.findAllPaginated(
                 page,
                 size,
                 filter.getFirstName(),
@@ -113,6 +107,8 @@ public class AdminMvcController {
                 filter.getUsername(),
                 filter.getEmail(),
                 filter.getPhoneNumber(),
+                filter.getUserRole(),
+                filter.getUserStatus(),
                 sort);
 
 

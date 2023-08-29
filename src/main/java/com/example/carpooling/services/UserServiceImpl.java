@@ -6,10 +6,10 @@ import com.example.carpooling.exceptions.duplicate.DuplicatePhoneNumberException
 import com.example.carpooling.exceptions.duplicate.DuplicateUsernameException;
 import com.example.carpooling.models.*;
 import com.example.carpooling.models.dtos.UserChangePasswordDto;
-import com.example.carpooling.models.dtos.UserPreviewDto;
 import com.example.carpooling.models.dtos.UserUpdateDto;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.models.enums.UserRole;
+import com.example.carpooling.models.enums.UserStatus;
 import com.example.carpooling.repositories.contracts.TokenRepository;
 import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.repositories.contracts.VehicleRepository;
@@ -56,8 +56,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findAll(String firstName, String lastName, String username, String email, String phoneNumber, Sort sort) {
-        return this.userRepository.findByCriteria(firstName, lastName, username, email, phoneNumber, sort);
+    public List<User> findAll(String firstName, String lastName, String username, String email, String phoneNumber, String userRole, String userStatus, Sort sort) {
+        return this.userRepository.findByCriteria(firstName, lastName, username, email, phoneNumber, userRole, userStatus, sort);
     }
 
     @Override
@@ -281,9 +281,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<User> getItemsByPage(int page, int size, String firstName, String lastName, String username, String email, String phoneNumber, Sort sort) {
+    public Page<User> findAllPaginated(int page, int size, String firstName, String lastName, String username, String email, String phoneNumber, String userRole, String userStatus, Sort sort) {
         PageRequest pageRequest = PageRequest.of(page, size);
-        return userRepository.findAll(pageRequest,firstName,lastName,username,email,phoneNumber,sort);
+
+        UserRole criteriaRole =
+                userRole != null && !userRole.trim().isEmpty()
+                        ? UserRole.valueOf(userRole.toUpperCase())
+                        : null;
+
+        UserStatus criteriaStatus =
+                userStatus != null && !userStatus.trim().isEmpty()
+                        ? UserStatus.valueOf(userStatus.toUpperCase())
+                        : null;
+
+        return userRepository.findAllPaginated(pageRequest, firstName, lastName, username, email, phoneNumber, criteriaRole, criteriaStatus, sort);
     }
 
     @Override

@@ -48,6 +48,24 @@
                 </div>
             </div>
             <div class="select input-container">
+                <label for="sort-order">User status</label>
+                <select id="user-status" th:field="*{userStatus}">
+                    <option value="">All</option>
+                    <option th:each="enumValue : ${T(com.example.carpooling.models.enums.UserStatus).values()}"
+                            th:value="${enumValue}"
+                            th:text="${enumValue}"></option>
+                </select>
+            </div>
+            <div class="select input-container">
+                <label for="sort-order">User role</label>
+                <select id="user-role" th:field="*{userRole}">
+                    <option value="">All</option>
+                    <option th:each="enumValue : ${T(com.example.carpooling.models.enums.UserRole).values()}"
+                            th:value="${enumValue}"
+                            th:text="${enumValue}"></option>
+                </select>
+            </div>
+            <div class="select input-container">
                 <label for="sort-by">Sort By</label>
                 <select id="sort-by" th:field="*{sortBy}">
                     <option value="id">Relevance</option>
@@ -139,7 +157,7 @@
         </div>
     </div>
     <!-- Pagination controls -->
-    <ul role="list" class="pagination">
+    <ul th:if="${userPage.getTotalPages()>1}" role="list" class="pagination">
         <!-- First Page -->
         <li th:class="${userPage.first ? 'disabled' : 'edge-page'}">
             <a th:href="@{'/admin/users' +'?page=0'+${filterParams}}">

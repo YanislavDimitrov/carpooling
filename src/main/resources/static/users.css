@@ -48,6 +48,7 @@
     text-decoration: none;
     font-size: 2rem;
     padding: 0 1rem;
+    color: #0b2b3a;
 }
 
 .main .pagination .dots{
@@ -176,7 +177,7 @@ select {
     outline: none;
     background-color: transparent;
     color: rgb(65, 89, 96);
-    /*width: 100%;*/
+    width: 100%;
 }
 
 .form input:focus::placeholder {
@@ -194,12 +195,16 @@ input:-webkit-autofill:active {
     -webkit-box-shadow: 0 0 0 30px white inset !important;
 }
 
+.main .matches{
+    font-weight: 500;
+    font-size: 1.5rem;
+}
 
 .form .inputs-container {
     display: flex;
-    gap: 1rem;
+    gap: 2rem;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
 }
 

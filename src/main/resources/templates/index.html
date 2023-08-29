@@ -74,8 +74,8 @@
     </a>
     </a>
     <div class="btns">
-        <a th:if="${isAdmin}" class="admin-btn-container">
-            <i class="fa-solid fa-gear"></i>Admin
+        <a th:href="@{/admin/users}" th:if="${isAdmin}" class="admin-btn-container">
+            <i class="fa-solid fa-user"></i>Users
         </a>
         <a class="search-btn-container">
             <i class="fa-solid fa-magnifying-glass"></i>Search
