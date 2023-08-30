@@ -6,6 +6,7 @@ import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.exceptions.duplicate.DuplicatePhoneNumberException;
 import com.example.carpooling.exceptions.duplicate.DuplicateUsernameException;
 import com.example.carpooling.helpers.AuthenticationHelper;
+import com.example.carpooling.models.Image;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.dtos.LoginDto;
 import com.example.carpooling.models.dtos.RegisterDto;
@@ -64,12 +65,35 @@ public class AuthenticationController {
             return false;
         }
     }
+    @ModelAttribute("hasProfilePicture")
+    public Boolean hasProfilePicture(HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            return loggedUser.getProfilePicture() != null;
+        } catch (AuthenticationFailureException e) {
+            return false;
+        }
+    }
+
+    @ModelAttribute("profilePicture")
+    public Image populateProfilePicture(HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            return loggedUser.getProfilePicture();
+        } catch (AuthenticationFailureException e) {
+            return null;
+        }
+    }
 
     @GetMapping("/login")
     public String showLoginPage(Model model) {
         model.addAttribute("login", new LoginDto());
         return "LoginView";
         //Todo LoginView
+    }
+    @GetMapping("/recovered")
+    public String recoverAccountPage() {
+        return "DeletedUserView";
     }
 
     @PostMapping("/login")
@@ -87,7 +111,8 @@ public class AuthenticationController {
 
             if (user.getStatus() == UserStatus.DELETED) {
                 userService.restore(user.getId(), user);
-                return "DeletedUserView";
+                session.setAttribute("currentUser", dto.getUserName());
+                return "redirect:/auth/recovered";
             }
 
             session.setAttribute("currentUser", dto.getUserName());
