@@ -1,8 +1,8 @@
 package com.example.carpooling.services;
 
 import com.example.carpooling.exceptions.InvalidLocationException;
-import com.example.carpooling.exceptions.InvalidOperationException;
 import com.example.carpooling.exceptions.InvalidTravelException;
+import com.example.carpooling.services.contracts.BingMapsService;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -11,46 +11,34 @@ import org.springframework.stereotype.Service;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Service
-public class BingMapsService {
+public class BingMapsServiceImpl implements BingMapsService {
     private static final String API_KEY = "ApCDqrWiyt1uxxpCrXxFDT44JTvyUnba2onqQ9NEyrYFEKCq5F9-U02xEb2rcMcw";
     public static final String INVALID_LOCAtiON = "This location is not valid!";
     public static final String IMPOSSIBLE_TRAVEL = "We are supporting only travels which can be done by land , this travel needs sea/air transport!";
+    public static final String MICROSOFT_URL = "http://dev.virtualearth.net/REST/v1/Locations?q=";
+    public static final String KEY = "&key=";
+    public static final String GET = "GET";
 
     public String getTravelDistance(String origin, String destination) {
         String json = getDistanceMatrixJson(origin, destination);
         return parseTravelDistanceAndDuration(json);
     }
 
-    private String getDistanceMatrixJson(String origin, String destination) {
+    public String getDistanceMatrixJson(String origin, String destination) {
         String url = "https://dev.virtualearth.net/REST/v1/Routes/DistanceMatrix?origins=" +
                 origin + "&destinations=" + destination +
                 "&travelMode=driving&key=" + API_KEY;
-//ToDo to insert it in try with resources
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
             connection.setRequestMethod("GET");
-
-            int responseCode = connection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String inputLine;
-                StringBuilder response = new StringBuilder();
-
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-                in.close();
-
-                return response.toString();
-            } else {
-                System.out.println("API request failed with response code: " + responseCode);
-            }
+            String response = readTheDataFromEndPoint(connection);
+            if (response != null) return response;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -58,7 +46,25 @@ public class BingMapsService {
         return null;
     }
 
-    private String parseTravelDistanceAndDuration(String json) {
+    private String readTheDataFromEndPoint(HttpURLConnection connection) throws IOException {
+        int responseCode = connection.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                String inputLine;
+                StringBuilder response = new StringBuilder();
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                return response.toString();
+            }
+        } else {
+            System.out.println("API request failed with response code: " + responseCode);
+        }
+        return null;
+    }
+
+    public String parseTravelDistanceAndDuration(String json) {
         JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
         double travelDistance = jsonObject
                 .getAsJsonArray("resourceSets").get(0)
@@ -83,28 +89,15 @@ public class BingMapsService {
 
     public String getLocationJson(String address) {
         String encodedAddress = encodeURIComponent(address);
-        String url = "http://dev.virtualearth.net/REST/v1/Locations?q=" +
-                encodedAddress + "&key=" + API_KEY;
+        String url = MICROSOFT_URL +
+                encodedAddress + KEY + API_KEY;
 
         try {
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-            connection.setRequestMethod("GET");
+            connection.setRequestMethod(GET);
 
-            int responseCode = connection.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String inputLine;
-                StringBuilder response = new StringBuilder();
-
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-                in.close();
-
-                return response.toString();
-            } else {
-                System.out.println("API request failed with response code: " + responseCode);
-            }
+            String response = readTheDataFromEndPoint(connection);
+            if (response != null) return response;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -112,12 +105,8 @@ public class BingMapsService {
         return null;
     }
 
-    private String encodeURIComponent(String s) {
-        try {
-            return URLEncoder.encode(s, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("Error encoding URI component: " + e.getMessage());
-        }
+    public String encodeURIComponent(String s) {
+        return URLEncoder.encode(s, StandardCharsets.UTF_8);
     }
 
     public double[] parseCoordinates(String json) {

@@ -55,6 +55,13 @@
         </div>
         <div class="names-container">
             <div class="field-container">
+                <label th:text="#{travel.label.price}">Price</label>
+                <input type="number" th:field="*{price}"
+                       placeholder="Price">
+            </div>
+        </div>
+        <div class="names-container">
+            <div class="field-container">
                 <label th:text="#{travel.label.vehicle}">Vehicle</label>
                 <select th:field="*{vehicle}">
                     <option th:each="vehicle : ${vehicles}"

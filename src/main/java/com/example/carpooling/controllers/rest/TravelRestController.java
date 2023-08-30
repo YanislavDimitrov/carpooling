@@ -10,7 +10,7 @@ import com.example.carpooling.models.dtos.TravelViewDto;
 import com.example.carpooling.models.dtos.UserViewDto;
 import com.example.carpooling.models.enums.TravelRequestStatus;
 import com.example.carpooling.models.enums.TravelStatus;
-import com.example.carpooling.services.BingMapsService;
+import com.example.carpooling.services.BingMapsServiceImpl;
 import com.example.carpooling.services.contracts.TravelService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +35,9 @@ public class TravelRestController {
     private final TravelMapper travelMapper;
     private final ModelMapper modelMapper;
     private final AuthenticationHelper authenticationHelper;
-    private final BingMapsService bingMapsService;
+    private final BingMapsServiceImpl bingMapsService;
     @Autowired
-    public TravelRestController(TravelService travelService, TravelMapper travelMapper, ModelMapper modelMapper, AuthenticationHelper authenticationHelper, BingMapsService bingMapsService) {
+    public TravelRestController(TravelService travelService, TravelMapper travelMapper, ModelMapper modelMapper, AuthenticationHelper authenticationHelper, BingMapsServiceImpl bingMapsService) {
         this.travelService = travelService;
         this.travelMapper = travelMapper;
         this.modelMapper = modelMapper;

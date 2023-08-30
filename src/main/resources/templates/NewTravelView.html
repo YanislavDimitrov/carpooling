@@ -61,6 +61,14 @@
             </div>
             </div>
             <div class="names-container">
+                <div class="field-container">
+                    <label th:text="#{travel.label.price}">Price</label>
+                    <label>
+                        <input type="number" th:field="*{price}" placeholder="Price">
+                    </label>
+                </div>
+            </div>
+            <div class="names-container">
             <div class="field-container">
                 <label th:text="#{travel.label.vehicle}">Vehicle</label>
                 <select th:field="*{vehicle}">

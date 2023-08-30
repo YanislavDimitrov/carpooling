@@ -39,16 +39,16 @@ public class TravelServiceImpl implements TravelService {
     public static final String TRAVEL_AT_THIS_TIME = "You already have planned travel for %s , if you want to proceed you should cancel it first!";
     public static final String TRAVEL_AS_PASSENGER = "You have approved request for being passenger on travel from %s to %s , so if you want to create a Travel you should cancel your request for participating in your passenger travel!";
     public static final String YOU_CAN_UPDATE_ONLY_PLANNED_TRAVELS = "You can update only planned travels!";
-    public static final String TRAVEL_PLANNED_IN_THIS_TIME_FRAME = "You are planning to create a travel but you currently have a planned travel which departure time is before your current estimated time of arrival, so reconsider either cancelling your travel travel from %s to %s at %s or change the timeframe for this one";
     public static final String TRAVEL_IN_THIS_TIME_FRAME = "You have a planned travel which is scheduled for %s from %s to %s , if you want to plan this travel you should either reconsider the departure time or cancel the travel that you have planned , in order not to disappoint potential passengers!";
     public static final String INVALID_STATUS = "You cannot complete travel unless it is active , if your travel is planned, consider cancelling it instead!";
+    public static final String ARRIVAL_TIME_INSIDE_INVALID_TIME_FRAME = "You are planning to create a travel in the time frame when you have already planned or active travel from %s to %s , please reconsider your actions!";
     private final TravelRepository travelRepository;
     private final PassengerRepository passengerRepository;
     private final UserService userService;
 
-    private final BingMapsService bingMapsService;
+    private final BingMapsServiceImpl bingMapsService;
 
-    public TravelServiceImpl(TravelRepository travelRepository, PassengerRepository passengerRepository, UserService userService, BingMapsService bingMapsService) {
+    public TravelServiceImpl(TravelRepository travelRepository, PassengerRepository passengerRepository, UserService userService, BingMapsServiceImpl bingMapsService) {
         this.travelRepository = travelRepository;
         this.passengerRepository = passengerRepository;
         this.userService = userService;
@@ -139,22 +139,20 @@ public class TravelServiceImpl implements TravelService {
     /**
      * @param travel This parameter is needed to create the travel itself
      * @param driver This parameter is needed to set the driver of the travel automatically
-     *               With the help of external Microsoft Bing Maps API endpoints , a new travel has been created.
+     *               With the help of external Microsoft Bing Maps API endpoints ,  new travel has been created.
      */
     @Override
     public void create(Travel travel, User driver) {
         checkIfTheTravelTimeFrameIsValid(travel, driver);
-        calculatingDistanceAndDuration(travel);
         travel.setStatus(TravelStatus.PLANNED);
         travel.setDriver(driver);
         travelRepository.save(travel);
     }
 
 
-
     @Override
     public Travel update(Travel travelToUpdate, User editor) {
-      //  checkIfTheTravelTimeFrameIsValid(travelToUpdate, editor);
+          checkIfTheTravelTimeFrameIsValid(travelToUpdate, editor);
         if (!travelToUpdate.getDriver().equals(editor)) {
             throw new AuthorizationException(UPDATE_CANCELLED);
         }
@@ -292,9 +290,9 @@ public class TravelServiceImpl implements TravelService {
         return passengerRepository.existsByUserAndTravel(user, travel);
     }
 
-    public static void checkIfTheTravelTimeFrameIsValid( Travel oldTravel ,Travel travel, User driver) {
-       List<Travel> travelsToCheck = driver.getTravelsAsDriver();
-       travelsToCheck.remove(oldTravel);
+    public static void checkIfTheTravelTimeFrameIsValid(Travel oldTravel, Travel travel, User driver) {
+        List<Travel> travelsToCheck = driver.getTravelsAsDriver();
+        travelsToCheck.remove(oldTravel);
 
         for (Travel travelToCheck : travelsToCheck) {
             if (travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime())
@@ -336,6 +334,7 @@ public class TravelServiceImpl implements TravelService {
             }
         }
     }
+
     private static void checkIfTheTravelTimeFrameIsValid(Travel travel, User driver) {
         for (Travel travelToCheck : driver.getTravelsAsDriver()) {
             if (travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime())
@@ -358,6 +357,12 @@ public class TravelServiceImpl implements TravelService {
             }
             if (travel.getDepartureTime().isEqual(travelToCheck.getDepartureTime())) {
                 throw new InvalidOperationException(String.format(TRAVEL_AT_THIS_TIME, travelToCheck.getDepartureTime()));
+            }
+            if (travel.getEstimatedTimeOfArrival().isAfter(travelToCheck.getDepartureTime()) &&
+                    travel.getEstimatedTimeOfArrival().isBefore(travelToCheck.getEstimatedTimeOfArrival())) {
+                throw new InvalidOperationException(String.format(ARRIVAL_TIME_INSIDE_INVALID_TIME_FRAME,
+                        travelToCheck.getDeparturePoint(),
+                        travelToCheck.getArrivalPoint()));
             }
         }
         List<TravelRequest> travelRequestOfTheDriverAsPassenger = driver.getTravelsAsPassenger()

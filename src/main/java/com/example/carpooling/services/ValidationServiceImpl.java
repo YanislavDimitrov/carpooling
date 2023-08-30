@@ -1,8 +1,10 @@
 package com.example.carpooling.services;
 
+import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.VerificationToken;
 import com.example.carpooling.repositories.contracts.TokenRepository;
+import com.example.carpooling.services.contracts.BingMapsService;
 import com.example.carpooling.services.contracts.ValidationService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.LocalDateTime;
 
 import static com.example.carpooling.services.UserServiceImpl.CONFIRMATION_EMAIL_TEMPLATE_PATH;
 
@@ -22,11 +25,13 @@ import static com.example.carpooling.services.UserServiceImpl.CONFIRMATION_EMAIL
 public class ValidationServiceImpl implements ValidationService {
     private final TokenRepository tokenRepository;
     private final JavaMailSender javaMailSender;
+    private final BingMapsService bingMapsService;
 
     @Autowired
-    public ValidationServiceImpl(TokenRepository tokenRepository, JavaMailSender javaMailSender) {
+    public ValidationServiceImpl(TokenRepository tokenRepository, JavaMailSender javaMailSender, BingMapsService bingMapsService) {
         this.tokenRepository = tokenRepository;
         this.javaMailSender = javaMailSender;
+        this.bingMapsService = bingMapsService;
     }
 
     @Override
@@ -64,4 +69,6 @@ public class ValidationServiceImpl implements ValidationService {
 
         javaMailSender.send(message);
     }
+
+
 }

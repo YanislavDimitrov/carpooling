@@ -245,11 +245,11 @@ public class TravelMvcController {
         Travel travelToCheckIfValid = travelMapper.fromTravelCreateToTestDepartureTime(travelUpdateDto);
 
         try {
-            TravelServiceImpl.checkIfTheTravelTimeFrameIsValid(travel,travelToCheckIfValid,loggedUser);
+            TravelServiceImpl.checkIfTheTravelTimeFrameIsValid(travel, travelToCheckIfValid, loggedUser);
 
         } catch (InvalidOperationException e) {
-            errors.rejectValue("departureTime","creation_error",e.getMessage());
-            return "PlannedTravelErrorView";
+            errors.rejectValue("departureTime", "creation_error", e.getMessage());
+            return "UpdateTravelView";
         }
 
         Travel travelUpdate = travelMapper.toTravelFromTravelUpdateSaveDto(travel, travelUpdateDto);
@@ -269,10 +269,11 @@ public class TravelMvcController {
             errors.rejectValue("departurePoint", "location_error", e.getMessage());
             errors.rejectValue("arrivalPoint", "location_error", e.getMessage());
             model.addAttribute("vehicles", loggedUser.getVehicles());
+            return "UpdateTravelView";
         } catch (InvalidOperationException e) {
             errors.rejectValue("departureTime", "creation_error", e.getMessage());
             model.addAttribute("vehicles", loggedUser.getVehicles());
-            return "PlannedTravelErrorView";
+            return "UpdateTravelView";
         }
         return "redirect:/travels/" + id;
     }

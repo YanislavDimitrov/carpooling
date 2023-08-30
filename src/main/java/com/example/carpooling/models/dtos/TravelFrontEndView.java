@@ -29,7 +29,16 @@ public class TravelFrontEndView {
     private LocalDateTime arrivalTime;
     private String comment;
     private TravelStatus status;
+    private String price;
     private boolean isDeleted;
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
 
     public boolean isDeleted() {
         return isDeleted;

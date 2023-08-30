@@ -1,10 +1,7 @@
 package com.example.carpooling.models.dtos;
 
 import com.example.carpooling.models.Vehicle;
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 
 import java.time.LocalDateTime;
 
@@ -22,9 +19,19 @@ public class TravelCreationOrUpdateDto {
     @NotNull(message = "Vehicle field cannot be null")
     private Vehicle vehicle;
     private String comment;
+    @Positive(message = "Price cannot be negative!")
+    private String price;
 
 
     public TravelCreationOrUpdateDto() {
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
     }
 
     public Vehicle getVehicle() {

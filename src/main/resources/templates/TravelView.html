@@ -27,6 +27,7 @@
                 <th scope="col" th:text="#{travel.label.duration}">Duration</th>
                 <th scope="col" th:text="#{travel.label.departure-time}">Departure Time</th>
                 <th scope="col" th:text="#{travel.label.arrival-time}">Arrival Time</th>
+                <th scope="col" th:text="#{travel.label.price}">Price</th>
                 <th scope="col" th:text="#{travel.label.status}">Status</th>
                 <th th:if="${!travel.getComment().isEmpty()}" scope="col" th:text="#{travel.label.comment}">Comment</th>
             </tr>
@@ -41,6 +42,7 @@
                 <td th:text="${travel.getDuration()}">1h 54min</td>
                 <td th:text="${#temporals.format(travel.getDepartureTime(),'dd MMM y HH:mm')}">1-Jan 10:45</td>
                 <td th:text="${#temporals.format(travel.getArrivalTime(),'dd MMM y HH:mm')}">2-Jan 10;45</td>
+                <td th:text="${travel.getPrice()}">10lv</td>
                 <td th:text="${travel.getStatus()}">COMPLETED</td>
                 <td th:if="${!travel.comment.isEmpty()}" th:text="${travel.getComment()}">Comment</td>
                 <td th:if="${isAdmin} and ${!travel.getDriverName().equals(session.currentUser)}">
@@ -82,7 +84,8 @@
     <button th:if="${travel.getDriverName().equals(session.currentUser)} or ${isAdmin}" class="btn" id="toggleButton">
         Show passengers<i id="show-hide-icon"
                           class="fa-solid fa-angle-down"></i></button>
-    <div th:if="${travel.getDriverName().equals(session.currentUser)} or ${isAdmin}" id="infoContainer" class="info">
+    <div th:if="${travel.getDriverName().equals(session.currentUser)} or ${isAdmin}" id="infoContainer"
+         style="display:none" class="info">
         <div th:if="${passengers.isEmpty()}" id="no-passengers">
             <h1>No passengers to show</h1>
         </div>
@@ -107,7 +110,7 @@
         Travel Requests
         <i id="show-hide-ico"
            class="fa-solid fa-angle-down"></i></button>
-    <div th:if="${travel.getDriverName().equals(session.currentUser)} or ${isAdmin}" id="information-container"
+    <div th:if="${travel.getDriverName().equals(session.currentUser)} or ${isAdmin}" id="information-container" style="display:none"
          class="info">
         <div th:if="${travelRequestForThisTravel.isEmpty()}" id="no-requests">
             <h1>No travel requests to show</h1>
@@ -151,6 +154,13 @@
     window.onload = function () {
         Microsoft.Maps.loadModule('Microsoft.Maps.Directions', {callback: loadMap});
     };
+</script>
+<script>
+    var mapContainer = document.getElementById('mapContainer');
+
+    mapContainer.addEventListener('wheel', function(event) {
+        event.stopPropagation();
+    });
 </script>
 <script>
     function toggleLabel() {

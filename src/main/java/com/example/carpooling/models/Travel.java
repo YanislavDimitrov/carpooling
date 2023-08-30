@@ -44,7 +44,7 @@ public class Travel {
     private Vehicle vehicle;
 
     @Enumerated(EnumType.STRING)
-    private TravelStatus status ;
+    private TravelStatus status;
 
     @Column(name = "distance")
     private String distance;
@@ -58,6 +58,9 @@ public class Travel {
 
     @Column(name = "is_deleted")
     private boolean isDeleted;
+
+    @Column(name = "price")
+    private String price;
 
     public Travel() {
         travelRequests = new ArrayList<>();

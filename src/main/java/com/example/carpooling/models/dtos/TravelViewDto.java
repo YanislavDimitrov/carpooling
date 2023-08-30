@@ -3,6 +3,7 @@ package com.example.carpooling.models.dtos;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.TravelStatus;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,10 +28,19 @@ public class TravelViewDto {
     private String comment;
 
     private TravelStatus status;
-//    private List<TravelRequestDto> requests;
     private List<TravelRequestDto> passengers;
+  @Positive(message = "Price cannot be negative!")
+    private String price;
 
     public TravelViewDto() {
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
     }
 
     public List<TravelRequestDto> getPassengers() {

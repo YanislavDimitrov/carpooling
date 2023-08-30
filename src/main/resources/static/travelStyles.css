@@ -94,10 +94,17 @@ th {
 
 /* Style the oval-shaped map container */
 #mapContainer {
-    margin-top: 20px;
-    height: 1000px;
-    border-radius: 80%;
-    overflow: hidden;
+    /*position: relative;*/
+    /*margin-top: 20px;*/
+    /*height: 1000px;*/
+    /*border-radius: 80%;*/
+    /*overflow: hidden ;*/
+    /*overscroll-behavior: none;*/
+    width: 700px;
+    height: 700px;
+    border-radius: 50%; /* Make it circular */
+    overflow: hidden; /* Hide any overflow content if the circular form clips it */
+    margin: 0 auto;
 }
 
 @media (max-width: 768px) {

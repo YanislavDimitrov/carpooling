@@ -1,26 +1,31 @@
 package com.example.carpooling.helpers.mappers;
 
+import com.example.carpooling.helpers.CalculationDistanceDurationHelper;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.dtos.*;
 import com.example.carpooling.models.enums.TravelRequestStatus;
-import com.example.carpooling.models.enums.TravelStatus;
+import com.example.carpooling.services.BingMapsServiceImpl;
 import com.example.carpooling.services.contracts.TravelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.stream.Collectors;
+import java.util.List;
 
 @Component
 public class TravelMapper {
 
     private final TravelService travelService;
     private final TravelRequestMapper travelRequestMapper;
+    private final BingMapsServiceImpl bingMapsService;
+    private final CalculationDistanceDurationHelper calculationHelper;
 
     @Autowired
-    public TravelMapper(TravelService travelService, TravelRequestMapper travelRequestMapper) {
+    public TravelMapper(TravelService travelService, TravelRequestMapper travelRequestMapper, BingMapsServiceImpl bingMapsService, CalculationDistanceDurationHelper calculationHelper) {
         this.travelService = travelService;
         this.travelRequestMapper = travelRequestMapper;
+        this.bingMapsService = bingMapsService;
+        this.calculationHelper = calculationHelper;
     }
 
     public TravelViewDto fromTravel(Travel travel) {
@@ -35,6 +40,7 @@ public class TravelMapper {
         travelViewDto.setDeparturePoint(travel.getDeparturePoint());
         travelViewDto.setFreeSpots(travel.getFreeSpots());
         travelViewDto.setDistance(travel.getDistance());
+        travelViewDto.setPrice(travel.getPrice());
         int wholeNumberIndex = travel.getTravelDuration().indexOf(" ");
         double durationAsDouble = Double.parseDouble(travel.getTravelDuration().substring(0, wholeNumberIndex));
         int hours;
@@ -71,6 +77,11 @@ public class TravelMapper {
         travel.setComment(travelCreationOrUpdateDto.getComment());
         travel.setFreeSpots(travelCreationOrUpdateDto.getFreeSpots());
         travel.setVehicle(travelCreationOrUpdateDto.getVehicle());
+        travel.setPrice(travelCreationOrUpdateDto.getPrice());
+        List<String> distanceAndDuration = calculationHelper.calculateDistanceAndDuration(travel);
+        travel.setTravelDuration(distanceAndDuration.get(0));
+        travel.setDistance(distanceAndDuration.get(1));
+        travel.setEstimatedTimeOfArrival(calculationHelper.calculateEstimatedTimeOfArrival(travel));
         return travel;
     }
 
@@ -80,6 +91,7 @@ public class TravelMapper {
         travel.setComment(travelUpdateDto.getComment());
         travel.setDepartureTime(travelUpdateDto.getDepartureTime());
         travel.setFreeSpots(travelUpdateDto.getFreeSpots());
+        travel.setPrice(travelUpdateDto.getPrice());
         return travel;
     }
 
@@ -91,6 +103,7 @@ public class TravelMapper {
         travelCreationOrUpdateDto.setDeparturePoint(travel.getDeparturePoint());
         travelCreationOrUpdateDto.setFreeSpots(travel.getFreeSpots());
         travelCreationOrUpdateDto.setDepartureTime(travel.getDepartureTime());
+        travelCreationOrUpdateDto.setPrice(travel.getPrice());
         return travelCreationOrUpdateDto;
     }
 
@@ -102,6 +115,7 @@ public class TravelMapper {
         travelFrontEndView.setComment(travel.getComment());
         travelFrontEndView.setDistance(travel.getDistance());
         travelFrontEndView.setDeleted(travel.isDeleted());
+        travelFrontEndView.setPrice(travel.getPrice());
         int wholeNumberIndex = travel.getTravelDuration().indexOf(" ");
         double durationAsDouble = Double.parseDouble(travel.getTravelDuration().substring(0, wholeNumberIndex));
         int hours;
@@ -135,7 +149,8 @@ public class TravelMapper {
         travel = travelRequest.getTravel();
         return travel;
     }
-public Travel fromTravelCreateToTestDepartureTime(TravelCreationOrUpdateDto travelCreationOrUpdateDto) {
+
+    public Travel fromTravelCreateToTestDepartureTime(TravelCreationOrUpdateDto travelCreationOrUpdateDto) {
         Travel travel = new Travel();
         travel.setDepartureTime(travelCreationOrUpdateDto.getDepartureTime());
         travel.setDeparturePoint(travelCreationOrUpdateDto.getDeparturePoint());
@@ -143,6 +158,7 @@ public Travel fromTravelCreateToTestDepartureTime(TravelCreationOrUpdateDto trav
         travel.setComment(travelCreationOrUpdateDto.getComment());
         travel.setFreeSpots(travelCreationOrUpdateDto.getFreeSpots());
         travel.setVehicle(travelCreationOrUpdateDto.getVehicle());
+        travel.setPrice(travelCreationOrUpdateDto.getPrice());
         return travel;
-}
+    }
 }

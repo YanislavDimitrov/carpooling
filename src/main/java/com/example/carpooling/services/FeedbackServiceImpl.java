@@ -30,7 +30,6 @@ public class FeedbackServiceImpl implements FeedbackService {
     public static final String TRAVEL_NOT_COMPLETED = "Travel with ID %d has not been completed so you cannot leave feedback now.";
     public static final String NOT_AUTHORIZED = "You are not authorized to update feedback because only creators of the feedback can update it!";
     public static final String INVALID_FEEDBACK = "You cannot give feedback for this person if he was not part of this travel!";
-    public static final String NOT_PART_OF_TRAVEL = "You were not a part of this travel so you cannot leave feedback!";
     public static final String FEEDBACK_REPETITION = "You cannot give feedback again for the same person for this travel,if you want to edit your feedback , please go to the edit button!";
     public static final String CANNOT_GIVE_YOURSELF_A_FEEDBACK = "You cannot give yourself a feedback!";
     private final FeedbackRepository feedbackRepository;
