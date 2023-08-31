@@ -45,18 +45,18 @@
                 <td th:text="${travel.getPrice()}">10lv</td>
                 <td th:text="${travel.getStatus()}">COMPLETED</td>
                 <td th:if="${!travel.comment.isEmpty()}" th:text="${travel.getComment()}">Comment</td>
-                <td th:if="${isAdmin} and ${!travel.getDriverName().equals(session.currentUser)}">
+                <td th:if="${isAdmin} and ${!travel.getDriverName().equals(session.currentUser)} and ${travel.status == T(com.example.carpooling.models.enums.TravelStatus).PLANNED}">
                     <a class="btn delete" href="#" th:href="@{/travels/{id}/delete(id=${travel.getId()})}"><i
                             class="fa-solid fa-trash-can"></i></a>
 
                 </td>
-                <td th:if="${travel.getDriverName().equals(session.currentUser)}">
+                <td th:if="${travel.getDriverName().equals(session.currentUser)} and ${travel.status == T(com.example.carpooling.models.enums.TravelStatus).PLANNED}">
                     <a class="btn edit" href="#" th:href="@{/travels/{id}/update(id=${travel.getId()})}"><i
                             class="fa-solid fa-pencil"></i></a>
                     <a class="btn delete" href="#" th:href="@{/travels/{id}/delete(id=${travel.getId()})}"><i
                             class="fa-solid fa-trash-can"></i></a>
                 </td>
-                <td th:if="${!travel.getDriverName().equals(session.currentUser)} and ${!isPassenger}">
+                <td th:if="${!travel.getDriverName().equals(session.currentUser)} and ${!isPassenger} and ${travel.status == T(com.example.carpooling.models.enums.TravelStatus).PLANNED}">
                     <a  class="btn delete" href="#" th:href="@{/travels/{id}/apply(id=${travel.getId()})}">
                         <button class="btn"
                                 th:text="${isRequestedByUser ? 'Cancel Request' : 'Apply for Travel'}"></button>

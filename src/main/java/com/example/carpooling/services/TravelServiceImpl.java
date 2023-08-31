@@ -11,16 +11,20 @@ import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.TravelRequestStatus;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.models.enums.UserRole;
+import com.example.carpooling.models.enums.UserStatus;
 import com.example.carpooling.repositories.contracts.PassengerRepository;
 import com.example.carpooling.repositories.contracts.TravelRepository;
 import com.example.carpooling.services.contracts.TravelService;
 import com.example.carpooling.services.contracts.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -100,9 +104,25 @@ public class TravelServiceImpl implements TravelService {
 
     @Override
     public List<Travel> findBySearchCriteria(String departurePoint, String arrivalPoint, LocalDateTime departureTime, Short freeSpots) {
-        return travelRepository.findByCustomSearchFilter(departurePoint, arrivalPoint, departureTime, freeSpots);
+        return travelRepository.findByCustomSearchFilter(departurePoint, arrivalPoint, departureTime, freeSpots)
+                .stream()
+                .filter(travel -> travel.getStatus() == TravelStatus.PLANNED)
+                .toList();
     }
 
+    @Override
+    public Page<Travel> findAllPaginated(int page,
+                                         int size,
+                                         Short freeSpots,
+                                         LocalDate departedBefore,
+                                         LocalDate departedAfter,
+                                         String departurePoint,
+                                         String arrivalPoint,
+                                         String price,
+                                         Sort sort) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return travelRepository.findAllPaginated(pageRequest,sort,freeSpots,departedBefore,departedAfter,departurePoint,arrivalPoint,price);
+    }
 
     /**
      * @param sort – the Sort specification to sort the results by, can be Sort.unsorted(), must not be null.
@@ -152,7 +172,7 @@ public class TravelServiceImpl implements TravelService {
 
     @Override
     public Travel update(Travel travelToUpdate, User editor) {
-          checkIfTheTravelTimeFrameIsValid(travelToUpdate, editor);
+        checkIfTheTravelTimeFrameIsValid(travelToUpdate, editor);
         if (!travelToUpdate.getDriver().equals(editor)) {
             throw new AuthorizationException(UPDATE_CANCELLED);
         }

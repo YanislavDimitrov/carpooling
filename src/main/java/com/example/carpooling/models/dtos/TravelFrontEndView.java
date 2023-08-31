@@ -5,13 +5,17 @@ import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
+@Getter
+@Setter
+@NoArgsConstructor
 public class TravelFrontEndView {
     private Long id;
-
     @NotEmpty(message = "Driver  field cannot be empty!")
     private String driverName;
     @NotNull(message = "Free spots cannot be null")
@@ -31,110 +35,6 @@ public class TravelFrontEndView {
     private TravelStatus status;
     private String price;
     private boolean isDeleted;
-
-    public String getPrice() {
-        return price;
-    }
-
-    public void setPrice(String price) {
-        this.price = price;
-    }
-
-    public boolean isDeleted() {
-        return isDeleted;
-    }
-
-    public void setDeleted(boolean deleted) {
-        isDeleted = deleted;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public LocalDateTime getArrivalTime() {
-        return arrivalTime;
-    }
-
-    public void setArrivalTime(LocalDateTime arrivalTime) {
-        this.arrivalTime = arrivalTime;
-    }
-
-    public String getDuration() {
-        return duration;
-    }
-
-    public void setDuration(String duration) {
-        this.duration = duration;
-    }
-
-    public String getDistance() {
-        return distance;
-    }
-
-    public void setDistance(String distance) {
-        this.distance = distance;
-    }
-
-    public String getDeparturePoint() {
-        return departurePoint;
-    }
-
-    public void setDeparturePoint(String departurePoint) {
-        this.departurePoint = departurePoint;
-    }
-
-    public String getArrivalPoint() {
-        return arrivalPoint;
-    }
-
-    public void setArrivalPoint(String arrivalPoint) {
-        this.arrivalPoint = arrivalPoint;
-    }
-
-    public Short getFreeSpots() {
-        return freeSpots;
-    }
-
-    public void setFreeSpots(Short freeSpots) {
-        this.freeSpots = freeSpots;
-    }
-
-    public LocalDateTime getDepartureTime() {
-        return departureTime;
-    }
-
-    public void setDepartureTime(LocalDateTime departureTime) {
-        this.departureTime = departureTime;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public String getDriverName() {
-        return driverName;
-    }
-
-    public void setDriverName(String driverName) {
-        this.driverName = driverName;
-    }
-
-    public TravelStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(TravelStatus status) {
-        this.status = status;
-    }
 }
 
 

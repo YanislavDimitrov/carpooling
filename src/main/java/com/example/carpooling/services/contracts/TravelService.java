@@ -4,8 +4,10 @@ import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.TravelStatus;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -45,6 +47,16 @@ public interface TravelService {
     List<Travel> findPlannedTravelsWithPastDepartureTime();
 
     List<User> getAllPassengersForTravel(Travel travel);
+
+    Page<Travel> findAllPaginated(int page,
+                                  int size,
+                                  Short freeSpots,
+                                  LocalDate departedBefore,
+                                  LocalDate departedAfter,
+                                  String departurePoint,
+                                  String arrivalPoint,
+                                  String price,
+                                  Sort sort);
 
     void create(Travel travel, User driver);
 
