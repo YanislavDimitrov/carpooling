@@ -166,6 +166,21 @@ public class FeedbackMvcController {
             return "NotFoundView";
         }
     }
+    @GetMapping("/{id}/delete")
+    public String deleteFeedback(@PathVariable Long id ,HttpSession session) {
+        User loggedUser;
+        Feedback feedback ;
+        try {
+            loggedUser = authenticationHelper.tryGetUser(session);
+            feedback = feedbackService.getById(id);
+            feedbackService.delete(feedback.getId(),loggedUser);
+            return "redirect:/feedbacks";
+        } catch (AuthenticationFailureException e ) {
+            return "redirect:/auth/login";
+        }catch (EntityNotFoundException e) {
+            return "NotFoundView";
+        }
+    }
 
     @ModelAttribute("isAdmin")
     public boolean populateIsAdmin(HttpSession session) {

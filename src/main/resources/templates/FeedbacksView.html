@@ -21,7 +21,7 @@
                 <div>
                     <label for="rating">Rating</label>
                     <i class="fa-solid fa-star"></i>
-                    <input  id="rating" type="number" th:field="*{rating}"  value="0" placeholder="Rating">
+                    <input id="rating" type="number" th:field="*{rating}" value="0" placeholder="Rating">
                 </div>
 
             </div>
@@ -98,23 +98,32 @@
                     <p th:text="${'Rating: ' + feedback.rating}"></p>
                     <p th:text="${'Comment: ' + feedback.comment}"></p>
                     <p th:text="${'Travel: ' + feedback.travel.getDeparturePoint()} + ' -> ' + ${feedback.travel.getArrivalPoint()}"></p>
-        </div>
-    </div>
+                </div>
+                <div>
+                    <span class="btn"><a href="#" th:href="@{/feedbacks/{id}/update(id=${feedback.id})}">
+                           <i class="fa-regular fa-pen-to-square"></i>
+                    </a></span>
+                    <span class="btn"><a href="#" th:href="@{/feedbacks/{id}/delete(id=${feedback.id})}">
+                         <i class="fa-solid fa-trash-can"></i>
+                    </a></span>
+                </div>
+
             </div>
-    <ul th:if="${feedbackPage.getTotalPages()>1}" role="list" class="pagination">
-        <!-- First Page -->
-        <li th:class="${feedbackPage.first ? 'disabled' : 'edge-page'}">
-            <a th:href="@{'/feedbacks' +'?page=0'+${filterParams}}">
-                <i class="fa-solid fa-angles-left"></i></a>
-        </li>
-        <!-- Previous Page -->
-        <li th:class="${feedbackPage.first ? 'disabled' : 'edge-page'}">
-            <a
-                    th:href="@{'/feedbacks' +'?page='+${feedbackPage.getNumber()-1}+${filterParams}}"><i
-                    class="fa-solid fa-angle-left"></i></a>
-        </li>
-        <!-- Middle Pages -->
-        <li id="middle-pages" th:each="pageNumber : ${#numbers.sequence(0, feedbackPage.totalPages - 1)}">
+        </div>
+        <ul th:if="${feedbackPage.getTotalPages()>1}" role="list" class="pagination">
+            <!-- First Page -->
+            <li th:class="${feedbackPage.first ? 'disabled' : 'edge-page'}">
+                <a th:href="@{'/feedbacks' +'?page=0'+${filterParams}}">
+                    <i class="fa-solid fa-angles-left"></i></a>
+            </li>
+            <!-- Previous Page -->
+            <li th:class="${feedbackPage.first ? 'disabled' : 'edge-page'}">
+                <a
+                        th:href="@{'/feedbacks' +'?page='+${feedbackPage.getNumber()-1}+${filterParams}}"><i
+                        class="fa-solid fa-angle-left"></i></a>
+            </li>
+            <!-- Middle Pages -->
+            <li id="middle-pages" th:each="pageNumber : ${#numbers.sequence(0, feedbackPage.totalPages - 1)}">
             <span th:if="${pageNumber == 0 or pageNumber == feedbackPage.totalPages - 1 or
             (pageNumber >= feedbackPage.number - 1 and pageNumber <= feedbackPage.number + 1)}">
                 <a class="current-page" th:if="${pageNumber == feedbackPage.number}" th:text="${pageNumber + 1}"></a>
@@ -122,24 +131,24 @@
                    th:href="@{'/feedbacks' +'?page='+${pageNumber}+${filterParams}}"
                    th:text="${pageNumber + 1}">1</a>
             </span>
-            <span class="dots" th:unless="${pageNumber == 0 or pageNumber == feedbackPage.totalPages - 1 or
+                <span class="dots" th:unless="${pageNumber == 0 or pageNumber == feedbackPage.totalPages - 1 or
             (pageNumber >= feedbackPage.number - 1 and pageNumber <= feedbackPage.number + 1)}">
                 ...
             </span>
-        </li>
-        <!-- Next Page -->
-        <li th:class="${feedbackPage.last ? 'disabled' : 'edge-page'}">
-            <a
-                    th:href="@{'/feedbacks' +'?page='+${feedbackPage.getNumber()+1}+${filterParams}}"><i
-                    class="fa-solid fa-chevron-right"></i></a>
-        </li>
-        <!-- Last Page -->
-        <li th:class="${feedbackPage.last ? 'disabled' : 'edge-page'}">
-            <a th:href="@{'/travels/search' +'?page='+${feedbackPage.getTotalPages()-1}+${filterParams}}">
-                <i class="fa-solid fa-angles-right"></i>
-            </a>
-        </li>
-    </ul>
+            </li>
+            <!-- Next Page -->
+            <li th:class="${feedbackPage.last ? 'disabled' : 'edge-page'}">
+                <a
+                        th:href="@{'/feedbacks' +'?page='+${feedbackPage.getNumber()+1}+${filterParams}}"><i
+                        class="fa-solid fa-chevron-right"></i></a>
+            </li>
+            <!-- Last Page -->
+            <li th:class="${feedbackPage.last ? 'disabled' : 'edge-page'}">
+                <a th:href="@{'/travels/search' +'?page='+${feedbackPage.getTotalPages()-1}+${filterParams}}">
+                    <i class="fa-solid fa-angles-right"></i>
+                </a>
+            </li>
+        </ul>
     </div>
 </section>
 <footer th:replace="index.html :: footer"></footer>
