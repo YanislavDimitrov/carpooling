@@ -4,8 +4,11 @@ import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.TravelStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -30,12 +33,15 @@ public interface TravelService {
     );
 
     List<Travel> findLatestTravels();
+
     List<Travel> findByDriverId(Long id);
 
     List<Travel> findAll(Sort sort);
 
     List<Travel> findTravelByUser(User user);
+
     void completeActiveTravelsAndDeleteUser(User user);
+
     void completeActiveTravelsAndBlockUser(Long id, User user);
 
     List<TravelRequest> findTravelsAsPassengerByUser(User user);
@@ -46,24 +52,43 @@ public interface TravelService {
 
     List<User> getAllPassengersForTravel(Travel travel);
 
-    void create(Travel travel, User driver);
+    Page<Travel> findAllPlannedPaginated(int page,
+                                         int size,
+                                         Short freeSpots,
+                                         LocalDate departedBefore,
+                                         LocalDate departedAfter,
+                                         String departurePoint,
+                                         String arrivalPoint,
+                                         String price,
+                                         Sort sort);
 
-    Travel update(Travel travelToUpdate, User editor);
+    Page<Travel> findAllPaginated(int page,
+                                  int size,
+                                  Short freeSpots,
+                                  LocalDate departedBefore,
+                                  LocalDate departedAfter,
+                                  String departurePoint,
+                                  String arrivalPoint,
+                                  String price,
+                                  Sort sort) ;
 
-    void delete(Long id, User editor);
+        void create (Travel travel, User driver);
 
-    void completeTravel(Long id, User editor);
+        Travel update (Travel travelToUpdate, User editor);
 
-    void cancelTravel(Long id, User editor);
+        void delete (Long id, User editor);
 
-    void updateTravelStatus();
-    boolean isRequestedByUser(Long travelId, User user);
-    boolean isPassengerInThisTravel (User user , Travel travel);
+        void completeTravel (Long id, User editor);
 
-    Long count();
+        void cancelTravel (Long id, User editor);
 
-    Long countCompleted();
+        void updateTravelStatus ();
+        boolean isRequestedByUser (Long travelId, User user);
+        boolean isPassengerInThisTravel (User user, Travel travel);
+
+        Long count ();
+
+        Long countCompleted ();
 
 
-
-}
+    }

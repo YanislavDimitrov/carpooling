@@ -63,6 +63,7 @@ public class User {
         this.status = UserStatus.ACTIVE;
     }
 
+
     public List<Feedback> getFeedbacks() {
         return feedbacks;
     }

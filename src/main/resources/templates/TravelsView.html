@@ -8,12 +8,83 @@
     <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
     <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">
     <link rel="stylesheet" href="../static/travelsStyles.css" th:href="@{/travelsStyles.css}">
+    <link rel="stylesheet" href="../static/filter.css" th:href="@{/filter.css}">
+    <link rel="stylesheet" href="../static/pagination.css" th:href="@{/pagination.css}">
 </head>
 <body>
 <!--HEADER-->
 <header th:replace="index.html :: header"></header>
 <section class="main">
+    <form id="filters-form" class="form" action="#" th:action="@{/travels/search}" th:object="${filter}" method="get">
+        <div class="inputs-container">
+            <div class="select input-container">
+                <div>
+                    <label for="free-spots">Free Spots</label>
+                    <i class="fa-solid fa-people-simple"></i>
+                    <input  id="free-spots" type="number" name="freeSpots" value="1" placeholder="Free Spots">
+                </div>
 
+            </div>
+            <div class="select input-container">
+                <div>
+                    <label for="departed-after">Departure After</label>
+                    <i class="fa-solid fa-calendar-days"></i>
+                    <input  id="departed-after" type="date" th:field="*{departedAfter}"  onfocus="this.showPicker()">
+                </div>
+
+            </div>
+            <div class="select input-container">
+                <div>
+                    <label for="date">Departure Before</label>
+                    <i class="fa-solid fa-calendar-days"></i>
+                    <input type="date" th:field="*{departedBefore}" id="date" onfocus="this.showPicker()">
+                </div>
+
+            </div>
+            <div class="select input-container">
+                <div>
+                    <label for="departure-point">Departure Destination</label>
+                    <i class="fa-sharp fa-solid fa-location-pin"></i>
+                    <input id="departure-point"  type="text" th:field="*{departurePoint}" placeholder="Departure Point">
+                </div>
+            </div>
+            <div class="select input-container">
+                <div>
+                    <label for="arrival-point">Arrival Destination</label>
+                    <i class="fa-sharp fa-solid fa-location-pin"></i>
+                    <input  id="arrival-point"  type="text" th:field="*{arrivalPoint}" placeholder="Arrival Point">
+                </div>
+            </div>
+            <div class="select input-container">
+                <div>
+                    <label for="price">Price</label>
+                    <i class="fa-solid fa-sack-dollar"></i>
+                    <input id="price" type="text" th:field="*{price}" placeholder="Price">
+                </div>
+            </div>
+            <div class="select input-container">
+                <label for="sort-by">Sort By</label>
+                <select id="sort-by" th:field="*{sortBy}">
+                    <option value="id">Relevance</option>
+                    <option value="freeSpots">Free Spots</option>
+                    <option value="departureTime">Departure Time</option>
+                    <option value="departurePoint">Departure Point</option>
+                    <option value="price">Price</option>
+                </select>
+            </div>
+            <div class="select input-container">
+                <label for="sort-order">Sort Order</label>
+                <select id="sort-order" th:field="*{sortOrder}">
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                </select>
+            </div>
+        </div>
+        <div class="filter-buttons">
+            <button type="submit" class="btn submit" id="submit">Apply</button>
+            <button type="reset" class="btn reset" id="reset">Reset</button>
+        </div>
+    </form>
     <!--    CONTENT-->
     <div id="content">
         <div class="no-travels" th:if="${travels.isEmpty()}">
@@ -21,9 +92,9 @@
         </div>
         <div class="travel-cards-container">
             <!-- Dynamically generate travel cards -->
-            <div th:each="travel : ${travels}" class="travel-card" th:attr="data-id=${travel.id}">
+            <div th:each="travel :${travelPage.content}" class="travel-card" th:attr="data-id=${travel.id}">
                 <div class="travel-card-content">
-                    <h2 th:text="${'Driver: ' + travel.driverName}">Driver: John Doe</h2>
+                    <h2 th:text="${'Driver: ' +travel.getDriver().getUserName()}">Driver: John Doe</h2>
                     <p th:text="${'Departure: ' + travel.departurePoint}">Departure: Burgas</p>
                     <p th:text="${'Arrival: ' + travel.arrivalPoint}">Arrival: Sofia</p>
                     <p th:text="${'Free Spots: ' + travel.freeSpots}">Free Spots: 2</p>
@@ -34,9 +105,50 @@
             </div>
         </div>
     </div>
+    <ul th:if="${travelPage.getTotalPages()>1}" role="list" class="pagination">
+        <!-- First Page -->
+        <li th:class="${travelPage.first ? 'disabled' : 'edge-page'}">
+            <a th:href="@{'/travels/search' +'?page=0'+${filterParams}}">
+                <i class="fa-solid fa-angles-left"></i></a>
+        </li>
+        <!-- Previous Page -->
+        <li th:class="${travelPage.first ? 'disabled' : 'edge-page'}">
+            <a
+                    th:href="@{'/travels/search' +'?page='+${travelPage.getNumber()-1}+${filterParams}}"><i
+                    class="fa-solid fa-angle-left"></i></a>
+        </li>
+        <!-- Middle Pages -->
+        <li id="middle-pages" th:each="pageNumber : ${#numbers.sequence(0, travelPage.totalPages - 1)}">
+            <span th:if="${pageNumber == 0 or pageNumber == travelPage.totalPages - 1 or
+            (pageNumber >= travelPage.number - 1 and pageNumber <= travelPage.number + 1)}">
+                <a class="current-page" th:if="${pageNumber == travelPage.number}" th:text="${pageNumber + 1}"></a>
+                <a th:if="${pageNumber != travelPage.number}"
+                   th:href="@{'/travels/search' +'?page='+${pageNumber}+${filterParams}}"
+                   th:text="${pageNumber + 1}">1</a>
+            </span>
+            <span class="dots" th:unless="${pageNumber == 0 or pageNumber == travelPage.totalPages - 1 or
+            (pageNumber >= travelPage.number - 1 and pageNumber <= travelPage.number + 1)}">
+                ...
+            </span>
+        </li>
+        <!-- Next Page -->
+        <li th:class="${travelPage.last ? 'disabled' : 'edge-page'}">
+            <a
+                    th:href="@{'/travels/search' +'?page='+${travelPage.getNumber()+1}+${filterParams}}"><i
+                    class="fa-solid fa-chevron-right"></i></a>
+        </li>
+        <!-- Last Page -->
+        <li th:class="${travelPage.last ? 'disabled' : 'edge-page'}">
+            <a th:href="@{'/travels/search' +'?page='+${travelPage.getTotalPages()-1}+${filterParams}}">
+                <i class="fa-solid fa-angles-right"></i>
+            </a>
+        </li>
+    </ul>
 </section>
 <footer th:replace="index.html :: footer"></footer>
 <script type="text/javascript" src="../static/js/showDropdown.js" th:src="@{/js/showDropdown.js}"></script>
+<script type="text/javascript" src="../static/js/reset.js" th:src="@{/js/reset.js}"></script>
+<script type="text/javascript" src="../static/js/displayDots.js" th:src="@{/js/displayDots.js}"></script>
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", () => {
         const travelCards = document.querySelectorAll('.travel-card');

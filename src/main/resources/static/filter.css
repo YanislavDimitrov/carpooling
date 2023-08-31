@@ -1,0 +1,147 @@
+#content .form-title {
+    font-size: 2.5rem;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    margin-bottom: 2rem;
+}
+
+
+.filter-buttons {
+    padding-top: 2rem;
+}
+
+.filter-buttons .btn{
+    padding: 0.5rem 1rem;
+    border-radius: .8rem;
+}
+
+.form input[type="text"],
+.form input[type="password"],
+.form input[type="email"] {
+    all: unset;
+    border: none;
+    width: 95%;
+    transition: color ease-in-out .1s;
+}
+
+select {
+    border: none;
+    outline: none;
+    background-color: transparent;
+    color: rgb(65, 89, 96);
+    width: 100%;
+}
+
+.form input:focus::placeholder {
+    color: transparent;
+}
+
+.form input::placeholder {
+    color: rgb(65, 89, 96);
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+}
+
+.main .matches{
+    font-weight: 500;
+    font-size: 1.5rem;
+}
+
+.form .inputs-container {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.form .select label {
+    font-size: 1.2rem;
+    color: rgb(65, 89, 96);
+    font-weight: 500;
+    position: absolute;
+    top: 0;
+    left: 4rem;
+    transform: translate(-50%, -50%);
+}
+
+.form .input-container {
+    /*overflow: hidden;*/
+    position: relative;
+    background-color: white;
+    min-width: 22%;
+    white-space: nowrap;
+    padding: .9rem 1rem;
+    border-radius: 1rem;
+    box-shadow: 3px 3px 5px 2px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes fadeInAnimation {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.form {
+    animation: fadeInAnimation .6s linear;
+    margin-top: 1rem;
+}
+
+.form button {
+    background-color: rgb(65, 89, 96);
+    border: none;
+    padding: .6rem 1.6rem;
+    border-radius: 1rem;
+    color: #fff;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+.form .reset {
+    background-color: #562317;
+}
+
+.form .reset:hover {
+    background-color: #3f1910;
+    border: none;
+    color: white;
+}
+
+.form button:hover {
+    background-color: rgb(43, 60, 65);
+    border: none;
+    color: white;
+}
+
+.form button:hover {
+    cursor: pointer;
+}
+
+/*HIDE placeholder text when FOCUSED*/
+input:focus::placeholder {
+    color: #060e1a;
+}
+
+textarea:focus::placeholder {
+    color: #060e1a;
+}
+
+/*NAVIGATION hover effects*/
+.main .header .logo:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+}
+
+.main .links .nav-link:hover {
+    cursor: pointer;
+    transform: scale(1.2);
+}

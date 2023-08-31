@@ -1,0 +1,31 @@
+.main .pagination {
+    padding: .6rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main .pagination a {
+    text-decoration: none;
+    font-size: 1.2rem;
+    padding: 0 1rem;
+    color: #0b2b3a;
+}
+
+.main .pagination .dots{
+    font-size: 2rem;
+}
+.main .pagination .edge-page{
+    color: inherit;
+}
+
+.main .pagination .disabled *{
+    pointer-events: none;
+    color: #bebebe;
+}
+.main .pagination a:visited{
+    color: inherit;
+}
+.main .pagination .current-page{
+    font-size: 2rem;
+}
