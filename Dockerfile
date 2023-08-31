@@ -6,17 +6,17 @@ WORKDIR /workspace/app
 COPY pom.xml .
 COPY src src
 
-RUN mvn clean package -P production
+RUN gradle clean build
 
 # Stage 2: Deploy
 FROM amazoncorretto:17.0.7-al2
 
 WORKDIR /app
 
-ARG DEPENDENCY=/workspace/app/target
+ARG DEPENDENCY=/workspace/app/build/libs
 
 COPY --from=build ${DEPENDENCY} .
 
-ENTRYPOINT ["java", "-jar", "/app/carpooling-1.0.0.jar"]
+ENTRYPOINT ["java", "-jar", "/app/carpooling-0.0.1-SNAPSHOT.jar"]
 
 EXPOSE 8080
