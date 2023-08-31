@@ -40,18 +40,18 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
             "(:rating IS NULL  OR f.rating >= :rating) " +
             "AND (:creator IS NULL  OR  f.creator =:creator) " +
             "AND(:recipient IS NULL OR f.recipient =:recipient)" +
+            "AND(:travel IS NULL OR f.travel =:travel)" +
             "AND f.isDeleted = false")
     Page<Feedback> findAllPaginated(PageRequest pageRequest,
                                     Sort sort,
                                     Short rating,
-                                   User creator,
-                                    User recipient);
+                                    User creator,
+                                    User recipient,
+                                    Travel travel);
 
     @Modifying
     @Query("UPDATE Feedback AS f SET f.isDeleted=true WHERE f.id = :id")
     void delete(@Param("id") Long id) throws EntityNotFoundException;
-
-
 
 
 }

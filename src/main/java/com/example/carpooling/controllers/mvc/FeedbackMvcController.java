@@ -7,21 +7,18 @@ import com.example.carpooling.helpers.mappers.FeedbackMapper;
 import com.example.carpooling.models.Feedback;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.User;
-import com.example.carpooling.models.dtos.FeedbackCreateDto;
 import com.example.carpooling.models.dtos.FeedbackFilterDto;
-import com.example.carpooling.models.dtos.TravelCreationOrUpdateDto;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.services.contracts.FeedbackService;
+import com.example.carpooling.services.contracts.TravelService;
 import com.example.carpooling.services.contracts.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,14 +32,16 @@ public class FeedbackMvcController {
     private final FeedbackMapper feedbackMapper;
     private final AuthenticationHelper authenticationHelper;
     private final UserService userService;
+    private final TravelService travelService;
     private final ExtractionHelper extractionHelper;
 
     @Autowired
-    public FeedbackMvcController(FeedbackService feedbackService, FeedbackMapper feedbackMapper, AuthenticationHelper authenticationHelper, UserService userService, ExtractionHelper extractionHelper) {
+    public FeedbackMvcController(FeedbackService feedbackService, FeedbackMapper feedbackMapper, AuthenticationHelper authenticationHelper, UserService userService, TravelService travelService, ExtractionHelper extractionHelper) {
         this.feedbackService = feedbackService;
         this.feedbackMapper = feedbackMapper;
         this.authenticationHelper = authenticationHelper;
         this.userService = userService;
+        this.travelService = travelService;
         this.extractionHelper = extractionHelper;
     }
 
@@ -73,7 +72,8 @@ public class FeedbackMvcController {
                 sort,
                 filter.getRating(),
                 filter.getCreator(),
-                filter.getRecipient());
+                filter.getRecipient(),
+                filter.getTravel());
 
         Map<String, String[]> parameterMap = request.getParameterMap();
         String parameters = extractionHelper.extractParametersSection(parameterMap);
@@ -123,6 +123,10 @@ public class FeedbackMvcController {
         } catch (AuthenticationFailureException e) {
             return false;
         }
+    }
+    @ModelAttribute("travels")
+    public List<Travel> populateTravels() {
+        return travelService.get();
     }
 
     @ModelAttribute("users")

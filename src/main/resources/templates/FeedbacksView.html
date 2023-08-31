@@ -50,6 +50,18 @@
                 </div>
             </div>
             <div class="select input-container">
+                <div>
+                    <label for="travel">Travel</label>
+                    <select id="travel" th:field="*{travel}">
+                        <option value="">Travels</option>
+                        <option th:each="travel : ${travels}"
+                                th:value="${travel.getId()}"
+                                th:text="${travel.departurePoint} + ' -> ' + ${travel.arrivalPoint}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="select input-container">
                 <label for="sort-by">Sort By</label>
                 <select id="sort-by" th:field="*{sortBy}">
                     <option value="id">Relevance</option>
@@ -85,6 +97,7 @@
                     <p th:text="${'Recipient: ' + feedback.recipient.getUserName()}"></p>
                     <p th:text="${'Rating: ' + feedback.rating}"></p>
                     <p th:text="${'Comment: ' + feedback.comment}"></p>
+                    <p th:text="${'Travel: ' + feedback.travel.getDeparturePoint()} + ' -> ' + ${feedback.travel.getArrivalPoint()}"></p>
         </div>
     </div>
             </div>

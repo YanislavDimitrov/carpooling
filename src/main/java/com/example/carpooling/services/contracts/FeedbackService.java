@@ -24,7 +24,8 @@ public interface FeedbackService {
                                     Sort sort,
                                     Short rating,
                                     User creator,
-                                    User recipient);
+                                    User recipient,
+                                    Travel travel);
     List<Feedback> findByTravelId(Long id);
 
     List<Feedback> findAll(Sort sort);
