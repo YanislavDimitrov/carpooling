@@ -17,6 +17,7 @@ build_dev:
     - echo "AWS_ACCESS_KEY_ID=${DEV_AWS_ACCESS_KEY_ID}" > .env
     - echo "AWS_SECRET_ACCESS_KEY=${DEV_AWS_SECRET_ACCESS_KEY}" >> .env
     - echo "AWS_DEFAULT_REGION=${AWS_REGION}" >> .env
+    - echo $REGISTRY_URL
   script:
     # registry login
     - echo $(docker run --rm --env-file=.env amazon/aws-cli ecr get-login-password) | docker login --username AWS --password-stdin $REGISTRY_URL
