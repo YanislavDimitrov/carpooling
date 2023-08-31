@@ -79,6 +79,14 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     @Override
+    public List<Feedback> findByTravelId(Long id) {
+        if(!travelRepository.existsById(id)) {
+            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND,id));
+        }
+        return feedbackRepository.findByTravelId(id);
+    }
+
+    @Override
     public List<Feedback> findAll(Sort sort) {
         return feedbackRepository.findAll();
     }

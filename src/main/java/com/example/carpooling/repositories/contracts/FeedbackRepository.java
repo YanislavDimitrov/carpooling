@@ -33,6 +33,8 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
 
     List<Feedback> findByRecipientIs(User user);
 
+    List<Feedback> findByTravelId(Long id);
+
 
     @Query("SELECT f FROM Feedback f WHERE " +
             "(:rating IS NULL  OR f.rating =:rating) " +

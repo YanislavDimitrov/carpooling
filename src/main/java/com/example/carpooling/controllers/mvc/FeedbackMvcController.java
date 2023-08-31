@@ -1,26 +1,28 @@
 package com.example.carpooling.controllers.mvc;
 
-import com.example.carpooling.exceptions.AuthenticationFailureException;
+import com.example.carpooling.exceptions.*;
 import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.helpers.ExtractionHelper;
 import com.example.carpooling.helpers.mappers.FeedbackMapper;
 import com.example.carpooling.models.Feedback;
+import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.User;
+import com.example.carpooling.models.dtos.FeedbackCreateDto;
 import com.example.carpooling.models.dtos.FeedbackFilterDto;
+import com.example.carpooling.models.dtos.TravelCreationOrUpdateDto;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.services.contracts.FeedbackService;
 import com.example.carpooling.services.contracts.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -81,6 +83,35 @@ public class FeedbackMvcController {
         model.addAttribute("filterParams", parameters);
         model.addAttribute("feedbacks", feedbacks);
         return "FeedbacksView";
+
+    }
+
+    @GetMapping("/travel/{id}")
+    public String getFeedbacksByTravelId(@PathVariable Long id, HttpSession session, Model model) {
+        try {
+            authenticationHelper.tryGetUser(session);
+            List<Feedback> feedbacks = feedbackService.findByTravelId(id);
+            return "redirect:/travels/" + id;
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        } catch (EntityNotFoundException e) {
+            return "NotFoundView";
+        }
+    }
+
+    @GetMapping("/user")
+    public String getFeedbacksByUser( HttpSession session , Model model) {
+     User recipient;
+        try {
+           recipient =   authenticationHelper.tryGetUser(session);
+           List<Feedback> feedbacks = feedbackService.getByRecipientIs(recipient);
+           model.addAttribute("feedbacks",feedbacks);
+           return "UserFeedbacksView";
+        }catch (AuthenticationFailureException e ) {
+            return "redirect:/auth/login";
+        }catch (EntityNotFoundException e) {
+            return "NotFoundView";
+        }
 
     }
 
