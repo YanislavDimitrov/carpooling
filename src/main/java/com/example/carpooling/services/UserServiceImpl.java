@@ -36,23 +36,19 @@ public class UserServiceImpl implements UserService {
     public static final String CONFIRMATION_EMAIL_TEMPLATE_PATH = "src/main/resources/templates/WelcomeTemplateEmail.html";
     private final UserRepository userRepository;
     private final VehicleRepository vehicleRepository;
-    private final TokenRepository tokenRepository;
-    private final JavaMailSender javaMailSender;
     private final ValidationService validationService;
 
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, VehicleRepository vehicleRepository, TokenRepository tokenRepository, JavaMailSender javaMailSender, ValidationService validationService) {
+    public UserServiceImpl(UserRepository userRepository, VehicleRepository vehicleRepository, ValidationService validationService) {
         this.userRepository = userRepository;
         this.vehicleRepository = vehicleRepository;
-        this.tokenRepository = tokenRepository;
-        this.javaMailSender = javaMailSender;
         this.validationService = validationService;
     }
 
     @Override
     public List<User> findAll(Sort sort) {
-        return this.userRepository.findAll();
+        return this.userRepository.findAll(sort);
     }
 
     @Override
@@ -382,7 +378,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private boolean areSameUser(User loggedUser, User targetUser) {
-        return targetUser.getUserName().equals(loggedUser.getUserName());
+        return targetUser.getId().equals(loggedUser.getId());
     }
 
     private void deleteUserFeedbacks(User targetUser) {

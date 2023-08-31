@@ -84,7 +84,7 @@
 
             </div>
         </li>
-        <li th:if="${vehiclesCount==0}" class="vehicles">
+        <li th:if="${vehiclesCount==0} and ${user.getUserName().equals(session.currentUser)}" class="vehicles">
             <a th:if="${user.getUserName().equals(session.currentUser)}" class="buttons btn create-vehicle"
                th:href="@{'/vehicles/create'}">
                 <i class="fa-solid fa-plus fa-bounce"></i>
@@ -92,7 +92,7 @@
             <h2 class="section-title">Vehicles</h2>
             <h3>Add your first vehicle</h3>
         </li>
-        <li th:unless="${vehiclesCount==0}" class="vehicles">
+        <li th:if="${vehiclesCount>0} and ${user.getUserName().equals(session.currentUser)}" class="vehicles">
             <a th:if="${user.getUserName().equals(session.currentUser)}" class="buttons btn create-vehicle"
                th:href="@{'/vehicles/create'}">
                 <i class="fa-solid fa-plus"></i>
