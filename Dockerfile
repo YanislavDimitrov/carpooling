@@ -3,7 +3,7 @@ FROM maven:3.9.1-amazoncorretto-17 as build
 
 WORKDIR /workspace/app
 
-COPY pom.xml .
+COPY build.gradle .
 COPY src src
 
 RUN gradle clean build
