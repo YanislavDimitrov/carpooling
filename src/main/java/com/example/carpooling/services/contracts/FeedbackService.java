@@ -4,6 +4,8 @@ import com.example.carpooling.models.Feedback;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.TravelStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
@@ -19,6 +21,13 @@ public interface FeedbackService {
     List<Feedback> findByCriteria(Short rating,
                                   String comment,
                                   Sort sort);
+
+    Page<Feedback> findAllPaginated(int page,
+                                    int size,
+                                    Sort sort,
+                                    Short rating,
+                                    String creator,
+                                    String recipient);
 
     List<Feedback> findAll(Sort sort);
 

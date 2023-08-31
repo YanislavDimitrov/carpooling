@@ -13,6 +13,8 @@ import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.services.contracts.FeedbackService;
 import com.example.carpooling.services.contracts.TravelService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -69,6 +71,13 @@ public class FeedbackServiceImpl implements FeedbackService {
     public List<Feedback> findByCriteria(Short rating, String comment, Sort sort) {
         return feedbackRepository.findByCriteria(rating, comment, sort);
     }
+
+    @Override
+    public Page<Feedback> findAllPaginated(int page, int size, Sort sort, Short rating, String creator, String recipient) {
+        PageRequest pageRequest = PageRequest.of(page,size);
+        return feedbackRepository.findAllPaginated(pageRequest,sort,rating,creator,recipient);
+    }
+
     @Override
     public List<Feedback> findAll(Sort sort) {
         return feedbackRepository.findAll();

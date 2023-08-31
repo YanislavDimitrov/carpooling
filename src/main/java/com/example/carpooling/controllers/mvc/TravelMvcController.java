@@ -3,6 +3,7 @@ package com.example.carpooling.controllers.mvc;
 import com.example.carpooling.exceptions.*;
 import com.example.carpooling.exceptions.duplicate.DuplicateEntityException;
 import com.example.carpooling.helpers.AuthenticationHelper;
+import com.example.carpooling.helpers.ExtractionHelper;
 import com.example.carpooling.helpers.mappers.TravelMapper;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.TravelRequest;
@@ -42,15 +43,17 @@ public class TravelMvcController {
     private final UserService userService;
     private final TravelMapper travelMapper;
     private final AuthenticationHelper authenticationHelper;
+    private final ExtractionHelper extractionHelper;
 
     public TravelMvcController(TravelService travelService,
                                TravelRequestService travelRequestService, UserService userService, TravelMapper travelMapper,
-                               AuthenticationHelper authenticationHelper) {
+                               AuthenticationHelper authenticationHelper, ExtractionHelper extractionHelper) {
         this.travelService = travelService;
         this.travelRequestService = travelRequestService;
         this.userService = userService;
         this.travelMapper = travelMapper;
         this.authenticationHelper = authenticationHelper;
+        this.extractionHelper = extractionHelper;
     }
 
     @GetMapping()
@@ -93,8 +96,7 @@ public class TravelMvcController {
 
     private void prepareInformationForTheView(Model model, @ModelAttribute("filter") TravelFilterDto filter, HttpServletRequest request, List<TravelFrontEndView> travels, Page<Travel> paginatedTravels) {
         Map<String, String[]> parameterMap = request.getParameterMap();
-        String parameters = extractParametersSection(parameterMap);
-
+        String parameters = extractionHelper.extractParametersSection(parameterMap);
         model.addAttribute("filter", filter);
         model.addAttribute("travelPage", paginatedTravels);
         model.addAttribute("filterParams", parameters);
@@ -151,7 +153,6 @@ public class TravelMvcController {
         List<TravelFrontEndView> travels = new ArrayList<>(travelService.findTravelByUser(user)
                 .stream()
                 .map(travelMapper::fromTravelToFrontEnd)
-                .filter(travelFrontEndView -> !travelFrontEndView.isDeleted())
                 .toList());
         List<TravelFrontEndView> travelsAsPassenger = travelService.findTravelsAsPassengerByUser(user)
                 .stream()
@@ -478,17 +479,7 @@ public class TravelMvcController {
         }
     }
 
-    private String extractParametersSection(Map<String, String[]> parameterMap) {
-        StringBuilder builder = new StringBuilder();
-        for (String key : parameterMap.keySet()) {
-            String value = parameterMap.get(key)[0];
-            if (value.trim().isEmpty() || key.equals("page")) {
-                continue;
-            }
-            builder.append("&").append(key).append("=").append(value);
-        }
-        return builder.toString();
-    }
+
 
     @ModelAttribute("isAdmin")
     public boolean populateIsAdmin(HttpSession session) {

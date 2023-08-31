@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Travels</title>
+    <link rel="website icon" th:type="png" th:href="@{/images/carpool_simplelogo.png}">
+    <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
+    <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
+    <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">
+    <link rel="stylesheet" href="../static/travelsStyles.css" th:href="@{/travelsStyles.css}">
+    <link rel="stylesheet" href="../static/filter.css" th:href="@{/filter.css}">
+    <link rel="stylesheet" href="../static/pagination.css" th:href="@{/pagination.css}">
+</head>
+<body>
+<!--HEADER-->
+<header th:replace="index.html :: header"></header>
+<section class="main">
+    <form id="filters-form" class="form" action="#" th:action="@{/feedbacks}" th:object="${filter}" method="get">
+        <div class="inputs-container">
+            <div class="select input-container">
+                <div>
+                    <label for="rating">Rating</label>
+                    <i class="fa-solid fa-star"></i>
+                    <input  id="rating" type="number" th:field="*{rating}"  value="0" placeholder="Rating">
+                </div>
+
+            </div>
+            <div class="select input-container">
+                <div>
+                    <label for="creator">Creator</label>
+                    <select id="creator" th:field="*{creator}">
+                        <option value="">Users</option>
+                        <option th:each="user : ${users}"
+                                th:value="${user.getId()}"
+                                th:text="${user.getUserName()}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="select input-container">
+                <div>
+                    <label for="recipient">Recipient</label>
+                    <select id="recipient" th:field="*{recipient}">
+                        <option value="">Users</option>
+                        <option th:each="user : ${users}"
+                                th:value="${user.getId()}"
+                                th:text="${user.getUserName()}">
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="select input-container">
+                <label for="sort-by">Sort By</label>
+                <select id="sort-by" th:field="*{sortBy}">
+                    <option value="id">Relevance</option>
+                    <option value="rating">Rating</option>
+                    <option value="creator">Creator</option>
+                    <option value="recipient">Recipient</option>
+
+                </select>
+            </div>
+            <div class="select input-container">
+                <label for="sort-order">Sort Order</label>
+                <select id="sort-order" th:field="*{sortOrder}">
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                </select>
+            </div>
+        </div>
+        <div class="filter-buttons">
+            <button type="submit" class="btn submit" id="submit">Apply</button>
+            <button type="reset" class="btn reset" id="reset">Reset</button>
+        </div>
+    </form>
+    <!--    CONTENT-->
+    <div id="content">
+        <div class="no-feedbacks" th:if="${feedbacks.isEmpty()}">
+            <h2 th:text="#{feedback.label.no-feedbacks}">No feedbacks to show</h2>
+        </div>
+        <div class="travel-cards-container">
+            <!-- Dynamically generate travel cards -->
+            <div th:each="feedback :${feedbackPage.content}" class="travel-card" th:attr="data-id=${feedback.id}">
+                <div class="travel-card-content">
+                    <h2 th:text="${'Creator: ' +feedback.creator}"></h2>
+                    <p th:text="${'Recipient: ' + feedback.recipient}"></p>
+                    <p th:text="${'Rating: ' + feedback.rating}"></p>
+                    <p th:text="${'Comment: ' + feedback.comment}"></p>
+        </div>
+    </div>
+            </div>
+    <ul th:if="${feedbackPage.getTotalPages()>1}" role="list" class="pagination">
+        <!-- First Page -->
+        <li th:class="${feedbackPage.first ? 'disabled' : 'edge-page'}">
+            <a th:href="@{'/feedbacks' +'?page=0'+${filterParams}}">
+                <i class="fa-solid fa-angles-left"></i></a>
+        </li>
+        <!-- Previous Page -->
+        <li th:class="${feedbackPage.first ? 'disabled' : 'edge-page'}">
+            <a
+                    th:href="@{'/feedbacks' +'?page='+${feedbackPage.getNumber()-1}+${filterParams}}"><i
+                    class="fa-solid fa-angle-left"></i></a>
+        </li>
+        <!-- Middle Pages -->
+        <li id="middle-pages" th:each="pageNumber : ${#numbers.sequence(0, feedbackPage.totalPages - 1)}">
+            <span th:if="${pageNumber == 0 or pageNumber == feedbackPage.totalPages - 1 or
+            (pageNumber >= feedbackPage.number - 1 and pageNumber <= feedbackPage.number + 1)}">
+                <a class="current-page" th:if="${pageNumber == feedbackPage.number}" th:text="${pageNumber + 1}"></a>
+                <a th:if="${pageNumber != feedbackPage.number}"
+                   th:href="@{'/feedbacks' +'?page='+${pageNumber}+${filterParams}}"
+                   th:text="${pageNumber + 1}">1</a>
+            </span>
+            <span class="dots" th:unless="${pageNumber == 0 or pageNumber == feedbackPage.totalPages - 1 or
+            (pageNumber >= feedbackPage.number - 1 and pageNumber <= feedbackPage.number + 1)}">
+                ...
+            </span>
+        </li>
+        <!-- Next Page -->
+        <li th:class="${feedbackPage.last ? 'disabled' : 'edge-page'}">
+            <a
+                    th:href="@{'/feedbacks' +'?page='+${feedbackPage.getNumber()+1}+${filterParams}}"><i
+                    class="fa-solid fa-chevron-right"></i></a>
+        </li>
+        <!-- Last Page -->
+        <li th:class="${feedbackPage.last ? 'disabled' : 'edge-page'}">
+            <a th:href="@{'/travels/search' +'?page='+${feedbackPage.getTotalPages()-1}+${filterParams}}">
+                <i class="fa-solid fa-angles-right"></i>
+            </a>
+        </li>
+    </ul>
+    </div>
+</section>
+<footer th:replace="index.html :: footer"></footer>
+<script type="text/javascript" src="../static/js/showDropdown.js" th:src="@{/js/showDropdown.js}"></script>
+<script type="text/javascript" src="../static/js/reset.js" th:src="@{/js/reset.js}"></script>
+<script type="text/javascript" src="../static/js/displayDots.js" th:src="@{/js/displayDots.js}"></script>
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", () => {
+        const travelCards = document.querySelectorAll('.travel-card');
+        travelCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const travelId = card.getAttribute('data-id');
+                if (travelId) {
+                    window.location.href = `/feedbacks/${id}`;
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>
