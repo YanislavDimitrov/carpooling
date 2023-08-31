@@ -73,7 +73,7 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     @Override
-    public Page<Feedback> findAllPaginated(int page, int size, Sort sort, Short rating, String creator, String recipient) {
+    public Page<Feedback> findAllPaginated(int page, int size, Sort sort, Short rating, User creator, User recipient) {
         PageRequest pageRequest = PageRequest.of(page,size);
         return feedbackRepository.findAllPaginated(pageRequest,sort,rating,creator,recipient);
     }
@@ -172,5 +172,19 @@ public class FeedbackServiceImpl implements FeedbackService {
           }
       }
       return false ;
+    }
+
+
+
+    static void checkIfTravelAndUsersExist(Travel travel, User creator, User recipient, TravelRepository travelRepository, String travelNotFound, UserRepository userRepository, String userNotFound) {
+        if(!travelRepository.existsById(travel.getId())) {
+            throw new EntityNotFoundException(String.format(travelNotFound,travel.getId()));
+        }
+        if(!userRepository.existsById(creator.getId())) {
+            throw new EntityNotFoundException(String.format(userNotFound,creator.getId()));
+        }
+        if(!userRepository.existsById(recipient.getId())) {
+            throw new EntityNotFoundException(String.format(userNotFound,recipient.getId()));
+        }
     }
 }

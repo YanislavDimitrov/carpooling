@@ -88,8 +88,8 @@
         <a th:href="@{/admin/users}" th:if="${isAdmin}" class="admin-btn-container">
             <i class="fa-solid fa-gears"></i>Users
         </a>
-        <a class="search-btn-container">
-            <i class="fa-solid fa-magnifying-glass"></i>Search
+        <a th:if="${isAuthenticated}" class="search-btn-container" th:href="@{/feedbacks}" >
+            <i class="fa-solid fa-magnifying-glass"></i>Feedbacks
         </a>
         <a class="create-btn-container" th:href="@{/travels/new}">
             <i class="fa-solid fa-circle-plus"></i>Publish a ride

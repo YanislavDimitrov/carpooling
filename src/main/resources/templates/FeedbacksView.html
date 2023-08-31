@@ -81,8 +81,8 @@
             <!-- Dynamically generate travel cards -->
             <div th:each="feedback :${feedbackPage.content}" class="travel-card" th:attr="data-id=${feedback.id}">
                 <div class="travel-card-content">
-                    <h2 th:text="${'Creator: ' +feedback.creator}"></h2>
-                    <p th:text="${'Recipient: ' + feedback.recipient}"></p>
+                    <h2 th:text="${'Creator: ' + feedback.creator.getUserName()}"></h2>
+                    <p th:text="${'Recipient: ' + feedback.recipient.getUserName()}"></p>
                     <p th:text="${'Rating: ' + feedback.rating}"></p>
                     <p th:text="${'Comment: ' + feedback.comment}"></p>
         </div>

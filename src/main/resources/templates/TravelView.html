@@ -103,8 +103,15 @@
                 <td>
                     <span th:text="${passenger.firstName} + ' ' + ${passenger.lastName} + ' (' + ${passenger.userName} + ')'"></span>
                     <span th:if="${travel.getDriverName().equals(session.currentUser)}">
-                <a  th:if="${travel.getDriverName().equals(session.currentUser)} and ${travel.status == T(com.example.carpooling.models.enums.TravelStatus).PLANNED}" class="btn"  th:href="@{/travels/{id}/remove/user/{userId}(id=${travel.getId()},userId=${passenger.getId()})}"><i class="fa-sharp fa-solid fa-trash"></i></a>
-                      <a th:if="${travel.getDriverName().equals(session.currentUser)} and ${travel.status == T(com.example.carpooling.models.enums.TravelStatus).COMPLETED}" class="btn delete" th:href="@{/travels/{travelId}/new/feedback/recipient/{recipientId}(travelId=${travel.id},recipientId=${passenger.id})}">
+                <a  th:if="${travel.getDriverName().equals(session.currentUser)}
+                and ${travel.status == T(com.example.carpooling.models.enums.TravelStatus).PLANNED}"
+                    class="btn"  th:href="@{/travels/{id}/remove/user/{userId}
+                    (id=${travel.getId()},userId=${passenger.getId()})}">
+                    <i class="fa-sharp fa-solid fa-trash"></i></a>
+                      <a th:if="${travel.getDriverName().equals(session.currentUser)}
+                      and ${travel.status == T(com.example.carpooling.models.enums.TravelStatus).COMPLETED}"
+                         class="btn delete" th:href="@{/travels/{travelId}/new/feedback/recipient/{recipientId}
+                         (travelId=${travel.id},recipientId=${passenger.id})}">
                         <i class="fa-solid fa-comment"></i>
                     </a>
             </span>
