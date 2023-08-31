@@ -1,0 +1,61 @@
+stages:
+  - build
+  - deploy
+
+build_dev:
+  stage: build
+  environment:
+    name: dev
+  image: docker:20.10.16
+  services:
+    - docker:20.10.16-dind
+  variables:
+    DOCKER_DRIVER: overlay
+    IMAGE_TAG: $CI_PROJECT_NAME:$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA
+    REGISTRY_URL: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+  before_script:
+    - echo "AWS_ACCESS_KEY_ID=${DEV_AWS_ACCESS_KEY_ID}" > .env
+    - echo "AWS_SECRET_ACCESS_KEY=${DEV_AWS_SECRET_ACCESS_KEY}" >> .env
+    - echo "AWS_DEFAULT_REGION=${AWS_REGION}" >> .env
+  script:
+    # registry login
+    - echo $(docker run --rm --env-file=.env amazon/aws-cli ecr get-login-password) | docker login --username AWS --password-stdin $REGISTRY_URL
+    # build and push the image
+    - docker build -t $REGISTRY_URL/$IMAGE_TAG .
+    - docker push $REGISTRY_URL/$IMAGE_TAG
+  after_script:
+    - rm .env
+  only:
+    - master
+
+deploy_dev:
+  image:
+    name: amazon/aws-cli
+    entrypoint: [ "" ]
+  stage: deploy
+  environment:
+    name: dev
+  variables:
+    AWS_ACCESS_KEY_ID: $DEV_AWS_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY: $DEV_AWS_SECRET_ACCESS_KEY
+    AWS_DEFAULT_REGION: $AWS_REGION
+    IMAGE_TAG: $CI_PROJECT_NAME:$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA
+    REGISTRY_URL: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+  before_script:
+    - yum install jq -y
+  script:
+    # get the curent task definition
+    - CURENT_TASK_DEFINTION=$(aws ecs describe-task-definition --task-definition $DEV_TASK_FAMILY)
+    # set the new image tag
+    - echo $(echo $CURENT_TASK_DEFINTION | jq --arg IMAGE "$REGISTRY_URL/$IMAGE_TAG" '.taskDefinition.containerDefinitions[0].image = $IMAGE | .taskDefinition | del(.taskDefinitionArn,.revision,.status,.revision,.requiresAttributes,.compatibilities,.registeredBy,.registeredAt)') > task-definition.json
+    # register the new task definition and get the task version
+    - TASK_VERSION=$(aws ecs register-task-definition --region $AWS_DEFAULT_REGION --family $DEV_TASK_FAMILY --cli-input-json file://task-definition.json | grep revision | cut -d ":" -f2 | cut -d "," -f1 | tr -d ' ')
+    # stop the old task
+    #    - CURRENT_TASK=$(aws ecs list-tasks --cluster $DEV_ECS_CLUSTER --service $DEV_ECS_SERVICE --output text --query taskArns[0])
+    #    - aws ecs stop-task --cluster $DEV_ECS_CLUSTER --task $CURRENT_TASK
+    # update ecs service
+    - aws ecs update-service --cluster $DEV_ECS_CLUSTER --service $DEV_ECS_SERVICE --task-definition $DEV_TASK_FAMILY:$TASK_VERSION > /dev/null
+  after_script:
+    - rm task-definition.json
+  only:
+    - master
