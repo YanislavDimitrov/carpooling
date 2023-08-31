@@ -5,6 +5,8 @@ import com.example.carpooling.models.Feedback;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.TravelStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -13,6 +15,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,6 +32,22 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
     );
 
     List<Feedback> findByRecipientIs(User user);
+
+    List<Feedback> findByTravelId(Long id);
+
+
+    @Query("SELECT f FROM Feedback f WHERE " +
+            "(:rating IS NULL  OR f.rating >= :rating) " +
+            "AND (:creator IS NULL  OR  f.creator =:creator) " +
+            "AND(:recipient IS NULL OR f.recipient =:recipient)" +
+            "AND(:travel IS NULL OR f.travel =:travel)" +
+            "AND f.isDeleted = false")
+    Page<Feedback> findAllPaginated(PageRequest pageRequest,
+                                    Sort sort,
+                                    Short rating,
+                                    User creator,
+                                    User recipient,
+                                    Travel travel);
 
     @Modifying
     @Query("UPDATE Feedback AS f SET f.isDeleted=true WHERE f.id = :id")

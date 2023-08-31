@@ -3,10 +3,14 @@ package com.example.carpooling.controllers.mvc;
 import com.example.carpooling.exceptions.*;
 import com.example.carpooling.exceptions.duplicate.DuplicateEntityException;
 import com.example.carpooling.helpers.AuthenticationHelper;
+import com.example.carpooling.helpers.ExtractionHelper;
+import com.example.carpooling.helpers.mappers.FeedbackMapper;
 import com.example.carpooling.helpers.mappers.TravelMapper;
+import com.example.carpooling.models.Feedback;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
+import com.example.carpooling.models.dtos.FeedbackCreateDto;
 import com.example.carpooling.models.dtos.TravelCreationOrUpdateDto;
 import com.example.carpooling.models.dtos.TravelFilterDto;
 import com.example.carpooling.models.dtos.TravelFrontEndView;
@@ -14,6 +18,7 @@ import com.example.carpooling.models.enums.TravelRequestStatus;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.services.TravelServiceImpl;
+import com.example.carpooling.services.contracts.FeedbackService;
 import com.example.carpooling.services.contracts.TravelRequestService;
 import com.example.carpooling.services.contracts.TravelService;
 import com.example.carpooling.services.contracts.UserService;
@@ -40,17 +45,23 @@ public class TravelMvcController {
     private final TravelService travelService;
     private final TravelRequestService travelRequestService;
     private final UserService userService;
+    private final FeedbackService feedbackService;
     private final TravelMapper travelMapper;
+    private final FeedbackMapper feedbackMapper;
     private final AuthenticationHelper authenticationHelper;
+    private final ExtractionHelper extractionHelper;
 
     public TravelMvcController(TravelService travelService,
-                               TravelRequestService travelRequestService, UserService userService, TravelMapper travelMapper,
-                               AuthenticationHelper authenticationHelper) {
+                               TravelRequestService travelRequestService, UserService userService, FeedbackService feedbackService, TravelMapper travelMapper,
+                               FeedbackMapper feedbackMapper, AuthenticationHelper authenticationHelper, ExtractionHelper extractionHelper) {
         this.travelService = travelService;
         this.travelRequestService = travelRequestService;
         this.userService = userService;
+        this.feedbackService = feedbackService;
         this.travelMapper = travelMapper;
+        this.feedbackMapper = feedbackMapper;
         this.authenticationHelper = authenticationHelper;
+        this.extractionHelper = extractionHelper;
     }
 
     @GetMapping()
@@ -93,8 +104,7 @@ public class TravelMvcController {
 
     private void prepareInformationForTheView(Model model, @ModelAttribute("filter") TravelFilterDto filter, HttpServletRequest request, List<TravelFrontEndView> travels, Page<Travel> paginatedTravels) {
         Map<String, String[]> parameterMap = request.getParameterMap();
-        String parameters = extractParametersSection(parameterMap);
-
+        String parameters = extractionHelper.extractParametersSection(parameterMap);
         model.addAttribute("filter", filter);
         model.addAttribute("travelPage", paginatedTravels);
         model.addAttribute("filterParams", parameters);
@@ -140,6 +150,7 @@ public class TravelMvcController {
 
         return "TravelsView";
     }
+
     @GetMapping("/user")
     public String viewAllTravelsForUser(HttpSession session, Model model) {
         User user;
@@ -151,7 +162,6 @@ public class TravelMvcController {
         List<TravelFrontEndView> travels = new ArrayList<>(travelService.findTravelByUser(user)
                 .stream()
                 .map(travelMapper::fromTravelToFrontEnd)
-                .filter(travelFrontEndView -> !travelFrontEndView.isDeleted())
                 .toList());
         List<TravelFrontEndView> travelsAsPassenger = travelService.findTravelsAsPassengerByUser(user)
                 .stream()
@@ -204,6 +214,7 @@ public class TravelMvcController {
         model.addAttribute("travelRequestForThisTravel", travelRequests);
         model.addAttribute("isRequestedByUser", isRequestedByUser);
         model.addAttribute("isPassenger", isPassenger);
+        model.addAttribute("driverId", travelService.getById(id).getDriver().getId());
         return "TravelView";
     }
 
@@ -478,16 +489,62 @@ public class TravelMvcController {
         }
     }
 
-    private String extractParametersSection(Map<String, String[]> parameterMap) {
-        StringBuilder builder = new StringBuilder();
-        for (String key : parameterMap.keySet()) {
-            String value = parameterMap.get(key)[0];
-            if (value.trim().isEmpty() || key.equals("page")) {
-                continue;
-            }
-            builder.append("&").append(key).append("=").append(value);
+    @GetMapping("/{travelId}/new/feedback/recipient/{recipientId}")
+    public String createFeedback(@PathVariable Long travelId,
+                                 @PathVariable Long recipientId,
+                                 HttpSession session,
+                                 Model model) {
+        Travel travel;
+        User recipient;
+        User creator;
+        try {
+            creator = authenticationHelper.tryGetUser(session);
+            travel = travelService.getById(travelId);
+            recipient = userService.getById(recipientId);
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        } catch (EntityNotFoundException e) {
+            return "NotFoundView";
         }
-        return builder.toString();
+        model.addAttribute("feedback", new FeedbackCreateDto());
+        model.addAttribute("recipient", recipient);
+        model.addAttribute("creator", creator);
+        model.addAttribute("travel", travel);
+        model.addAttribute("travelId", travel.getId());
+        model.addAttribute("recipientId", recipient.getId());
+        return "NewFeedbackView";
+    }
+
+    @PostMapping("/{travelId}/new/feedback/recipient/{recipientId}")
+    public String createFeedback(@Valid @ModelAttribute("feedback") FeedbackCreateDto feedback,
+                                 BindingResult errors,
+                                 HttpSession session,
+                                 @PathVariable Long travelId,
+                                 @PathVariable Long recipientId) {
+        if (errors.hasErrors()) {
+            return "NewFeedbackView";
+        }
+
+
+        Travel travel;
+        User recipient;
+        User creator;
+        Feedback createdFeedback;
+        try {
+            travel = travelService.getById(travelId);
+            recipient = userService.getById(recipientId);
+            creator = authenticationHelper.tryGetUser(session);
+            createdFeedback = feedbackMapper.fromCreationDto(feedback);
+            feedbackService.create(travel, creator, recipient, createdFeedback);
+            return "redirect:/travels/" + travelId;
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        } catch (EntityNotFoundException e) {
+            return "NotFoundView";
+        } catch (InvalidFeedbackException | TravelNotCompletedException | InvalidOperationException e) {
+            errors.rejectValue("rating", "rating_error", e.getMessage());
+            return "NewFeedbackView";
+        }
     }
 
     @ModelAttribute("isAdmin")

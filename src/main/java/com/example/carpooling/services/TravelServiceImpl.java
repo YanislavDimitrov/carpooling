@@ -276,7 +276,10 @@ public class TravelServiceImpl implements TravelService {
 
 
     public List<Travel> findTravelByUser(User user) {
-        return user.getTravelsAsDriver();
+        return user.getTravelsAsDriver()
+                .stream()
+                .filter(travel -> !travel.isDeleted())
+                .toList();
     }
 
     @Override

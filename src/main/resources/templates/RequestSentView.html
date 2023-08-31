@@ -1,26 +1,4 @@
-<!--<!DOCTYPE html>-->
-<!--<html lang="en">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-<!--    <title>Request Sent</title>-->
-<!--    <link rel="website icon" th:type="png" th:href="@{/images/carpool_simplelogo.png}">-->
-<!--    <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">-->
-<!--    <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">-->
-<!--    <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">-->
-<!--</head>-->
-<!--<body>-->
-<!--<header th:replace="index.html :: header"></header>-->
-<!--<section class="main">-->
-<!--    <h1>Your request for travel was sent successfully!</h1>-->
-<!--    <a href="#" th:href="@{/}">Go back to Home Page</a>-->
-<!--    <br>-->
-<!--    <a href="#" th:href="@{/travels}">Or browse through other travels</a>-->
-<!--</section>-->
-<!--<footer th:replace="index.html :: footer"></footer>-->
-<!--<script type="text/javascript" src="../static/js/showDropdown.js" th:src="@{/js/showDropdown.js}"></script>-->
 
-<!--</body>-->
-<!--</html>-->
 
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
@@ -41,7 +19,7 @@
     <p>You can either continue browsing through our travels, <br> or go back to our home page.
     <div class="options-container">
         <a class="btn"
-           th:href="@{/travels}">
+           th:href="@{/travels/search}">
             <i class="fa-solid fa-flag-checkered"></i>Travels
         </a>
         <p>or</p>

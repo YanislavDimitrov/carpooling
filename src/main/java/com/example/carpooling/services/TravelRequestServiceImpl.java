@@ -181,15 +181,7 @@ public class TravelRequestServiceImpl implements TravelRequestService {
     }
 
     private void checkIfAttributesExists(Travel travel, User editor, User requestCreator) {
-        if (!travelRepository.existsById(travel.getId())) {
-            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, travel.getId()));
-        }
-        if (!userRepository.existsById(editor.getId())) {
-            throw new EntityNotFoundException(String.format(USER_NOT_FOUND, editor.getId()));
-        }
-        if (!userRepository.existsById(requestCreator.getId())) {
-            throw new EntityNotFoundException(String.format(USER_NOT_FOUND, requestCreator.getId()));
-        }
+        FeedbackServiceImpl.checkIfTravelAndUsersExist(travel, editor, requestCreator, travelRepository, TRAVEL_NOT_FOUND, userRepository, USER_NOT_FOUND);
     }
 
     /**

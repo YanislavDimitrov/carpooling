@@ -52,4 +52,10 @@ public class FeedbackMapper {
 
         return feedback;
     }
+    public FeedbackCreateDto fromFeedback(Feedback feedback) {
+        FeedbackCreateDto feedbackCreateDto = new FeedbackCreateDto();
+        feedbackCreateDto.setComment(feedback.getComment());
+        feedbackCreateDto.setRating(feedback.getRating());
+        return feedbackCreateDto;
+    }
 }
