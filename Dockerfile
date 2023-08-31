@@ -13,10 +13,10 @@ FROM amazoncorretto:17.0.7-al2
 
 WORKDIR /app
 
-ARG DEPENDENCY=/workspace/app/build/libs
+ARG DEPENDENCY=/workspace/app/build
 
 COPY --from=build ${DEPENDENCY} .
 
-ENTRYPOINT ["java", "-jar", "/app/carpooling-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "/app/libs/carpooling-0.0.1-SNAPSHOT.jar"]
 
 EXPOSE 8080
