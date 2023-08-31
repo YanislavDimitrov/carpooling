@@ -379,7 +379,15 @@ public class TravelServiceImpl implements TravelService {
                 throw new InvalidOperationException(String.format(TRAVEL_AT_THIS_TIME, travelToCheck.getDepartureTime()));
             }
             if (travel.getEstimatedTimeOfArrival().isAfter(travelToCheck.getDepartureTime()) &&
-                    travel.getEstimatedTimeOfArrival().isBefore(travelToCheck.getEstimatedTimeOfArrival())) {
+                    travel.getEstimatedTimeOfArrival().isBefore(travelToCheck.getEstimatedTimeOfArrival())
+            && travelToCheck.getStatus() == TravelStatus.PLANNED) {
+                throw new InvalidOperationException(String.format(ARRIVAL_TIME_INSIDE_INVALID_TIME_FRAME,
+                        travelToCheck.getDeparturePoint(),
+                        travelToCheck.getArrivalPoint()));
+            }
+            if (travel.getEstimatedTimeOfArrival().isAfter(travelToCheck.getDepartureTime()) &&
+                    travel.getEstimatedTimeOfArrival().isBefore(travelToCheck.getEstimatedTimeOfArrival())
+                    && travelToCheck.getStatus() == TravelStatus.ACTIVE) {
                 throw new InvalidOperationException(String.format(ARRIVAL_TIME_INSIDE_INVALID_TIME_FRAME,
                         travelToCheck.getDeparturePoint(),
                         travelToCheck.getArrivalPoint()));

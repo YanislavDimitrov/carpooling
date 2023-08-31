@@ -9,23 +9,31 @@ body {
 
 
 /* Header and Footer Styles */
-header, .footer {
+header {
     position: fixed;
     width: 100%;
     background-color: white;
     /* Other header and footer styles */
 }
 
+/*.main {*/
+/*    padding: 0px 30rem;*/
+/*    height: 85vh;*/
+/*}*/
+
+/*!* Content Container *!*/
+/*.main {*/
+/*    padding: 0px 12rem;*/
+/*    height: 84vh;*/
+/*}*/
 .main {
-    padding: 0px 30rem;
-    height: 85vh;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    min-height: 84vh;
+    padding: 2rem 18rem;
 }
 
-/* Content Container */
-.main {
-    padding: 0px 12rem;
-    height: 84vh;
-}
 
 /* Travel Card */
 .travel-card {
@@ -119,10 +127,6 @@ header, .footer {
     background-color: #e74c3c;
 }
 
-/* Footer */
 footer {
-    background-color: white;
-    color: #fff;
-    padding: 10px;
-    text-align: center;
+     border-bottom: 1px solid #e1e1e1;
 }

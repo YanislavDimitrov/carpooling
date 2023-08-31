@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">
     <link rel="stylesheet" href="../static/travelsStyles.css" th:href="@{/travelsStyles.css}">
     <link rel="stylesheet" href="../static/filter.css" th:href="@{/filter.css}">
+    <link rel="stylesheet" href="../static/pagination.css" th:href="@{/pagination.css}">
 </head>
 <body>
 <!--HEADER-->
@@ -91,9 +92,9 @@
         </div>
         <div class="travel-cards-container">
             <!-- Dynamically generate travel cards -->
-            <div th:each="travel : ${travels}" class="travel-card" th:attr="data-id=${travel.id}">
+            <div th:each="travel :${travelPage.content}" class="travel-card" th:attr="data-id=${travel.id}">
                 <div class="travel-card-content">
-                    <h2 th:text="${'Driver: ' + travel.driverName}">Driver: John Doe</h2>
+                    <h2 th:text="${'Driver: ' +travel.getDriver().getUserName()}">Driver: John Doe</h2>
                     <p th:text="${'Departure: ' + travel.departurePoint}">Departure: Burgas</p>
                     <p th:text="${'Arrival: ' + travel.arrivalPoint}">Arrival: Sofia</p>
                     <p th:text="${'Free Spots: ' + travel.freeSpots}">Free Spots: 2</p>
@@ -104,6 +105,45 @@
             </div>
         </div>
     </div>
+    <ul th:if="${travelPage.getTotalPages()>1}" role="list" class="pagination">
+        <!-- First Page -->
+        <li th:class="${travelPage.first ? 'disabled' : 'edge-page'}">
+            <a th:href="@{'/travels/search' +'?page=0'+${filterParams}}">
+                <i class="fa-solid fa-angles-left"></i></a>
+        </li>
+        <!-- Previous Page -->
+        <li th:class="${travelPage.first ? 'disabled' : 'edge-page'}">
+            <a
+                    th:href="@{'/travels/search' +'?page='+${travelPage.getNumber()-1}+${filterParams}}"><i
+                    class="fa-solid fa-angle-left"></i></a>
+        </li>
+        <!-- Middle Pages -->
+        <li id="middle-pages" th:each="pageNumber : ${#numbers.sequence(0, travelPage.totalPages - 1)}">
+            <span th:if="${pageNumber == 0 or pageNumber == travelPage.totalPages - 1 or
+            (pageNumber >= travelPage.number - 1 and pageNumber <= travelPage.number + 1)}">
+                <a class="current-page" th:if="${pageNumber == travelPage.number}" th:text="${pageNumber + 1}"></a>
+                <a th:if="${pageNumber != travelPage.number}"
+                   th:href="@{'/travels/search' +'?page='+${pageNumber}+${filterParams}}"
+                   th:text="${pageNumber + 1}">1</a>
+            </span>
+            <span class="dots" th:unless="${pageNumber == 0 or pageNumber == travelPage.totalPages - 1 or
+            (pageNumber >= travelPage.number - 1 and pageNumber <= travelPage.number + 1)}">
+                ...
+            </span>
+        </li>
+        <!-- Next Page -->
+        <li th:class="${travelPage.last ? 'disabled' : 'edge-page'}">
+            <a
+                    th:href="@{'/travels/search' +'?page='+${travelPage.getNumber()+1}+${filterParams}}"><i
+                    class="fa-solid fa-chevron-right"></i></a>
+        </li>
+        <!-- Last Page -->
+        <li th:class="${travelPage.last ? 'disabled' : 'edge-page'}">
+            <a th:href="@{'/travels/search' +'?page='+${travelPage.getTotalPages()-1}+${filterParams}}">
+                <i class="fa-solid fa-angles-right"></i>
+            </a>
+        </li>
+    </ul>
 </section>
 <footer th:replace="index.html :: footer"></footer>
 <script type="text/javascript" src="../static/js/showDropdown.js" th:src="@{/js/showDropdown.js}"></script>
