@@ -7,6 +7,7 @@ import com.example.carpooling.helpers.mappers.FeedbackMapper;
 import com.example.carpooling.models.Feedback;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.User;
+import com.example.carpooling.models.dtos.FeedbackCreateDto;
 import com.example.carpooling.models.dtos.FeedbackFilterDto;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.services.contracts.FeedbackService;
@@ -14,11 +15,13 @@ import com.example.carpooling.services.contracts.TravelService;
 import com.example.carpooling.services.contracts.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -100,19 +103,68 @@ public class FeedbackMvcController {
     }
 
     @GetMapping("/user")
-    public String getFeedbacksByUser( HttpSession session , Model model) {
-     User recipient;
+    public String getFeedbacksByUser(HttpSession session, Model model) {
+        User recipient;
         try {
-           recipient =   authenticationHelper.tryGetUser(session);
-           List<Feedback> feedbacks = feedbackService.getByRecipientIs(recipient);
-           model.addAttribute("feedbacks",feedbacks);
-           return "UserFeedbacksView";
-        }catch (AuthenticationFailureException e ) {
+            recipient = authenticationHelper.tryGetUser(session);
+            List<Feedback> feedbacks = feedbackService.getByRecipientIs(recipient);
+            model.addAttribute("feedbacks", feedbacks);
+            return "UserFeedbacksView";
+        } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
-        }catch (EntityNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             return "NotFoundView";
         }
 
+    }
+
+    @GetMapping("{id}/update")
+    public String updateFeedback(@PathVariable Long id, Model model, HttpSession session) {
+        Feedback feedback;
+        User loggedUser;
+        try {
+            loggedUser = authenticationHelper.tryGetUser(session);
+            feedback = feedbackService.getById(id);
+            model.addAttribute("feedback", feedback);
+            if (!loggedUser.equals(feedback.getCreator())) {
+                return "AccessDeniedView";
+            }
+            FeedbackCreateDto feedbackCreateDto = feedbackMapper.fromFeedback(feedback);
+            model.addAttribute("feedback",feedbackCreateDto);
+            model.addAttribute("feedbackId",feedback.getId());
+            return "UpdateFeedbackView";
+
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        } catch (EntityNotFoundException e) {
+            return "NotFoundView";
+        }
+    }
+    @PostMapping("/{id}/update")
+    public String updateFeedback(@Valid @ModelAttribute("feedback") FeedbackCreateDto feedbackCreateDto,
+                                 BindingResult bindingResult,
+                                 @PathVariable Long id ,
+                                 HttpSession session) {
+        if(bindingResult.hasErrors()) {
+            return "UpdateFeedbackView";
+        }
+        User loggedUser;
+        Feedback feedbackOriginal;
+        Feedback feedbackToUpdate;
+        try {
+            loggedUser = authenticationHelper.tryGetUser(session);
+            feedbackOriginal = feedbackService.getById(id);
+            feedbackToUpdate = feedbackMapper.fromCreationDto(feedbackCreateDto);
+            if(!loggedUser.equals(feedbackOriginal.getCreator())) {
+                return "AccessDeniedView";
+            }
+            feedbackService.update(feedbackOriginal,feedbackToUpdate,loggedUser);
+            return "redirect:/feedbacks";
+        } catch (AuthenticationFailureException e ) {
+            return "redirect:/auth/login";
+        } catch (EntityNotFoundException e ) {
+            return "NotFoundView";
+        }
     }
 
     @ModelAttribute("isAdmin")
@@ -124,6 +176,7 @@ public class FeedbackMvcController {
             return false;
         }
     }
+
     @ModelAttribute("travels")
     public List<Travel> populateTravels() {
         return travelService.get();

@@ -547,9 +547,6 @@ public class TravelMvcController {
         }
     }
 
-//    public String updateFeedback
-
-
     @ModelAttribute("isAdmin")
     public boolean populateIsAdmin(HttpSession session) {
         try {

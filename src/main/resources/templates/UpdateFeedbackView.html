@@ -16,12 +16,12 @@
 <section class="main">
 
   <h1 class="form-title">Create New Feedback</h1>
-  <form id="search-form" class="form" th:action="@{/travels/{travelId}/new/feedback/recipient/{recipientId}(travelId=${travelId},recipientId=${recipientId})}" th:object="${feedback}" method="post">
+  <form id="search-form" class="form" th:action="@{/feedbacks/{id}/update(id=${feedbackId})}" th:object="${feedback}" method="post">
     <div class="names-container">
       <div class="field-container">
         <label th:text="#{feedback.label.comment}">Comment</label>
         <label>
-         <textarea rows="5" cols="15" th:field="*{comment}" placeholder="Comment (optional)">Comment</textarea>
+          <textarea rows="5" cols="15" th:field="*{comment}" placeholder="Comment (optional)">Comment</textarea>
         </label>
       </div>
     </div>
