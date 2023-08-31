@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM maven:3.9.1-amazoncorretto-17 as build
+FROM gradle:7.2.0-jdk17 as build
 
 WORKDIR /workspace/app
 
