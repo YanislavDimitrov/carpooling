@@ -53,20 +53,52 @@ public class TravelMvcController {
         this.authenticationHelper = authenticationHelper;
     }
 
-    @GetMapping
-    public String viewAllTravels(Model model, HttpSession session) {
-
+    @GetMapping()
+    public String viewAllTravelsIncludingActive(HttpSession session,
+                                                Model model, @ModelAttribute("filter") TravelFilterDto filter,
+                                                @RequestParam(defaultValue = "0") int page,
+                                                @RequestParam(defaultValue = "5") int size,
+                                                HttpServletRequest request) {
         try {
             authenticationHelper.tryGetUser(session);
+            List<TravelFrontEndView> travels = travelService.get()
+                    .stream()
+                    .map(travelMapper::fromTravelToFrontEnd)
+                    .toList();
+
+            Sort sort;
+            if (filter.getSortOrder().equalsIgnoreCase("desc")) {
+                sort = Sort.by(Sort.Direction.DESC, filter.getSortBy());
+            } else {
+                sort = Sort.by(Sort.Direction.ASC, filter.getSortBy());
+            }
+            Page<Travel> paginatedTravels = travelService.findAllPaginated(
+                    page,
+                    size,
+                    filter.getFreeSpots(),
+                    filter.getDepartedBefore(),
+                    filter.getDepartedAfter(),
+                    filter.getDeparturePoint(),
+                    filter.getArrivalPoint(),
+                    filter.getPrice(),
+                    sort);
+
+            prepareInformationForTheView(model, filter, request, travels, paginatedTravels);
+
+            return "AllTravelsView";
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         }
-        List<TravelFrontEndView> travels = travelService.findAllByStatusPlanned()
-                .stream()
-                .map(travelMapper::fromTravelToFrontEnd)
-                .toList();
+    }
+
+    private void prepareInformationForTheView(Model model, @ModelAttribute("filter") TravelFilterDto filter, HttpServletRequest request, List<TravelFrontEndView> travels, Page<Travel> paginatedTravels) {
+        Map<String, String[]> parameterMap = request.getParameterMap();
+        String parameters = extractParametersSection(parameterMap);
+
+        model.addAttribute("filter", filter);
+        model.addAttribute("travelPage", paginatedTravels);
+        model.addAttribute("filterParams", parameters);
         model.addAttribute("travels", travels);
-        return "TravelsView";
     }
 
 
@@ -86,15 +118,13 @@ public class TravelMvcController {
                 .stream()
                 .map(travelMapper::fromTravelToFrontEnd)
                 .toList();
-
-
         Sort sort;
         if (filter.getSortOrder().equalsIgnoreCase("desc")) {
             sort = Sort.by(Sort.Direction.DESC, filter.getSortBy());
         } else {
             sort = Sort.by(Sort.Direction.ASC, filter.getSortBy());
         }
-        Page<Travel> paginatedTravels = travelService.findAllPaginated(
+        Page<Travel> paginatedTravels = travelService.findAllPlannedPaginated(
                 page,
                 size,
                 filter.getFreeSpots(),
@@ -105,33 +135,11 @@ public class TravelMvcController {
                 filter.getPrice(),
                 sort);
 
-        Map<String, String[]> parameterMap = request.getParameterMap();
-        String parameters = extractParametersSection(parameterMap);
+        prepareInformationForTheView(model, filter, request, travels, paginatedTravels);
 
-        model.addAttribute("filter", filter);
-        model.addAttribute("travelPage", paginatedTravels);
-        model.addAttribute("filterParams", parameters);
-        model.addAttribute("travels", travels);
+
         return "TravelsView";
     }
-
-
-    @GetMapping("/all")
-    public String viewAllTravelsIncludingActive(HttpSession session, Model model) {
-        try {
-            authenticationHelper.tryGetUser(session);
-            List<TravelFrontEndView> travels = travelService.get()
-                    .stream()
-                    .map(travelMapper::fromTravelToFrontEnd)
-                    .toList();
-            model.addAttribute("travels", travels);
-            return "TravelsView";
-        } catch (AuthenticationFailureException e) {
-            return "redirect:/auth/login";
-        }
-    }
-
-
     @GetMapping("/user")
     public String viewAllTravelsForUser(HttpSession session, Model model) {
         User user;
@@ -481,7 +489,6 @@ public class TravelMvcController {
         }
         return builder.toString();
     }
-
 
     @ModelAttribute("isAdmin")
     public boolean populateIsAdmin(HttpSession session) {

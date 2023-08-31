@@ -11,7 +11,6 @@ import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.TravelRequestStatus;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.models.enums.UserRole;
-import com.example.carpooling.models.enums.UserStatus;
 import com.example.carpooling.repositories.contracts.PassengerRepository;
 import com.example.carpooling.repositories.contracts.TravelRepository;
 import com.example.carpooling.services.contracts.TravelService;
@@ -104,23 +103,27 @@ public class TravelServiceImpl implements TravelService {
 
     @Override
     public List<Travel> findBySearchCriteria(String departurePoint, String arrivalPoint, LocalDateTime departureTime, Short freeSpots) {
-        return travelRepository.findByCustomSearchFilter(departurePoint, arrivalPoint, departureTime, freeSpots)
-                .stream()
-                .filter(travel -> travel.getStatus() == TravelStatus.PLANNED)
-                .toList();
+        return travelRepository.findByCustomSearchFilter(departurePoint, arrivalPoint, departureTime, freeSpots);
+
     }
 
     @Override
-    public Page<Travel> findAllPaginated(int page,
-                                         int size,
-                                         Short freeSpots,
-                                         LocalDate departedBefore,
-                                         LocalDate departedAfter,
-                                         String departurePoint,
-                                         String arrivalPoint,
-                                         String price,
-                                         Sort sort) {
+    public Page<Travel> findAllPlannedPaginated(int page,
+                                                int size,
+                                                Short freeSpots,
+                                                LocalDate departedBefore,
+                                                LocalDate departedAfter,
+                                                String departurePoint,
+                                                String arrivalPoint,
+                                                String price,
+                                                Sort sort) {
         PageRequest pageRequest = PageRequest.of(page, size);
+        return travelRepository.findAllPlannedPaginated(pageRequest,sort,freeSpots,departedBefore,departedAfter,departurePoint,arrivalPoint,price);
+    }
+
+    @Override
+    public Page<Travel> findAllPaginated(int page , int size , Short freeSpots, LocalDate departedBefore, LocalDate departedAfter, String departurePoint, String arrivalPoint, String price,Sort sort) {
+        PageRequest pageRequest = PageRequest.of(page,size);
         return travelRepository.findAllPaginated(pageRequest,sort,freeSpots,departedBefore,departedAfter,departurePoint,arrivalPoint,price);
     }
 

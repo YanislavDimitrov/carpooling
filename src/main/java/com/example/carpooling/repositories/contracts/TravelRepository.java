@@ -31,7 +31,8 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
             "(:driver is null or t.driver.userName like %:driver%) " +
             " and(:status is null or t.status =:status)" +
             " and (:free_spots is null or t.freeSpots  =:freeSpots)" +
-            " and(:departureTime is null or t.departureTime =:departureTime)")
+            " and(:departureTime is null or t.departureTime =:departureTime)"
+            + " and (t.isDeleted = false)")
     List<Travel> findByCriteria(
             @Param("driver") String driver,
             @Param("status") TravelStatus status,
@@ -44,7 +45,9 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
             "WHERE (:departurePoint IS NULL OR :departurePoint = '' OR t.departurePoint LIKE %:departurePoint%) " +
             "AND (:arrivalPoint IS NULL OR :arrivalPoint = '' OR t.arrivalPoint LIKE %:arrivalPoint%) " +
             "AND (:departureTime IS NULL OR t.departureTime = :departureTime) " +
-            "AND (:freeSpots IS NULL OR t.freeSpots >= :freeSpots)")
+            "AND (:freeSpots IS NULL OR t.freeSpots >= :freeSpots)" +
+            "AND t.status = 'PLANNED' " +
+            "AND t.isDeleted = false")
     List<Travel> findByCustomSearchFilter(
             String departurePoint,
             String arrivalPoint,
@@ -60,15 +63,36 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
             "AND(:departedAfter IS NULL OR FUNCTION('DATE', t.departureTime) < :departedAfter)" +
             "AND (:departurePoint IS NULL OR :departurePoint = '' OR t.departurePoint LIKE %:departurePoint%) " +
             "AND(:arrivalPoint IS NULL OR :arrivalPoint = '' OR t.arrivalPoint LIKE %:arrivalPoint%)" +
-            "AND (:price IS NULL OR :price = '' OR t.price LIKE :price) ")
+            "AND (:price IS NULL OR :price = '' OR t.price LIKE :price)" +
+            "AND t.status = 'PLANNED' " +
+            "AND t.isDeleted = false")
+    Page<Travel> findAllPlannedPaginated(PageRequest pageRequest,
+                                         Sort sort,
+                                         Short freeSpots,
+                                         LocalDate departedBefore,
+                                         LocalDate departedAfter,
+                                         String departurePoint,
+                                         String arrivalPoint,
+                                         String price);
+
+    @Query("SELECT t FROM Travel t WHERE " +
+            "(:freeSpots IS NULL  OR t.freeSpots >=:freeSpots) " +
+            "AND (:departedBefore IS NULL  OR FUNCTION('DATE', t.departureTime) >= :departedBefore) " +
+            "AND(:departedAfter IS NULL OR FUNCTION('DATE', t.departureTime) < :departedAfter)" +
+            "AND (:departurePoint IS NULL OR :departurePoint = '' OR t.departurePoint LIKE %:departurePoint%) " +
+            "AND(:arrivalPoint IS NULL OR :arrivalPoint = '' OR t.arrivalPoint LIKE %:arrivalPoint%)" +
+            "AND (:price IS NULL OR :price = '' OR t.price LIKE :price)" +
+            "AND t.isDeleted = false")
     Page<Travel> findAllPaginated(PageRequest pageRequest,
-                                  Sort sort,
-                                  Short freeSpots,
-                                  LocalDate departedBefore,
-                                  LocalDate departedAfter,
-                                  String departurePoint,
-                                  String arrivalPoint,
-                                  String price);
+                                         Sort sort,
+                                         Short freeSpots,
+                                         LocalDate departedBefore,
+                                         LocalDate departedAfter,
+                                         String departurePoint,
+                                         String arrivalPoint,
+                                         String price);
+
+
 
     @Modifying
     @Query("UPDATE Travel AS t SET t.isDeleted=true WHERE t.id = :id")
