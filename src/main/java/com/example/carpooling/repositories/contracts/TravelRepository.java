@@ -101,6 +101,7 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
     @Modifying
     @Query("UPDATE Travel AS t SET t.status='COMPLETED' WHERE t.id = :id")
     void completeTravel(@Param("id") Long id) throws EntityNotFoundException;
+    List<Travel> findAllByStatusIs(TravelStatus status);
 
     Long countAllByStatusIs(TravelStatus status);
 

@@ -407,7 +407,7 @@ public class TravelServiceImpl implements TravelService {
         }
     }
 
-    private void calculatingDistanceAndDuration(Travel travel) {
+    public void calculatingDistanceAndDuration(Travel travel) {
         String departurePoint = bingMapsService.getLocationJson(travel.getDeparturePoint());
         double[] coordinatesOfDeparturePoint = bingMapsService.parseCoordinates(departurePoint);
         double departureLatitude = coordinatesOfDeparturePoint[0];
@@ -449,7 +449,7 @@ public class TravelServiceImpl implements TravelService {
         }
     }
 
-    private static void completeActiveTravels(User user) {
+    public static void completeActiveTravels(User user) {
         List<Travel> travels = user.getTravelsAsDriver();
         travels = travels.stream()
                 .filter(travel -> travel.getStatus() == TravelStatus.ACTIVE)
