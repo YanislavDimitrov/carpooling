@@ -13,6 +13,7 @@ import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.repositories.contracts.PassengerRepository;
 import com.example.carpooling.repositories.contracts.TravelRepository;
+import com.example.carpooling.repositories.contracts.TravelRequestRepository;
 import com.example.carpooling.services.contracts.TravelService;
 import com.example.carpooling.services.contracts.UserService;
 import org.springframework.data.domain.Page;
@@ -46,13 +47,15 @@ public class TravelServiceImpl implements TravelService {
     public static final String INVALID_STATUS = "You cannot complete travel unless it is active , if your travel is planned, consider cancelling it instead!";
     public static final String ARRIVAL_TIME_INSIDE_INVALID_TIME_FRAME = "You are planning to create a travel in the time frame when you have already planned or active travel from %s to %s , please reconsider your actions!";
     private final TravelRepository travelRepository;
+    private final TravelRequestRepository travelRequestRepository;
     private final PassengerRepository passengerRepository;
     private final UserService userService;
 
     private final BingMapsServiceImpl bingMapsService;
 
-    public TravelServiceImpl(TravelRepository travelRepository, PassengerRepository passengerRepository, UserService userService, BingMapsServiceImpl bingMapsService) {
+    public TravelServiceImpl(TravelRepository travelRepository, TravelRequestRepository travelRequestRepository, PassengerRepository passengerRepository, UserService userService, BingMapsServiceImpl bingMapsService) {
         this.travelRepository = travelRepository;
+        this.travelRequestRepository = travelRequestRepository;
         this.passengerRepository = passengerRepository;
         this.userService = userService;
         this.bingMapsService = bingMapsService;
@@ -118,13 +121,13 @@ public class TravelServiceImpl implements TravelService {
                                                 String price,
                                                 Sort sort) {
         PageRequest pageRequest = PageRequest.of(page, size);
-        return travelRepository.findAllPlannedPaginated(pageRequest,sort,freeSpots,departedBefore,departedAfter,departurePoint,arrivalPoint,price);
+        return travelRepository.findAllPlannedPaginated(pageRequest, sort, freeSpots, departedBefore, departedAfter, departurePoint, arrivalPoint, price);
     }
 
     @Override
-    public Page<Travel> findAllPaginated(int page , int size , Short freeSpots, LocalDate departedBefore, LocalDate departedAfter, String departurePoint, String arrivalPoint, String price,Sort sort) {
-        PageRequest pageRequest = PageRequest.of(page,size);
-        return travelRepository.findAllPaginated(pageRequest,sort,freeSpots,departedBefore,departedAfter,departurePoint,arrivalPoint,price);
+    public Page<Travel> findAllPaginated(int page, int size, Short freeSpots, LocalDate departedBefore, LocalDate departedAfter, String departurePoint, String arrivalPoint, String price, Sort sort) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return travelRepository.findAllPaginated(pageRequest, sort, freeSpots, departedBefore, departedAfter, departurePoint, arrivalPoint, price);
     }
 
     /**
@@ -260,6 +263,8 @@ public class TravelServiceImpl implements TravelService {
             throw new InvalidOperationException(COMPLETED_OR_DELETED_TRAVEL_ERROR);
         }
         travel.setStatus(TravelStatus.CANCELED);
+        passengerRepository.deleteAllByTravel(travel);
+        travelRequestRepository.updateTravelRequestAsSetStatusCancelled(travel);
         travelRepository.save(travel);
     }
 
@@ -386,7 +391,7 @@ public class TravelServiceImpl implements TravelService {
             }
             if (travel.getEstimatedTimeOfArrival().isAfter(travelToCheck.getDepartureTime()) &&
                     travel.getEstimatedTimeOfArrival().isBefore(travelToCheck.getEstimatedTimeOfArrival())
-            && travelToCheck.getStatus() == TravelStatus.PLANNED) {
+                    && travelToCheck.getStatus() == TravelStatus.PLANNED) {
                 throw new InvalidOperationException(String.format(ARRIVAL_TIME_INSIDE_INVALID_TIME_FRAME,
                         travelToCheck.getDeparturePoint(),
                         travelToCheck.getArrivalPoint()));

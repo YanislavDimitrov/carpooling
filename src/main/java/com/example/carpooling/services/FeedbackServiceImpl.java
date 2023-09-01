@@ -65,7 +65,7 @@ public class FeedbackServiceImpl implements FeedbackService {
             if(!userRepository.existsById(user.getId())) {
                 throw new EntityNotFoundException(String.format(USER_NOT_FOUND,user.getId()));
             }
-           return user.getFeedbacks();
+           return feedbackRepository.findNonDeletedFeedbacksForRecipient(user);
     }
     @Override
     public List<Feedback> findByCriteria(Short rating, String comment, Sort sort) {
