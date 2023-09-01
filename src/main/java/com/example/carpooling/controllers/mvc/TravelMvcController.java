@@ -6,10 +6,7 @@ import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.helpers.ExtractionHelper;
 import com.example.carpooling.helpers.mappers.FeedbackMapper;
 import com.example.carpooling.helpers.mappers.TravelMapper;
-import com.example.carpooling.models.Feedback;
-import com.example.carpooling.models.Travel;
-import com.example.carpooling.models.TravelRequest;
-import com.example.carpooling.models.User;
+import com.example.carpooling.models.*;
 import com.example.carpooling.models.dtos.FeedbackCreateDto;
 import com.example.carpooling.models.dtos.TravelCreationOrUpdateDto;
 import com.example.carpooling.models.dtos.TravelFilterDto;
@@ -230,7 +227,7 @@ public class TravelMvcController {
             return "redirect:/auth/login";
         }
         model.addAttribute("travel", new TravelCreationOrUpdateDto());
-        model.addAttribute("vehicles", loggedUser.getVehicles());
+        model.addAttribute("vehicles", loggedUser.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
         return "NewTravelView";
     }
 
@@ -245,7 +242,7 @@ public class TravelMvcController {
             return "redirect:/auth/login";
         }
         if (errors.hasErrors()) {
-            model.addAttribute("vehicles", driver.getVehicles());
+            model.addAttribute("vehicles", driver.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
             return "NewTravelView";
         }
         Travel newTravel = travelMapper.toTravelFromTravelCreationDto(travel);
@@ -253,12 +250,12 @@ public class TravelMvcController {
             travelService.create(newTravel, driver);
         } catch (InvalidOperationException e) {
             errors.rejectValue("departureTime", "creation_error", e.getMessage());
-            model.addAttribute("vehicles", driver.getVehicles());
+            model.addAttribute("vehicles", driver.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
             return "NewTravelView";
         } catch (InvalidLocationException | InvalidTravelException e) {
             errors.rejectValue("departurePoint", "location_error", e.getMessage());
             errors.rejectValue("arrivalPoint", "location_error", e.getMessage());
-            model.addAttribute("vehicles", driver.getVehicles());
+            model.addAttribute("vehicles", driver.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
             return "NewTravelView";
         }
         return "redirect:/travels/" + newTravel.getId();
@@ -282,7 +279,7 @@ public class TravelMvcController {
         TravelCreationOrUpdateDto travelCreationOrUpdateDto = travelMapper.fromTravel(id);
         model.addAttribute("updateTravel", travelCreationOrUpdateDto);
         model.addAttribute("travelId", id);
-        model.addAttribute("vehicles", loggedUser.getVehicles());
+        model.addAttribute("vehicles", loggedUser.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
 
         return "UpdateTravelView";
     }
@@ -310,7 +307,7 @@ public class TravelMvcController {
         Travel travelUpdate = travelMapper.toTravelFromTravelUpdateSaveDto(travel, travelUpdateDto);
 
         if (errors.hasErrors()) {
-            model.addAttribute("vehicles", loggedUser.getVehicles());
+            model.addAttribute("vehicles", loggedUser.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
             return "UpdateTravelView";
         }
 
@@ -323,11 +320,11 @@ public class TravelMvcController {
         } catch (InvalidLocationException | InvalidTravelException e) {
             errors.rejectValue("departurePoint", "location_error", e.getMessage());
             errors.rejectValue("arrivalPoint", "location_error", e.getMessage());
-            model.addAttribute("vehicles", loggedUser.getVehicles());
+            model.addAttribute("vehicles", loggedUser.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
             return "UpdateTravelView";
         } catch (InvalidOperationException e) {
             errors.rejectValue("departureTime", "creation_error", e.getMessage());
-            model.addAttribute("vehicles", loggedUser.getVehicles());
+            model.addAttribute("vehicles", loggedUser.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
             return "UpdateTravelView";
         }
         return "redirect:/travels/" + id;
