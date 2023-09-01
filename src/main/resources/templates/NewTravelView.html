@@ -13,7 +13,7 @@
 <!--HEADER-->
 <header th:replace="index.html :: header"></header>
 <section class="main">
-
+<div id="content">
         <h1 class="form-title">Create New Travel</h1>
         <form  id="search-form" class="form" th:action="@{/travels/new}" th:object="${travel}" action="#" method="post">
            <div class="names-container">
@@ -24,8 +24,6 @@
                 </label>
                 <label class="error" th:errors="*{departurePoint}">Departure point field cannot be empty!</label>
             </div>
-           </div>
-            <div class="names-container">
             <div class="field-container">
                 <label th:text="#{travel.label.arrival-point}">Arrival Point</label>
                 <label>
@@ -42,8 +40,6 @@
                    </label>
                    <label class="error" th:errors="*{freeSpots}">Free spots field cannot be empty!</label>
                </div>
-            </div>
-            <div class="names-container">
             <div class="field-container">
                 <label th:text="#{travel.label.departure-time}">Departure Time</label>
                 <label>
@@ -59,8 +55,6 @@
                     <input type="text" th:field="*{comment}" placeholder="Comment">
                 </label>
             </div>
-            </div>
-            <div class="names-container">
                 <div class="field-container">
                     <label th:text="#{travel.label.price}">Price</label>
                     <label>
@@ -69,7 +63,7 @@
                 </div>
             </div>
             <div class="names-container">
-            <div class="field-container">
+            <div  id="vehicle" class="field-container">
                 <label th:text="#{travel.label.vehicle}">Vehicle</label>
                 <select th:field="*{vehicle}">
                     <option th:each="vehicle : ${vehicles}"
@@ -83,7 +77,7 @@
             <button type="submit" value="Create Travel">Create Travel</button>
         </form>
 <!--    </div>-->
-
+</div>
 </section>
 <!--FOOTER-->
 <footer th:replace="index.html :: footer"></footer>

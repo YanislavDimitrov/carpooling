@@ -52,7 +52,7 @@
 
                 </td>
                 <td th:if="${isPassenger} and ${travel.status == T(com.example.carpooling.models.enums.TravelStatus).COMPLETED}">
-                    <a  id="feedback-button"  onclick="hideButton()" class="btn delete" th:href="@{/travels/{travelId}/new/feedback/recipient/{recipientId}(travelId=${travel.id},recipientId=${driverId})}">
+                    <a id="feedback-button"   class="btn delete" th:href="@{/travels/{travelId}/new/feedback/recipient/{recipientId}(travelId=${travel.id},recipientId=${driverId})}">
                         <i class="fa-solid fa-comment"></i>
                     </a>
                 </td>
@@ -86,7 +86,6 @@
             </tbody>
         </table>
     </div>
-
     <button th:if="${travel.getDriverName().equals(session.currentUser)} or ${isAdmin}" class="btn" id="toggleButton">
         Show passengers<i id="show-hide-icon"
                           class="fa-solid fa-angle-down"></i></button>
@@ -108,8 +107,8 @@
                     class="btn"  th:href="@{/travels/{id}/remove/user/{userId}
                     (id=${travel.getId()},userId=${passenger.getId()})}">
                     <i class="fa-sharp fa-solid fa-trash"></i></a>
-                      <a id="feedbackButton"  onclick="hideButton()"  th:if="${travel.getDriverName().equals(session.currentUser)}
-                      and ${travel.status == T(com.example.carpooling.models.enums.TravelStatus).COMPLETED}"
+                      <a   id="feedbackButton"   th:if="${travel.getDriverName().equals(session.currentUser)}
+                      and ${travel.status == T(com.example.carpooling.models.enums.TravelStatus).COMPLETED} "
                          class="btn delete" th:href="@{/travels/{travelId}/new/feedback/recipient/{recipientId}
                          (travelId=${travel.id},recipientId=${passenger.id})}">
                         <i class="fa-solid fa-comment"></i>
@@ -145,40 +144,6 @@
     <div id="mapContainer"></div>
 </section>
 <footer th:replace="index.html :: footer"></footer>
-<script>
-    // Function to hide the button and store a flag in local storage
-    function hideButton() {
-        var button = document.getElementById('feedbackButton');
-        button.style.display = 'none';
-        localStorage.setItem('buttonHidden', 'true');
-    }
-
-    // Check if the button should be hidden on page load
-    window.onload = function() {
-        var buttonHidden = localStorage.getItem('buttonHidden');
-        if (buttonHidden === 'true') {
-            var button = document.getElementById('feedbackButton');
-            button.style.display = 'none';
-        }
-    }
-</script>
-<script>
-    // Function to hide the button and store a flag in local storage
-    function hideButton() {
-        var button = document.getElementById('feedback-button');
-        button.style.display = 'none';
-        localStorage.setItem('buttonHidden', 'true');
-    }
-
-    // Check if the button should be hidden on page load
-    window.onload = function() {
-        var buttonHidden = localStorage.getItem('buttonHidden');
-        if (buttonHidden === 'true') {
-            var button = document.getElementById('feedback-button');
-            button.style.display = 'none';
-        }
-    }
-</script>
 <script type="text/javascript">
     function loadMap() {
         var start = '[[${startDestination}]]';

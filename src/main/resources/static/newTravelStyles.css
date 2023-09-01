@@ -23,10 +23,35 @@ body {
     background-image: url(images/CoverPicture.svg);
     background-size:cover;
 }
+.names-container {
+    display: flex;
+    justify-content: space-between;
+}
+.names-container .field-container {
+    width: 47%;
+}
+#vehicle {
+    width: 100%
+}
+#content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 85vh;
+    margin: auto;
+    width: 100%;
+
+}
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
 .form{
     position: marker;
-    width: 60rem;
-    height: 80vh;
+    width: 70rem;
+    height: 70vh;
     background-image: url(images/CoverPicture.svg);
     background-size:cover;
     padding: 50px 220px 100px;
@@ -34,10 +59,12 @@ body {
     border: 0px solid whitesmoke;
     border-radius: 150px;
     box-shadow: inset 0 0 1px white;
+
 }
 
+
 .main {
-    padding: 0px 30rem;
+    padding: 0px 18rem;
     min-height: 84vh;
 }
 
@@ -163,6 +190,8 @@ input:focus {
 }
 
 .field-container {
+    display: flex;
+    flex-direction: column;
     text-align: center;
     margin-bottom: 10px;
 }
@@ -190,7 +219,7 @@ input:focus {
 
 .form-title {
     color: white;
-    font-size: 35px;
+    font-size: 50px;
     text-align: center;
     margin-bottom: -3px;
 }

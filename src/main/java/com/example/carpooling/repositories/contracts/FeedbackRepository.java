@@ -50,12 +50,11 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
     @Query("UPDATE Feedback AS f SET f.isDeleted=true WHERE f.id = :id")
     void delete(@Param("id") Long id) throws EntityNotFoundException;
 
-    boolean existsByTravelAndRecipient(Travel travel, User recipient);
+    boolean existsByTravelAndCreator(Travel travel, User creator);
 
-    boolean existsByTravelAndRecipientAndCreator(Travel travel , User recipient , User creator);
-    Feedback findByTravelIsAndCreatorAndRecipient(Travel travel ,User creator , User recipient);
+    boolean existsByTravelAndRecipientAndCreator(Travel travel, User recipient, User creator);
 
-
+    Feedback findByTravelIsAndCreatorAndRecipient(Travel travel, User creator, User recipient);
 
 
 }

@@ -152,6 +152,17 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     @Override
+    public boolean existsByTravelAndCreator(Travel travel, User creator) {
+        if(!travelRepository.existsById(travel.getId())) {
+            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND,travel.getId()));
+        }
+        if(!userRepository.existsById(creator.getId())) {
+            throw new EntityNotFoundException(String.format(USER_NOT_FOUND,creator.getId()));
+        }
+        return feedbackRepository.existsByTravelAndCreator(travel,creator);
+    }
+
+    @Override
     public Feedback update(Feedback originalFeedback, Feedback feedbackUpdate, User editor) {
         if (!feedbackRepository.existsById(originalFeedback.getId())) {
             throw new EntityNotFoundException(String.format(FEEDBACK_NOT_FOUND, originalFeedback.getId()));
