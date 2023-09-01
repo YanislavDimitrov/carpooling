@@ -211,22 +211,11 @@ input:focus {
     border-radius: 30px;
 }
 
-/*.error {*/
-/*    color: red;*/
-/*    font-size: 12px;*/
-/*    display: none;*/
-/*}*/
 .error {
+    color: red;
+    font-size: 12px;
     display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background-color: #ff9999;
-    padding: 5px;
-    border: 1px solid #ff3333;
-    z-index: 1;
 }
-
 .form-title {
     color: white;
     font-size: 50px;

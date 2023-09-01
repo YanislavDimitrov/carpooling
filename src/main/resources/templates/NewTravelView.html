@@ -104,24 +104,6 @@
         this.value = inputValue === '' ? '' : inputValue + '$';
     });
 </script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var inputFields = document.querySelectorAll("input[data-error-id]");
-
-        inputFields.forEach(function (input) {
-            var errorDivId = input.getAttribute("data-error-id");
-            var errorDiv = document.getElementById(errorDivId);
-
-            input.addEventListener("focus", function () {
-                errorDiv.style.display = "block";
-            });
-
-            input.addEventListener("blur", function () {
-                errorDiv.style.display = "none";
-            });
-        });
-    });
-</script>
 <script type="text/javascript" src="../static/js/showDropdown.js" th:src="@{/js/showDropdown.js}"></script>
 
 </body>
