@@ -211,10 +211,20 @@ input:focus {
     border-radius: 30px;
 }
 
+/*.error {*/
+/*    color: red;*/
+/*    font-size: 12px;*/
+/*    display: none;*/
+/*}*/
 .error {
-    color: red;
-    font-size: 12px;
     display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #ff9999;
+    padding: 5px;
+    border: 1px solid #ff3333;
+    z-index: 1;
 }
 
 .form-title {
@@ -236,4 +246,13 @@ button[type="submit"] {
 }
 .footer {
    background-color: white;
+}
+#price::before {
+    content: "$";
+    position: absolute;
+    left: 5px; /* Adjust the left position to align the dollar sign as needed */
+    top: 50%; /* Adjust the top position to center the dollar sign vertically */
+    transform: translateY(-50%);
+    z-index: 1;
+    color: #333; /* Optional: Set the color of the dollar sign */
 }

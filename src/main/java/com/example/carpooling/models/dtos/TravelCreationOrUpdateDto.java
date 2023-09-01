@@ -25,6 +25,7 @@ public class TravelCreationOrUpdateDto {
     @NotNull(message = "Vehicle field cannot be null")
     private Vehicle vehicle;
     private String comment;
-    @Positive(message = "Price cannot be negative!")
+    @NotBlank
+    @Pattern(regexp = "^(\\d{1,10}|\\d{1,10}\\$$)", message = "Price must be a non-negative number with up to 10 digits and an optional dollar sign")
     private String price;
 }

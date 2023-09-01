@@ -22,7 +22,8 @@
                 <label>
                     <input type="text" th:field="*{departurePoint}" placeholder="Departure Point">
                 </label>
-                <label class="error" th:errors="*{departurePoint}">Departure point field cannot be empty!</label>
+                <div id="departurePointError" class="error" th:errors="*{departurePoint}">Departure point field cannot be empty!</div>
+<!--                <label class="error" th:errors="*{departurePoint}">Departure point field cannot be empty!</label>-->
             </div>
             <div class="field-container">
                 <label th:text="#{travel.label.arrival-point}">Arrival Point</label>
@@ -43,7 +44,7 @@
             <div class="field-container">
                 <label th:text="#{travel.label.departure-time}">Departure Time</label>
                 <label>
-                    <input type="datetime-local" th:field="*{departureTime}" placeholder="Departure Time">
+                    <input type="datetime-local" th:field="*{departureTime}" placeholder="Departure Time" data-error-id="departureTimeError">
                 </label>
                 <label class="errors" th:errors="*{departureTime}">Departure time field cannot be empty!</label>
             </div>
@@ -58,8 +59,9 @@
                 <div class="field-container">
                     <label th:text="#{travel.label.price}">Price</label>
                     <label>
-                        <input type="number" th:field="*{price}" placeholder="Price">
+                        <input id="price" type="text" th:field="*{price}" placeholder="Price $">
                     </label>
+                    <label class="errors" th:errors="*{price}">Price cannot be negative!</label>
                 </div>
             </div>
             <div class="names-container">
@@ -81,7 +83,47 @@
 </section>
 <!--FOOTER-->
 <footer th:replace="index.html :: footer"></footer>
+<script>
+    // Get the input element
+    var priceInput = document.getElementById("price");
+
+    // Add an event listener to the input element
+    priceInput.addEventListener("input", function () {
+        // Get the input value
+        var inputValue = this.value;
+
+        // Remove any non-numeric characters (except the dollar sign)
+        inputValue = inputValue.replace(/[^0-9]/g, '');
+
+        // Limit the input to a maximum of 10 digits
+        if (inputValue.length > 10) {
+            inputValue = inputValue.substr(0, 10);
+        }
+
+        // Add a dollar sign after the formatted input value
+        this.value = inputValue === '' ? '' : inputValue + '$';
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var inputFields = document.querySelectorAll("input[data-error-id]");
+
+        inputFields.forEach(function (input) {
+            var errorDivId = input.getAttribute("data-error-id");
+            var errorDiv = document.getElementById(errorDivId);
+
+            input.addEventListener("focus", function () {
+                errorDiv.style.display = "block";
+            });
+
+            input.addEventListener("blur", function () {
+                errorDiv.style.display = "none";
+            });
+        });
+    });
+</script>
 <script type="text/javascript" src="../static/js/showDropdown.js" th:src="@{/js/showDropdown.js}"></script>
 
 </body>
 </html>
+

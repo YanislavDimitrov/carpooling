@@ -253,8 +253,8 @@ public class TravelMvcController {
             model.addAttribute("vehicles", driver.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
             return "NewTravelView";
         } catch (InvalidLocationException | InvalidTravelException e) {
-            errors.rejectValue("departurePoint", "location_error", e.getMessage());
-            errors.rejectValue("arrivalPoint", "location_error", e.getMessage());
+            errors.rejectValue("departurePoint", "location_error_departure", e.getMessage());
+            errors.rejectValue("arrivalPoint", "location_error_arrival", e.getMessage());
             model.addAttribute("vehicles", driver.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
             return "NewTravelView";
         }

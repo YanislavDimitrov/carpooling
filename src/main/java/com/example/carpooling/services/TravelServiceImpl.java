@@ -39,13 +39,12 @@ public class TravelServiceImpl implements TravelService {
     public static final String COMPLETED_OR_DELETED_TRAVEL_ERROR = "You cannot cancel travel which is either completed or deleted!";
     public static final String ALREADY_STARTED_TRAVEL = "You cannot cancel your travel because it has already started!";
     public static final String TRAVEL_CREATION_FAILED = "You cannot create a travel during the period of other existing one!";
-    public static final String EXISTING_TRAVEL = "If you want to create a travel within this time frame you should  cancel your planned travel from %s to %s  which is planned on %s,first";
+    public static final String EXISTING_TRAVEL = "You have a planned travel for this time frame!";
     public static final String TRAVEL_AT_THIS_TIME = "You already have planned travel for %s , if you want to proceed you should cancel it first!";
     public static final String TRAVEL_AS_PASSENGER = "You have approved request for being passenger on travel from %s to %s , so if you want to create a Travel you should cancel your request for participating in your passenger travel!";
     public static final String YOU_CAN_UPDATE_ONLY_PLANNED_TRAVELS = "You can update only planned travels!";
     public static final String TRAVEL_IN_THIS_TIME_FRAME = "You have a planned travel which is scheduled for %s from %s to %s , if you want to plan this travel you should either reconsider the departure time or cancel the travel that you have planned , in order not to disappoint potential passengers!";
     public static final String INVALID_STATUS = "You cannot complete travel unless it is active , if your travel is planned, consider cancelling it instead!";
-    public static final String ARRIVAL_TIME_INSIDE_INVALID_TIME_FRAME = "You are planning to create a travel in the time frame when you have already planned or active travel from %s to %s , please reconsider your actions!";
     private final TravelRepository travelRepository;
     private final TravelRequestRepository travelRequestRepository;
     private final PassengerRepository passengerRepository;
@@ -372,36 +371,33 @@ public class TravelServiceImpl implements TravelService {
                     && travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival())
                     && travelToCheck.getStatus() == TravelStatus.ACTIVE
             ) {
-                throw new InvalidOperationException(TRAVEL_CREATION_FAILED);
+                throw new InvalidOperationException(EXISTING_TRAVEL);
             }
             if (travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival()) &&
                     travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime()) &&
                     travelToCheck.getStatus() == TravelStatus.PLANNED) {
-                throw new InvalidOperationException(String.format(TRAVEL_IN_THIS_TIME_FRAME,
-                        travelToCheck.getDepartureTime(),
-                        travelToCheck.getDeparturePoint(),
-                        travelToCheck.getArrivalPoint()));
+                throw new InvalidOperationException(EXISTING_TRAVEL);
+
             }
             if (travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime())
-                    && travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival()) && travelToCheck.getStatus() == TravelStatus.PLANNED) {
-                throw new InvalidOperationException(String.format(EXISTING_TRAVEL, travelToCheck.getDeparturePoint(), travelToCheck.getArrivalPoint(), travelToCheck.getDepartureTime()));
+                    && travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival())
+                    && travelToCheck.getStatus() == TravelStatus.PLANNED) {
+                throw new InvalidOperationException(EXISTING_TRAVEL);
+
             }
             if (travel.getDepartureTime().isEqual(travelToCheck.getDepartureTime())) {
-                throw new InvalidOperationException(String.format(TRAVEL_AT_THIS_TIME, travelToCheck.getDepartureTime()));
+                throw new InvalidOperationException(EXISTING_TRAVEL);
+
             }
             if (travel.getEstimatedTimeOfArrival().isAfter(travelToCheck.getDepartureTime()) &&
                     travel.getEstimatedTimeOfArrival().isBefore(travelToCheck.getEstimatedTimeOfArrival())
                     && travelToCheck.getStatus() == TravelStatus.PLANNED) {
-                throw new InvalidOperationException(String.format(ARRIVAL_TIME_INSIDE_INVALID_TIME_FRAME,
-                        travelToCheck.getDeparturePoint(),
-                        travelToCheck.getArrivalPoint()));
+                throw new InvalidOperationException(EXISTING_TRAVEL);
             }
             if (travel.getEstimatedTimeOfArrival().isAfter(travelToCheck.getDepartureTime()) &&
                     travel.getEstimatedTimeOfArrival().isBefore(travelToCheck.getEstimatedTimeOfArrival())
                     && travelToCheck.getStatus() == TravelStatus.ACTIVE) {
-                throw new InvalidOperationException(String.format(ARRIVAL_TIME_INSIDE_INVALID_TIME_FRAME,
-                        travelToCheck.getDeparturePoint(),
-                        travelToCheck.getArrivalPoint()));
+                throw new InvalidOperationException(EXISTING_TRAVEL);
             }
         }
         List<TravelRequest> travelRequestOfTheDriverAsPassenger = driver.getTravelsAsPassenger()
@@ -415,9 +411,7 @@ public class TravelServiceImpl implements TravelService {
         for (Travel travelToCheckAsPassenger : travelsOfUserAsPassenger) {
             if (travel.getDepartureTime().isAfter(travelToCheckAsPassenger.getDepartureTime())
                     && travel.getDepartureTime().isBefore(travelToCheckAsPassenger.getEstimatedTimeOfArrival()) && travelToCheckAsPassenger.getStatus() == TravelStatus.ACTIVE) {
-                throw new InvalidOperationException(String.format(TRAVEL_AS_PASSENGER,
-                        travelToCheckAsPassenger.getDeparturePoint(),
-                        travelToCheckAsPassenger.getArrivalPoint()));
+                throw new InvalidOperationException(EXISTING_TRAVEL);
             }
         }
     }
