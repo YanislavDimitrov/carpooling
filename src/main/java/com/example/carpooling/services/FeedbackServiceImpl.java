@@ -60,40 +60,60 @@ public class FeedbackServiceImpl implements FeedbackService {
                         () -> new EntityNotFoundException(String.format(FEEDBACK_NOT_FOUND, id))
                 );
     }
+
     @Override
     public List<Feedback> getByRecipientIs(User user) {
-            if(!userRepository.existsById(user.getId())) {
-                throw new EntityNotFoundException(String.format(USER_NOT_FOUND,user.getId()));
-            }
-           return feedbackRepository.findNonDeletedFeedbacksForRecipient(user);
+        if (!userRepository.existsById(user.getId())) {
+            throw new EntityNotFoundException(String.format(USER_NOT_FOUND, user.getId()));
+        }
+        return feedbackRepository.findNonDeletedFeedbacksForRecipient(user);
     }
+
     @Override
     public List<Feedback> findByCriteria(Short rating, String comment, Sort sort) {
         return feedbackRepository.findByCriteria(rating, comment, sort);
     }
 
     @Override
-    public Page<Feedback> findAllPaginated(int page, int size, Sort sort, Short rating, User creator, User recipient,Travel travel) {
-        PageRequest pageRequest = PageRequest.of(page,size);
-        return feedbackRepository.findAllPaginated(pageRequest,sort,rating,creator,recipient,travel);
+    public Page<Feedback> findAllPaginated(int page, int size, Sort sort, Short rating, User creator, User recipient, Travel travel) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return feedbackRepository.findAllPaginated(pageRequest, sort, rating, creator, recipient, travel);
     }
 
     @Override
     public List<Feedback> findByTravelId(Long id) {
-        if(!travelRepository.existsById(id)) {
-            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND,id));
+        if (!travelRepository.existsById(id)) {
+            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, id));
         }
         return feedbackRepository.findByTravelId(id);
+    }
+
+    @Override
+    public boolean existsByTravelAndRecipientAndCreator(Travel travel, User recipient, User creator) {
+        return feedbackRepository.existsByTravelAndRecipientAndCreator(travel, recipient, creator);
+    }
+
+    @Override
+    public Feedback findByTravelIsAndCreatorAndRecipient(Travel travel, User creator, User recipient) {
+        if (!travelRepository.existsById(travel.getId())) {
+            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, travel.getId()));
+        }
+        if (!userRepository.existsById(creator.getId()) || !userRepository.existsById(recipient.getId())) {
+            throw new EntityNotFoundException(String.format(USER_NOT_FOUND, creator.getId()));
+        }
+        return feedbackRepository.findByTravelIsAndCreatorAndRecipient(travel, creator, recipient);
     }
 
     @Override
     public List<Feedback> findAll(Sort sort) {
         return feedbackRepository.findAll();
     }
+
     @Override
     public Long count() {
         return feedbackRepository.count();
     }
+
     @Override
     public Feedback create(Travel travel, User creator, User recipient, Feedback feedback) {
         if (!travelRepository.existsById(travel.getId())) {
@@ -105,29 +125,30 @@ public class FeedbackServiceImpl implements FeedbackService {
         if (travel.getStatus() != TravelStatus.COMPLETED) {
             throw new TravelNotCompletedException(String.format(TRAVEL_NOT_COMPLETED, travel.getId()));
         }
-        if(creator.equals(recipient)) {
+        if (creator.equals(recipient)) {
             throw new InvalidFeedbackException(CANNOT_GIVE_YOURSELF_A_FEEDBACK);
         }
-        Optional<Feedback> feedbackOptional = feedbackRepository.findAll()
-                .stream()
-                .filter(feedback1 -> feedback1.getCreator().equals(creator)
-                        && feedback1.getRecipient().equals(recipient)
-                        && feedback1.getTravel().equals(travel))
-                .findFirst();
-
-        if(feedbackOptional.isPresent()) {
-            throw new InvalidOperationException(FEEDBACK_REPETITION);
-        } else {
-            if (haveTravelledTogether(travel.getId(), creator, recipient)) {
+        Feedback feedbackToCheck;
+        if (!existsByTravelAndRecipientAndCreator(travel, recipient, creator)
+                && haveTravelledTogether(travel.getId(), creator, recipient)) {
+            feedback.setCreator(creator);
+            feedback.setRecipient(recipient);
+            feedback.setTravel(travel);
+            feedbackRepository.save(feedback);
+            return feedback;
+        }
+        if (existsByTravelAndRecipientAndCreator(travel, recipient, creator)) {
+            feedbackToCheck = findByTravelIsAndCreatorAndRecipient(travel, creator, recipient);
+            if (feedbackToCheck.isDeleted() && haveTravelledTogether(travel.getId(), creator, recipient)) {
                 feedback.setCreator(creator);
                 feedback.setRecipient(recipient);
                 feedback.setTravel(travel);
                 feedbackRepository.save(feedback);
                 return feedback;
-            } else {
-                throw new InvalidFeedbackException(INVALID_FEEDBACK);
             }
+            throw new InvalidFeedbackException(INVALID_FEEDBACK);
         }
+        throw new InvalidOperationException(FEEDBACK_REPETITION);
     }
 
     @Override
@@ -156,35 +177,35 @@ public class FeedbackServiceImpl implements FeedbackService {
         }
         feedbackRepository.delete(id);
     }
-    private boolean haveTravelledTogether (Long travelId , User driver , User recipient) {
-      Travel travel  = travelService.getById(travelId);
-      if(travel.getDriver().equals(driver)) {
-          for(TravelRequest travelToCheck : recipient.getTravelsAsPassenger()) {
-              if(travelToCheck.getTravel().equals(travel) && travelToCheck.getStatus() == TravelRequestStatus.APPROVED) {
-                  return true;
-              }
-          }
-      } else if (travel.getDriver().equals(recipient)) {
-          for(TravelRequest travelRequest : driver.getTravelsAsPassenger()) {
-              if(travelRequest.getTravel().equals(travel) && travelRequest.getStatus() == TravelRequestStatus.APPROVED) {
-                  return true;
-              }
-          }
-      }
-      return false ;
+
+    private boolean haveTravelledTogether(Long travelId, User driver, User recipient) {
+        Travel travel = travelService.getById(travelId);
+        if (travel.getDriver().equals(driver)) {
+            for (TravelRequest travelToCheck : recipient.getTravelsAsPassenger()) {
+                if (travelToCheck.getTravel().equals(travel) && travelToCheck.getStatus() == TravelRequestStatus.APPROVED) {
+                    return true;
+                }
+            }
+        } else if (travel.getDriver().equals(recipient)) {
+            for (TravelRequest travelRequest : driver.getTravelsAsPassenger()) {
+                if (travelRequest.getTravel().equals(travel) && travelRequest.getStatus() == TravelRequestStatus.APPROVED) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 
-
     static void checkIfTravelAndUsersExist(Travel travel, User creator, User recipient, TravelRepository travelRepository, String travelNotFound, UserRepository userRepository, String userNotFound) {
-        if(!travelRepository.existsById(travel.getId())) {
-            throw new EntityNotFoundException(String.format(travelNotFound,travel.getId()));
+        if (!travelRepository.existsById(travel.getId())) {
+            throw new EntityNotFoundException(String.format(travelNotFound, travel.getId()));
         }
-        if(!userRepository.existsById(creator.getId())) {
-            throw new EntityNotFoundException(String.format(userNotFound,creator.getId()));
+        if (!userRepository.existsById(creator.getId())) {
+            throw new EntityNotFoundException(String.format(userNotFound, creator.getId()));
         }
-        if(!userRepository.existsById(recipient.getId())) {
-            throw new EntityNotFoundException(String.format(userNotFound,recipient.getId()));
+        if (!userRepository.existsById(recipient.getId())) {
+            throw new EntityNotFoundException(String.format(userNotFound, recipient.getId()));
         }
     }
 }

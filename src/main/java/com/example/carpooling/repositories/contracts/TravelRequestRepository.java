@@ -20,6 +20,8 @@ public interface TravelRequestRepository extends JpaRepository<TravelRequest, Lo
 
     List<TravelRequest> findByTravelIs(Travel travel);
 
+    List<TravelRequest> findByTravelIsAndStatus(Travel travel , TravelRequestStatus status);
+
 
     TravelRequest findByTravelIsAndPassengerIsAndStatus(Travel travel, User passenger, TravelRequestStatus status);
 

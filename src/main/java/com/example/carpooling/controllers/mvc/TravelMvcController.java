@@ -191,20 +191,20 @@ public class TravelMvcController {
     @GetMapping("/{id}")
     public String viewTravel(@PathVariable Long id, Model model, HttpSession session) {
         User loggedUser;
+        Travel travel;
         try {
             loggedUser = authenticationHelper.tryGetUser(session);
+            travel = travelService.getById(id);
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
+        }catch (EntityNotFoundException e) {
+            return "NotFoundView";
         }
-        TravelFrontEndView travelFrontEndView = travelMapper.fromTravelToFrontEnd(travelService.getById(id));
+        TravelFrontEndView travelFrontEndView = travelMapper.fromTravelToFrontEnd(travel);
         if (travelFrontEndView.isDeleted()) {
             return "DeletedSourceView";
         }
-        List<TravelRequest> travelRequests = travelService.getById(id)
-                .getTravelRequests()
-                .stream()
-                .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.PENDING)
-                .toList();
+        List<TravelRequest> travelRequests = travelRequestService.findByTravelIsAndStatus(travel,TravelRequestStatus.PENDING);
         boolean isRequestedByUser = travelService.isRequestedByUser(id, loggedUser);
         boolean isPassenger = travelService.isPassengerInThisTravel(loggedUser, travelService.getById(id));
         model.addAttribute("startDestination", travelFrontEndView.getDeparturePoint());
@@ -522,6 +522,7 @@ public class TravelMvcController {
                                  @PathVariable Long travelId,
                                  @PathVariable Long recipientId) {
         if (errors.hasErrors()) {
+            errors.rejectValue("comment","rating_error");
             return "NewFeedbackView";
         }
 
@@ -534,7 +535,7 @@ public class TravelMvcController {
             travel = travelService.getById(travelId);
             recipient = userService.getById(recipientId);
             creator = authenticationHelper.tryGetUser(session);
-            createdFeedback = feedbackMapper.fromCreationDto(feedback);
+            createdFeedback = feedbackMapper.fromCreationDto(feedback,creator,recipient,travel);
             feedbackService.create(travel, creator, recipient, createdFeedback);
             return "redirect:/travels/" + travelId;
         } catch (AuthenticationFailureException e) {
@@ -542,8 +543,8 @@ public class TravelMvcController {
         } catch (EntityNotFoundException e) {
             return "NotFoundView";
         } catch (InvalidFeedbackException | TravelNotCompletedException | InvalidOperationException e) {
-            errors.rejectValue("rating", "rating_error", e.getMessage());
-            return "NewFeedbackView";
+            errors.rejectValue("comment", "rating_error", e.getMessage());
+            return "FeedbackAlreadyGivenView";
         }
     }
 

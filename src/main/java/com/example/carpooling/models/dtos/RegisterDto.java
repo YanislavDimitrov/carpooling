@@ -1,7 +1,9 @@
 package com.example.carpooling.models.dtos;
 
-import jakarta.validation.constraints.*;
-import org.modelmapper.internal.bytebuddy.implementation.bind.annotation.Empty;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 public class RegisterDto {
     @Size(min = 2, max = 20, message = "Firstname must be between 2 and 20 symbols.")

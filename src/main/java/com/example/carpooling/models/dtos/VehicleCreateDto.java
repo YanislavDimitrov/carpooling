@@ -17,6 +17,6 @@ public class VehicleCreateDto {
     private String color;
     @NotEmpty(message = "Vehicle type must not be empty")
     private String type;
-    @Pattern(regexp = "^(19\\d\\d|20[0-9]{2})$",message = "Production year must be between 1900 and 2099")
+    @Pattern(regexp = "^(19\\d\\d|20[0-9]{2})$", message = "Production year must be between 1900 and 2099")
     private String yearOfProduction;
 }

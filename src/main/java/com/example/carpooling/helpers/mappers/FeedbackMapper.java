@@ -45,17 +45,28 @@ public class FeedbackMapper {
         return feedback;
     }
 
-    public Feedback fromCreationDto(FeedbackCreateDto feedbackCreateDto) {
+    public Feedback fromCreationDto(FeedbackCreateDto feedbackCreateDto, User creator, User recipient, Travel travel) {
         Feedback feedback = new Feedback();
         feedback.setComment(feedbackCreateDto.getComment());
         feedback.setRating(feedbackCreateDto.getRating());
+        feedback.setCreator(creator);
+        feedback.setRecipient(recipient);
+        feedback.setTravel(travel);
 
         return feedback;
     }
+
     public FeedbackCreateDto fromFeedback(Feedback feedback) {
         FeedbackCreateDto feedbackCreateDto = new FeedbackCreateDto();
         feedbackCreateDto.setComment(feedback.getComment());
         feedbackCreateDto.setRating(feedback.getRating());
         return feedbackCreateDto;
+    }
+
+    public Feedback fromUpdateToFeedback(FeedbackCreateDto feedbackCreateDto, Long id) {
+        Feedback feedback = feedbackService.getById(id);
+        feedback.setComment(feedbackCreateDto.getComment());
+        feedback.setRating(feedbackCreateDto.getRating());
+        return feedback;
     }
 }

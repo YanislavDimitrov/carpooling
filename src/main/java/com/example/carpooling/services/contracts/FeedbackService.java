@@ -29,6 +29,8 @@ public interface FeedbackService {
     List<Feedback> findByTravelId(Long id);
 
     List<Feedback> findAll(Sort sort);
+    boolean existsByTravelAndRecipientAndCreator(Travel travel , User recipient , User creator);
+    Feedback findByTravelIsAndCreatorAndRecipient(Travel travel ,User creator , User recipient);
 
     Feedback create(Travel travel, User creator, User recipient, Feedback feedback);
 

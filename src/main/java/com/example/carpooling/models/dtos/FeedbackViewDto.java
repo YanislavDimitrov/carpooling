@@ -1,8 +1,5 @@
 package com.example.carpooling.models.dtos;
 
-import com.example.carpooling.models.Travel;
-import com.example.carpooling.models.User;
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

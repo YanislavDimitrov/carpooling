@@ -1,9 +1,7 @@
 package com.example.carpooling.models.dtos;
 
-import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.TravelStatus;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

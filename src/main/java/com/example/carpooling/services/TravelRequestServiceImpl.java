@@ -86,6 +86,14 @@ public class TravelRequestServiceImpl implements TravelRequestService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format(TRAVEL_REQUEST_NOT_FOUND, id)));
     }
 
+    @Override
+    public List<TravelRequest> findByTravelIsAndStatus(Travel travel, TravelRequestStatus status) {
+        if(!travelRepository.existsById(travel.getId())) {
+            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND,travel.getId()));
+        }
+        return travelRequestRepository.findByTravelIsAndStatus(travel,TravelRequestStatus.PENDING);
+    }
+
     /**
      * @param travel this parameter is used as a reference where we are doing the request for
      * @param user   this parameter is used to identify who is making the request for the travel

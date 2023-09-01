@@ -1,6 +1,5 @@
 package com.example.carpooling.models.dtos;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

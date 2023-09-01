@@ -1,14 +1,9 @@
 package com.example.carpooling.models;
 
 import com.example.carpooling.models.enums.TravelStatus;
-import com.example.carpooling.services.contracts.TravelService;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

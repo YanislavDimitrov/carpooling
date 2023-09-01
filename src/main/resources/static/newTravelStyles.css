@@ -38,7 +38,7 @@ body {
 
 .main {
     padding: 0px 30rem;
-    height: 85vh;
+    min-height: 84vh;
 }
 
 .main .header {
@@ -112,7 +112,6 @@ body {
 
 html {
     font-size: 14px;
-    background-color: blue;
 }
 #content .title{
     font-size: 2.5rem;
@@ -208,5 +207,4 @@ button[type="submit"] {
 }
 .footer {
    background-color: white;
-    height: 7vh !important;
 }

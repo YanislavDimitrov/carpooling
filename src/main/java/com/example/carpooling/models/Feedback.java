@@ -2,7 +2,6 @@ package com.example.carpooling.models;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Table(name = "feedbacks")

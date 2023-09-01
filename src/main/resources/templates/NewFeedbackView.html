@@ -2,27 +2,30 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Create Travel</title>
+  <title>Create Feedback</title>
   <link rel="website icon" th:type="png" th:href="@{/images/carpool_simplelogo.png}">
   <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
   <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
   <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">
   <link rel="stylesheet" href="../static/newTravelStyles.css" th:href="@{/newTravelStyles.css}">
   <link rel="stylesheet" href="../static/feedbackStyles.css" th:href="@{/feedbackStyles.css}">
+<!--  <link rel="stylesheet" href="../static/createVehicle.css" th:href="@{/createVehicle.css}">-->
 </head>
 <body>
 <!--HEADER-->
 <header th:replace="index.html :: header"></header>
 <section class="main">
 
-  <h1 class="form-title">Create New Feedback</h1>
+  <h1 class="form-title">Leave your feedback</h1>
+  <h2 class="form-title">This will help us improve</h2>
   <form id="search-form" class="form" th:action="@{/travels/{travelId}/new/feedback/recipient/{recipientId}(travelId=${travelId},recipientId=${recipientId})}" th:object="${feedback}" method="post">
     <div class="names-container">
       <div class="field-container">
         <label th:text="#{feedback.label.comment}">Comment</label>
         <label>
-         <textarea rows="5" cols="15" th:field="*{comment}" placeholder="Comment (optional)">Comment</textarea>
+         <textarea rows="15" cols="30" th:field="*{comment}" placeholder="Comment (optional)">Comment</textarea>
         </label>
+        <label class="error" th:errors="*{comment}">Comment error placeholder</label>
       </div>
     </div>
     <div class="rating">

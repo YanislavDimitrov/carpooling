@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class TravelRequestViewDto {
-    private String passengerName ;
+    private String passengerName;
     private String departurePoint;
     private String arrivalPoint;
     private String departureTime;
