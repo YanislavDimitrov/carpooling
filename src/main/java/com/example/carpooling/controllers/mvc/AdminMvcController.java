@@ -76,7 +76,7 @@ public class AdminMvcController {
 
     @GetMapping("/users")
     public String getUsers(@RequestParam(defaultValue = "0") int page,
-                           @RequestParam(defaultValue = "5") int size,
+                           @RequestParam(defaultValue = "1") int size,
                            @ModelAttribute("filter") UserFilterDto filter,
                            Model model,
                            HttpSession session,
