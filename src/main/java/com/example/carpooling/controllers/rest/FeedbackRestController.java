@@ -105,7 +105,7 @@ public class FeedbackRestController {
             Travel travel = travelService.getById(travelId);
             User creator = authenticationHelper.tryGetUser(headers);
             User recipient = userService.getById(userId);
-            Feedback feedback = feedbackMapper.fromCreationDto(feedbackCreateDto);
+            Feedback feedback = feedbackMapper.fromCreationDto(feedbackCreateDto,creator,recipient,travel);
             return feedbackMapper.toDtoFromFeedback(feedbackService.create(travel, creator, recipient, feedback));
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
@@ -122,7 +122,7 @@ public class FeedbackRestController {
         try {
             User editor = authenticationHelper.tryGetUser(headers);
             Feedback originalFeedback = feedbackService.getById(id);
-            Feedback feedbackUpdate = feedbackMapper.fromCreationDto(feedbackCreateDto);
+            Feedback feedbackUpdate = feedbackMapper.fromUpdateToFeedback(feedbackCreateDto,id  );
            return feedbackMapper.toDtoFromFeedback(feedbackService.update(originalFeedback,feedbackUpdate,editor));
         } catch (AuthenticationFailureException | AuthorizationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());

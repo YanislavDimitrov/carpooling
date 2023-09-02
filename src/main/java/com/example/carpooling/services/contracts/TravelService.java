@@ -5,7 +5,6 @@ import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.TravelStatus;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
@@ -70,25 +69,27 @@ public interface TravelService {
                                   String departurePoint,
                                   String arrivalPoint,
                                   String price,
-                                  Sort sort) ;
+                                  Sort sort);
 
-        void create (Travel travel, User driver);
+    void create(Travel travel, User driver);
 
-        Travel update (Travel travelToUpdate, User editor);
+    Travel update(Travel travelToUpdate, User editor);
 
-        void delete (Long id, User editor);
+    void delete(Long id, User editor);
 
-        void completeTravel (Long id, User editor);
+    void completeTravel(Long id, User editor);
 
-        void cancelTravel (Long id, User editor);
+    void cancelTravel(Long id, User editor);
 
-        void updateTravelStatus ();
-        boolean isRequestedByUser (Long travelId, User user);
-        boolean isPassengerInThisTravel (User user, Travel travel);
+    void updateTravelStatus();
 
-        Long count ();
+    boolean isRequestedByUser(Long travelId, User user);
 
-        Long countCompleted ();
+    boolean isPassengerInThisTravel(User user, Travel travel);
+
+    Long count();
+
+    Long countCompleted();
 
 
-    }
+}

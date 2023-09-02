@@ -6,7 +6,10 @@ import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.TravelRequestStatus;
 import com.example.carpooling.models.enums.TravelStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,6 +20,8 @@ public interface TravelRequestRepository extends JpaRepository<TravelRequest, Lo
 
     List<TravelRequest> findByTravelIs(Travel travel);
 
+    List<TravelRequest> findByTravelIsAndStatus(Travel travel , TravelRequestStatus status);
+
 
     TravelRequest findByTravelIsAndPassengerIsAndStatus(Travel travel, User passenger, TravelRequestStatus status);
 
@@ -25,6 +30,10 @@ public interface TravelRequestRepository extends JpaRepository<TravelRequest, Lo
     boolean existsByTravelAndPassenger(Travel travel, User user);
 
     void deleteByTravelAndAndPassenger(Travel travel, User user);
+    @Query("update TravelRequest  as t set t.status = 'CANCELLED' where t.travel=:travel")
+    @Modifying
+    @Transactional
+    void updateTravelRequestAsSetStatusCancelled(Travel travel);
 
 
 }

@@ -6,10 +6,7 @@ import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.helpers.ExtractionHelper;
 import com.example.carpooling.helpers.mappers.FeedbackMapper;
 import com.example.carpooling.helpers.mappers.TravelMapper;
-import com.example.carpooling.models.Feedback;
-import com.example.carpooling.models.Travel;
-import com.example.carpooling.models.TravelRequest;
-import com.example.carpooling.models.User;
+import com.example.carpooling.models.*;
 import com.example.carpooling.models.dtos.FeedbackCreateDto;
 import com.example.carpooling.models.dtos.TravelCreationOrUpdateDto;
 import com.example.carpooling.models.dtos.TravelFilterDto;
@@ -191,22 +188,23 @@ public class TravelMvcController {
     @GetMapping("/{id}")
     public String viewTravel(@PathVariable Long id, Model model, HttpSession session) {
         User loggedUser;
+        Travel travel;
         try {
             loggedUser = authenticationHelper.tryGetUser(session);
+            travel = travelService.getById(id);
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
+        } catch (EntityNotFoundException e) {
+            return "NotFoundView";
         }
-        TravelFrontEndView travelFrontEndView = travelMapper.fromTravelToFrontEnd(travelService.getById(id));
+        TravelFrontEndView travelFrontEndView = travelMapper.fromTravelToFrontEnd(travel);
         if (travelFrontEndView.isDeleted()) {
             return "DeletedSourceView";
         }
-        List<TravelRequest> travelRequests = travelService.getById(id)
-                .getTravelRequests()
-                .stream()
-                .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.PENDING)
-                .toList();
+        List<TravelRequest> travelRequests = travelRequestService.findByTravelIsAndStatus(travel, TravelRequestStatus.PENDING);
         boolean isRequestedByUser = travelService.isRequestedByUser(id, loggedUser);
         boolean isPassenger = travelService.isPassengerInThisTravel(loggedUser, travelService.getById(id));
+        List<Feedback> feedbacksForTravel = feedbackService.findByTravelId(id);
         model.addAttribute("startDestination", travelFrontEndView.getDeparturePoint());
         model.addAttribute("endDestination", travelFrontEndView.getArrivalPoint());
         model.addAttribute("travel", travelFrontEndView);
@@ -215,6 +213,8 @@ public class TravelMvcController {
         model.addAttribute("isRequestedByUser", isRequestedByUser);
         model.addAttribute("isPassenger", isPassenger);
         model.addAttribute("driverId", travelService.getById(id).getDriver().getId());
+        model.addAttribute("feedbacks",feedbacksForTravel);
+
         return "TravelView";
     }
 
@@ -227,7 +227,7 @@ public class TravelMvcController {
             return "redirect:/auth/login";
         }
         model.addAttribute("travel", new TravelCreationOrUpdateDto());
-        model.addAttribute("vehicles", loggedUser.getVehicles());
+        model.addAttribute("vehicles", loggedUser.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
         return "NewTravelView";
     }
 
@@ -242,7 +242,7 @@ public class TravelMvcController {
             return "redirect:/auth/login";
         }
         if (errors.hasErrors()) {
-            model.addAttribute("vehicles", driver.getVehicles());
+            model.addAttribute("vehicles", driver.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
             return "NewTravelView";
         }
         Travel newTravel = travelMapper.toTravelFromTravelCreationDto(travel);
@@ -250,12 +250,12 @@ public class TravelMvcController {
             travelService.create(newTravel, driver);
         } catch (InvalidOperationException e) {
             errors.rejectValue("departureTime", "creation_error", e.getMessage());
-            model.addAttribute("vehicles", driver.getVehicles());
+            model.addAttribute("vehicles", driver.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
             return "NewTravelView";
         } catch (InvalidLocationException | InvalidTravelException e) {
-            errors.rejectValue("departurePoint", "location_error", e.getMessage());
-            errors.rejectValue("arrivalPoint", "location_error", e.getMessage());
-            model.addAttribute("vehicles", driver.getVehicles());
+            errors.rejectValue("departurePoint", "location_error_departure", e.getMessage());
+            errors.rejectValue("arrivalPoint", "location_error_arrival", e.getMessage());
+            model.addAttribute("vehicles", driver.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
             return "NewTravelView";
         }
         return "redirect:/travels/" + newTravel.getId();
@@ -279,7 +279,7 @@ public class TravelMvcController {
         TravelCreationOrUpdateDto travelCreationOrUpdateDto = travelMapper.fromTravel(id);
         model.addAttribute("updateTravel", travelCreationOrUpdateDto);
         model.addAttribute("travelId", id);
-        model.addAttribute("vehicles", loggedUser.getVehicles());
+        model.addAttribute("vehicles", loggedUser.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
 
         return "UpdateTravelView";
     }
@@ -307,7 +307,7 @@ public class TravelMvcController {
         Travel travelUpdate = travelMapper.toTravelFromTravelUpdateSaveDto(travel, travelUpdateDto);
 
         if (errors.hasErrors()) {
-            model.addAttribute("vehicles", loggedUser.getVehicles());
+            model.addAttribute("vehicles", loggedUser.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
             return "UpdateTravelView";
         }
 
@@ -320,11 +320,11 @@ public class TravelMvcController {
         } catch (InvalidLocationException | InvalidTravelException e) {
             errors.rejectValue("departurePoint", "location_error", e.getMessage());
             errors.rejectValue("arrivalPoint", "location_error", e.getMessage());
-            model.addAttribute("vehicles", loggedUser.getVehicles());
+            model.addAttribute("vehicles", loggedUser.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
             return "UpdateTravelView";
         } catch (InvalidOperationException e) {
             errors.rejectValue("departureTime", "creation_error", e.getMessage());
-            model.addAttribute("vehicles", loggedUser.getVehicles());
+            model.addAttribute("vehicles", loggedUser.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
             return "UpdateTravelView";
         }
         return "redirect:/travels/" + id;
@@ -501,6 +501,10 @@ public class TravelMvcController {
             creator = authenticationHelper.tryGetUser(session);
             travel = travelService.getById(travelId);
             recipient = userService.getById(recipientId);
+
+            if(feedbackService.existsByTravelAndRecipientAndCreator(travel,recipient,creator)) {
+
+            }
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         } catch (EntityNotFoundException e) {
@@ -522,6 +526,7 @@ public class TravelMvcController {
                                  @PathVariable Long travelId,
                                  @PathVariable Long recipientId) {
         if (errors.hasErrors()) {
+            errors.rejectValue("comment", "rating_error");
             return "NewFeedbackView";
         }
 
@@ -534,7 +539,7 @@ public class TravelMvcController {
             travel = travelService.getById(travelId);
             recipient = userService.getById(recipientId);
             creator = authenticationHelper.tryGetUser(session);
-            createdFeedback = feedbackMapper.fromCreationDto(feedback);
+            createdFeedback = feedbackMapper.fromCreationDto(feedback, creator, recipient, travel);
             feedbackService.create(travel, creator, recipient, createdFeedback);
             return "redirect:/travels/" + travelId;
         } catch (AuthenticationFailureException e) {
@@ -542,8 +547,8 @@ public class TravelMvcController {
         } catch (EntityNotFoundException e) {
             return "NotFoundView";
         } catch (InvalidFeedbackException | TravelNotCompletedException | InvalidOperationException e) {
-            errors.rejectValue("rating", "rating_error", e.getMessage());
-            return "NewFeedbackView";
+            errors.rejectValue("comment", "rating_error", e.getMessage());
+            return "FeedbackAlreadyGivenView";
         }
     }
 

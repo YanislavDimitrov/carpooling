@@ -1,23 +1,8 @@
-/*#mapContainer {*/
-/*    border-radius: 50%;*/
-/*    width: 100%;*/
-/*    height: 800px;*/
-/*}*/
-/* Reset some default styles */
-/* Reset some default styles */
+
 body, h1, h2, h3, p, ul, ol, li, table, td, th {
     margin: 0;
     padding: 0;
 }
-
-/* Set a background color and font for the body */
-/*body {*/
-/*    background-color: dodgerblue;*/
-/*    background-image: url('images/CoverPicture.svg');*/
-/*    background-size: cover;*/
-/*    background-repeat: no-repeat;*/
-/*    background-attachment: fixed;*/
-/*}*/
 body {
     margin: 0;
     background-image: url('images/CoverPicture.svg');
@@ -32,7 +17,7 @@ body {
 
 /* Style the main content */
 #content {
-    margin: 20px auto;
+    margin: 0px;
     padding: 0px 0px;
     background-color: rgba(255, 255, 255, 0.9);
     border-radius: 10px;
@@ -94,17 +79,10 @@ th {
 
 /* Style the oval-shaped map container */
 #mapContainer {
-    /*position: relative;*/
-    /*margin-top: 20px;*/
-    /*height: 1000px;*/
-    /*border-radius: 80%;*/
-    /*overflow: hidden ;*/
-    /*overscroll-behavior: none;*/
-    width: 700px;
+    width: 80%;
     height: 700px;
-    border-radius: 50%; /* Make it circular */
-    overflow: hidden; /* Hide any overflow content if the circular form clips it */
-    margin: 0 auto;
+    overflow: hidden;
+    margin: 20px auto;
 }
 
 @media (max-width: 768px) {
@@ -124,7 +102,7 @@ th {
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
+    margin-top: 5px;
 }
 
 th, td {

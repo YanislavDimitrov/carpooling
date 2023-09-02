@@ -1,8 +1,6 @@
 package com.example.carpooling.models.dtos;
 
 import com.example.carpooling.models.Image;
-import com.example.carpooling.models.Travel;
-import com.example.carpooling.models.Vehicle;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.models.enums.UserStatus;
 import lombok.Getter;

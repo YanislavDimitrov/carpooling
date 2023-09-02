@@ -3,10 +3,11 @@ package com.example.carpooling.helpers;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+
 @Component
 public class ExtractionHelper {
 
-    public   String extractParametersSection(Map<String, String[]> parameterMap) {
+    public String extractParametersSection(Map<String, String[]> parameterMap) {
         StringBuilder builder = new StringBuilder();
         for (String key : parameterMap.keySet()) {
             String value = parameterMap.get(key)[0];

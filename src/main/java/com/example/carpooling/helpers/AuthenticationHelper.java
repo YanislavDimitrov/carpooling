@@ -34,6 +34,7 @@ public class AuthenticationHelper {
         String password = getPassword(userInfo);
         return verifyAuthentication(username, password);
     }
+
     public User tryGetUser(HttpSession session) {
         String currentUser = (String) session.getAttribute(CURRENT_USER_ATTRIBUTE_NAME);
 
@@ -42,6 +43,7 @@ public class AuthenticationHelper {
         }
         return userService.getByUsername(currentUser);
     }
+
     public User verifyAuthentication(String username, String password) {
         try {
             User user = userService.getByUsername(username);

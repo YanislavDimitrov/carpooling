@@ -7,55 +7,49 @@
     <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
     <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
     <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">
+    <link rel="stylesheet" href="../static/travelsStyles.css" th:href="@{/travelsStyles.css}">
 </head>
 <body>
+<header th:replace="index.html :: header"></header>
 <section class="main">
     <!--HEADER-->
-    <header th:replace="index.html :: header"></header>
+
 
     <!--    CONTENT-->
     <div id="content">
+        <h1 id="driver-title">Completed Travels</h1>
         <div class="no-travels" th:if="${travels.isEmpty()}">
-            <h2 th:text="#{travel.label.no-travels}">No travels to show</h2>
+            <h2 id="no-travels-to-show" th:text="#{travel.label.no-travels}">No travels to show</h2>
         </div>
-        <table th:unless="${travels.isEmpty()}" class="table custom-table">
-            <thead>
-            <tr>
-                <th scope="col" th:text="#{travel.label.driver}">Driver</th>
-                <th scope="col" th:text="#{travel.label.departure-point}">Departure Point</th>
-                <th scope="col" th:text="#{travel.label.arrival-point}">Arrival Point</th>
-                <th scope="col" th:text="#{travel.label.status}">Status</th>
-            </tr>
-            </thead>
-            <tbody th:each="travel : ${travels}">
-            <tr>
-                <td>
-                    <p class="post-title"  th:href="@{/travels/{id}(id=${travel.getId()})}"
-                       th:text="${travel.getDriverName()}">Driver</p>
-                </td>
-                <td th:text="${travel.getDeparturePoint()}">Burgas</td>
-                <td th:text="${travel.getArrivalPoint()}">Sofia</td>
-                <td th:text="${travel.getStatus()}">COMPLETED</td>
-                <td th:if="${isAdmin} and ${!travel.getDriverName().equals(session.currentUser)}">
-                    <a class="btn view" href="#" th:href="@{/travels/{id}(id=${travel.getId()})}"><i
-                            class="fa-solid fa-eye fa-beat"></i></a>
-                </td>
+        <div th:unless="${travels.isEmpty()}" class="travel-cards-container">
+            <div th:each="travel : ${travels}" class="travel-card" th:attr="data-id=${travel.id}">
+                <div class="travel-card-content">
+                    <h2 th:text="${'Driver: ' + travel.driverName}">Driver: John Doe</h2>
+                    <p th:text="${'Departure: ' + travel.departurePoint}">Departure: Burgas</p>
+                    <p th:text="${'Arrival: ' + travel.arrivalPoint}">Arrival: Sofia</p>
+                    <p th:text="${'Free Spots: ' + travel.freeSpots}">Free Spots: 2</p>
+                </div>
 
-                <td th:if="${travel.getDriverName().equals(session.currentUser)}">
+                <span class="text" th:text="${travel.status}">Completed</span>
 
-                    <a class="btn view" href="#" th:href="@{/travels/{id}(id=${travel.getId()})}"><i
-                            class="fa-solid fa-eye fa-beat"></i></a>
-                </td>
-                <td th:if="${!travel.getDriverName().equals(session.currentUser)} and !${isAdmin}">
-                    <a class="btn view" href="#" th:href="@{/travels/{id}(id=${travel.getId()})}"><i
-                            class="fa-solid fa-eye fa-beat"></i></a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+            </div>
+        </div>
     </div>
-    <footer th:replace="index.html :: footer"></footer>
 </section>
+<footer th:replace="index.html :: footer"></footer>
 <script type="text/javascript" src="../static/js/showDropdown.js" th:src="@{/js/showDropdown.js}"></script>
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", () => {
+        const travelCards = document.querySelectorAll('.travel-card');
+        travelCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const travelId = card.getAttribute('data-id');
+                if (travelId) {
+                    window.location.href = `/travels/${travelId}`;
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>

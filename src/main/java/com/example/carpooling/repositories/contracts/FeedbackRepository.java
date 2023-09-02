@@ -4,7 +4,6 @@ import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.models.Feedback;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.User;
-import com.example.carpooling.models.enums.TravelStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -13,10 +12,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -31,7 +27,8 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
             Sort sort
     );
 
-    List<Feedback> findByRecipientIs(User user);
+    @Query("SELECT f FROM Feedback f WHERE f.recipient = :recipient AND f.isDeleted = false")
+    List<Feedback> findNonDeletedFeedbacksForRecipient(@Param("recipient") User recipient);
 
     List<Feedback> findByTravelId(Long id);
 
@@ -52,6 +49,12 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
     @Modifying
     @Query("UPDATE Feedback AS f SET f.isDeleted=true WHERE f.id = :id")
     void delete(@Param("id") Long id) throws EntityNotFoundException;
+
+    boolean existsByTravelAndCreator(Travel travel, User creator);
+
+    boolean existsByTravelAndRecipientAndCreator(Travel travel, User recipient, User creator);
+
+    Feedback findByTravelIsAndCreatorAndRecipient(Travel travel, User creator, User recipient);
 
 
 }

@@ -154,7 +154,7 @@ public class FeedbackMvcController {
         try {
             loggedUser = authenticationHelper.tryGetUser(session);
             feedbackOriginal = feedbackService.getById(id);
-            feedbackToUpdate = feedbackMapper.fromCreationDto(feedbackCreateDto);
+            feedbackToUpdate = feedbackMapper.fromUpdateToFeedback(feedbackCreateDto,feedbackOriginal.getId());
             if(!loggedUser.equals(feedbackOriginal.getCreator())) {
                 return "AccessDeniedView";
             }

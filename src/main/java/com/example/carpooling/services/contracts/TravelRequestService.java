@@ -13,6 +13,7 @@ public interface TravelRequestService {
     List<TravelRequest> getPending();
     List<TravelRequest> getByTravel(Travel travel);
     TravelRequest findByTravelIsAndPassengerIsAndStatus(Travel travel , User passenger , TravelRequestStatus status);
+    List<TravelRequest> findByTravelIsAndStatus(Travel travel , TravelRequestStatus status);
     void createRequest(Travel travel, User user);
     void update(TravelRequest travelRequest, User editor);
     void delete(Long id,User editor);

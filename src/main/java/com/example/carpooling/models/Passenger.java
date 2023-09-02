@@ -2,14 +2,13 @@ package com.example.carpooling.models;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "passengers_travels")
 @Getter
 @Setter
-@NoArgsConstructor
+
 public class Passenger {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,5 +20,10 @@ public class Passenger {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "travel_id")
     private Travel travel;
+    @Column(name = "is_active")
+    private boolean isActive;
 
+    public Passenger() {
+        isActive = true;
+    }
 }

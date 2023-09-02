@@ -3,7 +3,6 @@ package com.example.carpooling.models.dtos;
 import com.example.carpooling.models.Image;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.models.enums.UserStatus;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
