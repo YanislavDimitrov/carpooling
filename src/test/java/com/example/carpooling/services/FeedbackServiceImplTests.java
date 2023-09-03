@@ -25,7 +25,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -559,43 +562,51 @@ public class FeedbackServiceImplTests {
     }
 
     @Test
-    void testHaveTravelledTogether() {
-        // Arrange
-        Long travelId = 1L;
-
-        User driver = new User();
-        driver.setId(1L);
-
-        User recipient = new User();
-        recipient.setId(2L);
-
+    public void testEntitiesExist() {
         Travel travel = new Travel();
-        travel.setId(travelId);
-        travel.setDriver(driver);
+        User creator = new User();
+        User recipient = new User();
+        when(travelRepository.existsById(travel.getId())).thenReturn(true);
+        when(userRepository.existsById(creator.getId())).thenReturn(true);
+        when(userRepository.existsById(recipient.getId())).thenReturn(true);
+        assertDoesNotThrow(() -> feedbackService.checkIfTravelAndUsersExist(
+                travel, creator, recipient, travelRepository, "Travel not found", userRepository, "User not found"
+        ));
+    }
 
+    @Test
+    public void testTravelNotFound() {
+        Travel travel = new Travel();
+        User creator = new User();
+        User recipient = new User();
+        when(travelRepository.existsById(travel.getId())).thenReturn(false);
+        when(userRepository.existsById(creator.getId())).thenReturn(true);
+        when(userRepository.existsById(recipient.getId())).thenReturn(true);
+        assertThrows(EntityNotFoundException.class, () -> feedbackService.checkIfTravelAndUsersExist(
+                travel, creator, recipient, travelRepository, "Travel not found", userRepository, "User not found"
+        ));
+    }
+
+    @Test
+    public void testRecipientUserNotFound() {
+        Travel travel = new Travel();
+        User creator = new User();
+        User recipient = new User();
+        when(travelRepository.existsById(travel.getId())).thenReturn(true);
+        when(userRepository.existsById(creator.getId())).thenReturn(true);
+        when(userRepository.existsById(recipient.getId())).thenReturn(false);
+
+        assertThrows(EntityNotFoundException.class, () -> feedbackService.checkIfTravelAndUsersExist(
+                travel, creator, recipient, travelRepository, "Travel not found", userRepository, "User not found"
+        ));
+    }
+    public TravelRequest createRequest(Travel travel, User recipient, TravelRequestStatus travelRequestStatus) {
         TravelRequest travelRequest = new TravelRequest();
         travelRequest.setTravel(travel);
-        travelRequest.setStatus(TravelRequestStatus.APPROVED);
-
-
-        // Mock the travelService and user repository
-        when(travelService.getById(travelId)).thenReturn(travel);
-        when(userRepository.findById(driver.getId())).thenReturn(Optional.of(driver));
-        when(userRepository.findById(recipient.getId())).thenReturn(Optional.of(recipient));
-
-        // Case 1: The driver and recipient are the same (should return false)
-        assertFalse(feedbackService.haveTravelledTogether(travelId, driver, driver));
-
-        // Case 2: The driver and recipient have traveled together
-        when(driver.getTravelsAsPassenger()).thenReturn(Collections.singletonList(travelRequest));
-        assertTrue(feedbackService.haveTravelledTogether(travelId, driver, recipient));
-
-        // Case 3: The driver and recipient have not traveled together
-        when(driver.getTravelsAsPassenger()).thenReturn(Collections.emptyList());
-        assertFalse(feedbackService.haveTravelledTogether(travelId, driver, recipient));
-
-        // Case 4: Different driver and recipient with a travel request
-        when(driver.getTravelsAsPassenger()).thenReturn(Collections.singletonList(travelRequest));
-        assertTrue(feedbackService.haveTravelledTogether(travelId, driver, recipient));
+        travelRequest.setPassenger(recipient);
+        travelRequest.setStatus(travelRequestStatus);
+        return travelRequest;
     }
+
+
 }

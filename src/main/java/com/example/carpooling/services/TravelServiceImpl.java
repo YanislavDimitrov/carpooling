@@ -164,7 +164,8 @@ public class TravelServiceImpl implements TravelService {
      */
     @Override
     public void create(Travel travel, User driver) {
-        checkIfTheTravelTimeFrameIsValid(travel, driver);
+
+        checkIfTheTravelTimeFrameIsValidWithQuery(travel, driver);
         travel.setStatus(TravelStatus.PLANNED);
         travel.setDriver(driver);
         travelRepository.save(travel);
@@ -173,7 +174,6 @@ public class TravelServiceImpl implements TravelService {
 
     @Override
     public Travel update(Travel travelToUpdate, User editor) {
-        checkIfTheTravelTimeFrameIsValid(travelToUpdate, editor);
         if (!travelToUpdate.getDriver().equals(editor)) {
             throw new AuthorizationException(UPDATE_CANCELLED);
         }
@@ -184,8 +184,24 @@ public class TravelServiceImpl implements TravelService {
             throw new InvalidOperationException(YOU_CAN_UPDATE_ONLY_PLANNED_TRAVELS);
         }
         calculatingDistanceAndDuration(travelToUpdate);
+        checkIfTimeIsValid(travelToUpdate, editor);
         travelRepository.save(travelToUpdate);
         return travelToUpdate;
+    }
+
+    private void checkIfTimeIsValid(Travel travel, User editor) {
+        for (Travel travelToCheck : editor.getTravelsAsDriver()) {
+            checkIfArrivalTimeIsWithinInvalidTimeFrame(travel, travelToCheck);
+        }
+    }
+
+    private static void checkIfArrivalTimeIsWithinInvalidTimeFrame(Travel travel, Travel travelToCheck) {
+        if (travel.getEstimatedTimeOfArrival().isAfter(travelToCheck.getDepartureTime()) && travel.getEstimatedTimeOfArrival().isBefore(travelToCheck.getEstimatedTimeOfArrival()) && travelToCheck.getStatus() == TravelStatus.PLANNED) {
+            throw new InvalidOperationException(EXISTING_TRAVEL);
+        }
+        if (travel.getEstimatedTimeOfArrival().isAfter(travelToCheck.getDepartureTime()) && travel.getEstimatedTimeOfArrival().isBefore(travelToCheck.getEstimatedTimeOfArrival()) && travelToCheck.getStatus() == TravelStatus.ACTIVE) {
+            throw new InvalidOperationException(EXISTING_TRAVEL);
+        }
     }
 
     /**
@@ -316,30 +332,15 @@ public class TravelServiceImpl implements TravelService {
         return passengerRepository.existsByUserAndTravel(user, travel);
     }
 
-    public static void checkIfTheTravelTimeFrameIsValid(Travel oldTravel, Travel travel, User driver) {
-        List<Travel> travelsToCheck = driver.getTravelsAsDriver();
-        travelsToCheck.remove(oldTravel);
-
-        for (Travel travelToCheck : travelsToCheck) {
-            if (travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime())
-                    && travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival())
-                    && travelToCheck.getStatus() == TravelStatus.ACTIVE
-            ) {
-                throw new InvalidOperationException(EXISTING_TRAVEL);
-            }
-            if (travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival()) &&
-                    travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime()) &&
-                    travelToCheck.getStatus() == TravelStatus.PLANNED) {
-                throw new InvalidOperationException(EXISTING_TRAVEL);
-            }
-            if (travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime())
-                    && travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival()) && travelToCheck.getStatus() == TravelStatus.PLANNED) {
-                throw new InvalidOperationException(EXISTING_TRAVEL);
-            }
-            if (travel.getDepartureTime().isEqual(travelToCheck.getDepartureTime())) {
-                throw new InvalidOperationException(EXISTING_TRAVEL);
-            }
+    public static void checkIfTheTravelTimeFrameIsValid(Travel travel, User driver) {
+        for (Travel travelToCheck : driver.getTravelsAsDriver()) {
+            checkIfDepartureTimeIsWithingValidTimeFrame(travel, travelToCheck);
+            checkIfArrivalTimeIsWithinInvalidTimeFrame(travel, travelToCheck);
         }
+        checkIfThereAreAnyTravelsAsPassengerWithingThisTimeFrame(travel, driver);
+    }
+
+    private static void checkIfThereAreAnyTravelsAsPassengerWithingThisTimeFrame(Travel travel, User driver) {
         List<TravelRequest> travelRequestOfTheDriverAsPassenger = driver.getTravelsAsPassenger()
                 .stream()
                 .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.APPROVED)
@@ -356,54 +357,51 @@ public class TravelServiceImpl implements TravelService {
         }
     }
 
-    public static void checkIfTheTravelTimeFrameIsValid(Travel travel, User driver) {
-        for (Travel travelToCheck : driver.getTravelsAsDriver()) {
-            if (travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime())
-                    && travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival())
-                    && travelToCheck.getStatus() == TravelStatus.ACTIVE
-            ) {
-                throw new InvalidOperationException(EXISTING_TRAVEL);
-            }
-            if (travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival()) &&
-                    travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime()) &&
-                    travelToCheck.getStatus() == TravelStatus.PLANNED) {
-                throw new InvalidOperationException(EXISTING_TRAVEL);
-
-            }
-            if (travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime())
-                    && travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival())
-                    && travelToCheck.getStatus() == TravelStatus.PLANNED) {
-                throw new InvalidOperationException(EXISTING_TRAVEL);
-
-            }
-            if (travel.getDepartureTime().isEqual(travelToCheck.getDepartureTime())) {
-                throw new InvalidOperationException(EXISTING_TRAVEL);
-
-            }
-            if (travel.getEstimatedTimeOfArrival().isAfter(travelToCheck.getDepartureTime()) &&
-                    travel.getEstimatedTimeOfArrival().isBefore(travelToCheck.getEstimatedTimeOfArrival())
-                    && travelToCheck.getStatus() == TravelStatus.PLANNED) {
-                throw new InvalidOperationException(EXISTING_TRAVEL);
-            }
-            if (travel.getEstimatedTimeOfArrival().isAfter(travelToCheck.getDepartureTime()) &&
-                    travel.getEstimatedTimeOfArrival().isBefore(travelToCheck.getEstimatedTimeOfArrival())
-                    && travelToCheck.getStatus() == TravelStatus.ACTIVE) {
-                throw new InvalidOperationException(EXISTING_TRAVEL);
-            }
+    private static void checkIfDepartureTimeIsWithingValidTimeFrame(Travel travel, Travel travelToCheck) {
+        if (travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime())
+                && travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival())
+                && travelToCheck.getStatus() == TravelStatus.ACTIVE
+        ) {
+            throw new InvalidOperationException(EXISTING_TRAVEL);
         }
-        List<TravelRequest> travelRequestOfTheDriverAsPassenger = driver.getTravelsAsPassenger()
-                .stream()
-                .filter(travelRequest -> travelRequest.getStatus() == TravelRequestStatus.APPROVED)
-                .toList();
-        List<Travel> travelsOfUserAsPassenger = new ArrayList<>();
-        for (TravelRequest travelRequest : travelRequestOfTheDriverAsPassenger) {
-            travelsOfUserAsPassenger.add(travelRequest.getTravel());
+        if (travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival()) &&
+                travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime()) &&
+                travelToCheck.getStatus() == TravelStatus.PLANNED) {
+            throw new InvalidOperationException(EXISTING_TRAVEL);
+
         }
-        for (Travel travelToCheckAsPassenger : travelsOfUserAsPassenger) {
-            if (travel.getDepartureTime().isAfter(travelToCheckAsPassenger.getDepartureTime())
-                    && travel.getDepartureTime().isBefore(travelToCheckAsPassenger.getEstimatedTimeOfArrival()) && travelToCheckAsPassenger.getStatus() == TravelStatus.ACTIVE) {
-                throw new InvalidOperationException(EXISTING_TRAVEL);
-            }
+        if (travel.getDepartureTime().isAfter(travelToCheck.getDepartureTime())
+                && travel.getDepartureTime().isBefore(travelToCheck.getEstimatedTimeOfArrival())
+                && travelToCheck.getStatus() == TravelStatus.PLANNED) {
+            throw new InvalidOperationException(EXISTING_TRAVEL);
+
+        }
+        if (travel.getDepartureTime().isEqual(travelToCheck.getDepartureTime())) {
+            throw new InvalidOperationException(EXISTING_TRAVEL);
+
+        }
+    }
+
+    public void checkIfTheTravelTimeFrameIsValid(Travel oldTravel, Travel travel, User driver) {
+        List<Travel> travelsToCheck = driver.getTravelsAsDriver();
+        travelsToCheck.remove(oldTravel);
+
+        for (Travel travelToCheck : travelsToCheck) {
+            checkIfDepartureTimeIsWithingValidTimeFrame(travel, travelToCheck);
+
+        }
+        checkIfThereAreAnyTravelsAsPassengerWithingThisTimeFrame(travel, driver);
+    }
+
+    public void checkIfTheTravelTimeFrameIsValidWithQuery(Travel travel, User driver) {
+        int conflictingTravelCount = travelRepository.countConflictingTravels(
+                driver.getId(),
+                travel.getDepartureTime(),
+                travel.getEstimatedTimeOfArrival()
+        );
+
+        if (conflictingTravelCount > 0) {
+            throw new InvalidOperationException(EXISTING_TRAVEL);
         }
     }
 

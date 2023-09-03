@@ -6,7 +6,10 @@ import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.helpers.ExtractionHelper;
 import com.example.carpooling.helpers.mappers.FeedbackMapper;
 import com.example.carpooling.helpers.mappers.TravelMapper;
-import com.example.carpooling.models.*;
+import com.example.carpooling.models.Feedback;
+import com.example.carpooling.models.Travel;
+import com.example.carpooling.models.TravelRequest;
+import com.example.carpooling.models.User;
 import com.example.carpooling.models.dtos.FeedbackCreateDto;
 import com.example.carpooling.models.dtos.TravelCreationOrUpdateDto;
 import com.example.carpooling.models.dtos.TravelFilterDto;
@@ -14,7 +17,6 @@ import com.example.carpooling.models.dtos.TravelFrontEndView;
 import com.example.carpooling.models.enums.TravelRequestStatus;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.models.enums.UserRole;
-import com.example.carpooling.services.TravelServiceImpl;
 import com.example.carpooling.services.contracts.FeedbackService;
 import com.example.carpooling.services.contracts.TravelRequestService;
 import com.example.carpooling.services.contracts.TravelService;
@@ -213,7 +215,7 @@ public class TravelMvcController {
         model.addAttribute("isRequestedByUser", isRequestedByUser);
         model.addAttribute("isPassenger", isPassenger);
         model.addAttribute("driverId", travelService.getById(id).getDriver().getId());
-        model.addAttribute("feedbacks",feedbacksForTravel);
+        model.addAttribute("feedbacks", feedbacksForTravel);
 
         return "TravelView";
     }
@@ -297,17 +299,20 @@ public class TravelMvcController {
         Travel travelToCheckIfValid = travelMapper.fromTravelCreateToTestDepartureTime(travelUpdateDto);
 
         try {
-            TravelServiceImpl.checkIfTheTravelTimeFrameIsValid(travel, travelToCheckIfValid, loggedUser);
+            travelService.checkIfTheTravelTimeFrameIsValid(travel, travelToCheckIfValid, loggedUser);
 
         } catch (InvalidOperationException e) {
             errors.rejectValue("departureTime", "creation_error", e.getMessage());
-            return "UpdateTravelView";
+            model.addAttribute("vehicles", loggedUser.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
+            model.addAttribute("travelId", travel.getId());
+            return "redirect:/travels/" + id + "/update";
         }
 
         Travel travelUpdate = travelMapper.toTravelFromTravelUpdateSaveDto(travel, travelUpdateDto);
 
         if (errors.hasErrors()) {
             model.addAttribute("vehicles", loggedUser.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
+            model.addAttribute("travelId", travel.getId());
             return "UpdateTravelView";
         }
 
@@ -321,10 +326,12 @@ public class TravelMvcController {
             errors.rejectValue("departurePoint", "location_error", e.getMessage());
             errors.rejectValue("arrivalPoint", "location_error", e.getMessage());
             model.addAttribute("vehicles", loggedUser.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
+            model.addAttribute("travelId", travel.getId());
             return "UpdateTravelView";
         } catch (InvalidOperationException e) {
             errors.rejectValue("departureTime", "creation_error", e.getMessage());
             model.addAttribute("vehicles", loggedUser.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
+            model.addAttribute("travelId", travel.getId());
             return "UpdateTravelView";
         }
         return "redirect:/travels/" + id;
@@ -501,10 +508,6 @@ public class TravelMvcController {
             creator = authenticationHelper.tryGetUser(session);
             travel = travelService.getById(travelId);
             recipient = userService.getById(recipientId);
-
-            if(feedbackService.existsByTravelAndRecipientAndCreator(travel,recipient,creator)) {
-
-            }
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         } catch (EntityNotFoundException e) {
@@ -541,7 +544,7 @@ public class TravelMvcController {
             creator = authenticationHelper.tryGetUser(session);
             createdFeedback = feedbackMapper.fromCreationDto(feedback, creator, recipient, travel);
             feedbackService.create(travel, creator, recipient, createdFeedback);
-            return "redirect:/travels/" + travelId;
+            return "redirect:/feedbacks";
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         } catch (EntityNotFoundException e) {
