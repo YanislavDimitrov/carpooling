@@ -15,8 +15,7 @@
 <section class="main">
     <div id="content">
     <h1 class="form-title">Update Travel</h1>
-    <form class="form" th:action="@{/travels/{id}/update(id=${travelId})}" th:object="${updateTravel}" action="#"
-          method="post">
+        <form class="form" th:action="@{'/travels/' + ${travelId} + '/update'}" th:object="${updateTravel}" method="post">
         <div class="names-container">
             <div class="field-container">
                 <label th:text="#{travel.label.departure-point}">Departure Point</label>

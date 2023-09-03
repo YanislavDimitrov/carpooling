@@ -98,7 +98,6 @@ public class TravelRequestServiceImpl implements TravelRequestService {
      * @param travel this parameter is used as a reference where we are doing the request for
      * @param user   this parameter is used to identify who is making the request for the travel
      */
-    // ToDo add validation which checks whether a feedback for this user and for this travel already exists and throw exception if yes
     @Override
     public void createRequest(Travel travel, User user) {
         TravelRequest travelRequest = new TravelRequest();

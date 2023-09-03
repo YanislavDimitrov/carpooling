@@ -31,6 +31,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.example.carpooling.services.TravelServiceImpl.checkIfTheTravelTimeFrameIsValid;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -194,7 +195,7 @@ public class TravelServiceImplTests {
     public void testCheckIfTheTravelTimeFrameIsValid_NoConflicts() {
         Travel travel = new Travel();
         User driver = new User();
-        assertDoesNotThrow(() -> travelService.checkIfTheTravelTimeFrameIsValid(travel, driver));
+        assertDoesNotThrow(() -> checkIfTheTravelTimeFrameIsValid(travel, driver));
     }
 
     @Test
@@ -209,7 +210,7 @@ public class TravelServiceImplTests {
         conflictingTravel.setStatus(TravelStatus.PLANNED);
         User driver = new User();
         driver.getTravelsAsDriver().add(conflictingTravel);
-        assertThrows(InvalidOperationException.class, () -> travelService.checkIfTheTravelTimeFrameIsValid(travel, driver));
+        assertThrows(InvalidOperationException.class, () -> checkIfTheTravelTimeFrameIsValid(travel, driver));
     }
 
     @Test
@@ -224,7 +225,7 @@ public class TravelServiceImplTests {
         conflictingTravel.setStatus(TravelStatus.ACTIVE);
         User driver = new User();
         driver.getTravelsAsDriver().add(conflictingTravel);
-        assertThrows(InvalidOperationException.class, () -> travelService.checkIfTheTravelTimeFrameIsValid(travel, driver));
+        assertThrows(InvalidOperationException.class, () -> checkIfTheTravelTimeFrameIsValid(travel, driver));
     }
 
     @Test
@@ -376,7 +377,7 @@ public class TravelServiceImplTests {
         User driver = new User();
         driver.setTravelsAsDriver(driverTravels);
         when(travelRepository.existsById(anyLong())).thenReturn(true);
-        assertThrows(InvalidOperationException.class, () -> travelService.checkIfTheTravelTimeFrameIsValid(travel, driver));
+        assertThrows(InvalidOperationException.class, () -> checkIfTheTravelTimeFrameIsValid(travel, driver));
     }
 
     @Test
@@ -535,7 +536,7 @@ public class TravelServiceImplTests {
         Travel travel = createTravel(2L, LocalDateTime.now());
         User driver = createUser();
 
-        TravelServiceImpl.checkIfTheTravelTimeFrameIsValid(oldTravel, travel, driver);
+         travelService.checkIfTheTravelTimeFrameIsValid(oldTravel, travel, driver);
 
     }
 
@@ -766,6 +767,23 @@ public class TravelServiceImplTests {
                 createTravel(3L, user, false)
         ).collect(Collectors.toList());
     }
+    @Test
+    void testCheckIfTheTravelTimeFrameIsValidd_NoConflicts() {
+        Travel travel = new Travel();
+        User driver = new User();
+        driver.setId(1L);
+        when(travelRepository.countConflictingTravels(anyLong(), any(), any())).thenReturn(0);
+        travelService.checkIfTheTravelTimeFrameIsValidWithQuery(travel, driver);
+    }
 
+    @Test
+    void testCheckIfTheTravelTimeFrameIsValid_ConflictsExist() {
+        Travel travel = new Travel();
+        User driver = new User();
+        driver.setId(1L);
+        when(travelRepository.countConflictingTravels(anyLong(), any(), any())).thenReturn(1);
+        assertThrows(InvalidOperationException.class,
+                () -> travelService.checkIfTheTravelTimeFrameIsValidWithQuery(travel, driver));
+    }
 
 }
