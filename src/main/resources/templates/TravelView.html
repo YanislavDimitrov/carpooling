@@ -121,11 +121,11 @@
 
     </div>
 
-    <button th:if="${travel.getDriverName().equals(session.currentUser)} or ${isAdmin}" class="btn" id="toggle">Show
+    <button th:if="${travel.getDriverName().equals(session.currentUser)} " class="btn" id="toggle">Show
         Travel Requests
         <i id="show-hide-ico"
            class="fa-solid fa-angle-down"></i></button>
-    <div th:if="${travel.getDriverName().equals(session.currentUser)} or ${isAdmin}" id="information-container" style="display:none"
+    <div th:if="${travel.getDriverName().equals(session.currentUser)} " id="information-container" style="display:none"
          class="info">
         <div th:if="${travelRequestForThisTravel.isEmpty()}" id="no-requests">
             <h1>No travel requests to show</h1>

@@ -189,7 +189,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         feedbackRepository.delete(id);
     }
 
-    private boolean haveTravelledTogether(Long travelId, User driver, User recipient) {
+    public boolean haveTravelledTogether(Long travelId, User driver, User recipient) {
         Travel travel = travelService.getById(travelId);
         if (travel.getDriver().equals(driver)) {
             for (TravelRequest travelToCheck : recipient.getTravelsAsPassenger()) {
