@@ -213,7 +213,8 @@ public class UserMvcController {
             }
 
             // Upload newImage to Cloudinary
-            String imgUrl = this.imageService.uploadImage(file.getBytes(), targetUser.getUserName());
+            String imgUrl = (String) this.imageService.uploadImage(file.getBytes(), targetUser.getUserName())
+                    .get("secure_url");
 
             // Save newImage URL to database
             Image newImage = new Image();
@@ -248,7 +249,7 @@ public class UserMvcController {
             return "AccessDeniedView";
         }
         model.addAttribute("changePasswordInfo", new UserChangePasswordDto());
-        model.addAttribute("userId",id);
+        model.addAttribute("userId", id);
         return "ChangePasswordView";
     }
 
@@ -283,7 +284,7 @@ public class UserMvcController {
         }
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("userId",id);
+            model.addAttribute("userId", id);
             return "ChangePasswordView";
         }
 

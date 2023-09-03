@@ -19,12 +19,10 @@ import static com.example.carpooling.helpers.ConstantMessages.*;
 
 @Service
 public class VehicleServiceImpl implements VehicleService {
-    private final UserRepository userRepository;
     private final VehicleRepository vehicleRepository;
 
     @Autowired
-    public VehicleServiceImpl(UserRepository userRepository, VehicleRepository vehicleRepository) {
-        this.userRepository = userRepository;
+    public VehicleServiceImpl(VehicleRepository vehicleRepository) {
         this.vehicleRepository = vehicleRepository;
     }
 

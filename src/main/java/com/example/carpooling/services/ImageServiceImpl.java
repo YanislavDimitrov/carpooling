@@ -1,6 +1,7 @@
 package com.example.carpooling.services;
 
 import com.cloudinary.Cloudinary;
+import com.cloudinary.Uploader;
 import com.cloudinary.Url;
 import com.cloudinary.utils.ObjectUtils;
 import com.example.carpooling.models.Image;
@@ -24,13 +25,14 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public String uploadImage(byte[] imageDate, String username) throws IOException {
+    public Map uploadImage(byte[] imageDate, String username) throws IOException {
 
-        Map uploadResult = cloudinary.uploader().upload(imageDate, ObjectUtils.asMap(
+        Uploader uploader = cloudinary.uploader();
+        Map uploadResult = uploader.upload(imageDate, ObjectUtils.asMap(
                 "public_id", username
         ));
 
-        return (String) uploadResult.get("secure_url");
+        return uploadResult;
     }
 
     @Override
@@ -45,6 +47,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public void destroyImage(Image image,String username) throws IOException {
-        cloudinary.uploader().destroy(username, null);
+        Uploader uploader = cloudinary.uploader();
+        uploader.destroy(username, null);
     }
 }
