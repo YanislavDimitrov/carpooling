@@ -25,6 +25,7 @@ import java.nio.charset.StandardCharsets;
  *
  * @author Ivan Boev
  * @version 1.0
+ * @since 2023-09-04
  */
 @Service
 public class BingMapsServiceImpl implements BingMapsService {
