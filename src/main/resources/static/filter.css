@@ -18,8 +18,10 @@
 
 .form input[type="text"],
 .form input[type="password"],
-.form input[type="email"] {
-    all: unset;
+.form input[type="email"],
+.form input[type="date"],
+.form input[type="number"]{
+    color: rgb(65, 89, 96);
     border: none;
     width: 95%;
     transition: color ease-in-out .1s;
@@ -54,15 +56,17 @@ input:-webkit-autofill:active {
 }
 
 .form .inputs-container {
-    display: flex;
-    gap: 2rem;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 1.2rem;
     flex-wrap: wrap;
     justify-content: flex-start;
     align-items: center;
 }
 
 .form .select label {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     color: rgb(65, 89, 96);
     font-weight: 500;
     position: absolute;
@@ -72,7 +76,7 @@ input:-webkit-autofill:active {
 }
 
 .form .input-container {
-    /*overflow: hidden;*/
+    color: rgb(65, 89, 96);
     position: relative;
     background-color: white;
     min-width: 22%;
