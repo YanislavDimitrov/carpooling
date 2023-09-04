@@ -51,13 +51,17 @@ h1{
     font-size: 1.5rem;
 }
 
-.star {
-    color: #36708a;
+.star > *{
+    transition: ease-in-out .2s;
 }
 
-.star:hover,
 .star.active {
-    color: goldenrod;
+    color: #c59618;
+    transform: scale(1.5);
+}
+
+.star > *:hover{
+    transform: scale(1.1);
 }
 
 button {
@@ -90,8 +94,8 @@ textarea {
 }
 
 .star {
+    color: #194256;
     font-size: 30px;
-    color: #ffc107;
     cursor: pointer;
     transition: transform 0.2s ease-in-out;
 }

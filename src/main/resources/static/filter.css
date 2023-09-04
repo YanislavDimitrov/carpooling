@@ -64,6 +64,26 @@ input:-webkit-autofill:active {
     justify-content: flex-start;
     align-items: center;
 }
+.star:hover,
+.star.active {
+    color: goldenrod;
+}
+
+.stars-container{
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+.stars {
+    font-size: 1rem;
+    cursor: pointer;
+}
+.star > *{
+    transition: ease-in-out .2s;
+}
+.star > *:hover{
+    transform: scale(1.1);
+}
 
 .form .select label {
     font-size: 1.1rem;
@@ -81,7 +101,7 @@ input:-webkit-autofill:active {
     background-color: white;
     min-width: 22%;
     white-space: nowrap;
-    padding: .9rem 1rem;
+    padding: .8rem 1rem;
     border-radius: 1rem;
     box-shadow: 3px 3px 5px 2px rgba(0, 0, 0, 0.2);
 }
