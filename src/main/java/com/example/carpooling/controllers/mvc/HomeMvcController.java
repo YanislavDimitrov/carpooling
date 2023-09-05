@@ -8,6 +8,7 @@ import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.models.enums.UserStatus;
 import com.example.carpooling.services.contracts.TravelService;
+import com.example.carpooling.services.contracts.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,16 +23,19 @@ import java.util.List;
 public class HomeMvcController {
     private final AuthenticationHelper authenticationHelper;
     private final TravelService travelService;
+    private final UserService userService;
 
-    public HomeMvcController(AuthenticationHelper authenticationHelper, TravelService travelService) {
+    public HomeMvcController(AuthenticationHelper authenticationHelper, TravelService travelService, UserService userService) {
         this.authenticationHelper = authenticationHelper;
         this.travelService = travelService;
+        this.userService = userService;
     }
 
     @GetMapping
     public String viewHomePage(Model model) {
-        long completedTravels = travelService.countCompleted();
-        model.addAttribute("completedTravels", completedTravels);
+        model.addAttribute("completedTravels", travelService.countCompleted());
+        model.addAttribute("createdUsers", userService.count());
+        model.addAttribute("topDrivers", userService.findTopTenDrivers());
         return "index";
     }
 

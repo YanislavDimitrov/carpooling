@@ -34,7 +34,7 @@
                          class="profile-picture"
                          src="../static/images/avatar.png">
                 </div>
-                <form class="form-container" th:if="${session.currentUser.equals(user.getUserName())} or ${isAdmin}"
+                <form class="form-container" th:if="${isAuthenticated} and (${session.currentUser.equals(user.getUserName())} or ${isAdmin})"
                       th:action="@{'/users/' + ${user.id} + '/avatar'}" th:object="${user}"
                       method="post" enctype="multipart/form-data">
                     <input id="choose-file-btn" class="file-container" type="file" name="file" accept="image/*"/>
@@ -45,7 +45,7 @@
                 <h1 class="firstName" th:text="${user.getFirstName()} +' '+ ${user.getLastName()}">Yanislav
                     Dimitrov</h1>
                 <h2 class="firstName" th:text="'(' + ${user.getUserName()} +')'">(Yanidim)</h2>
-                <a th:if="${isAdmin} or ${user.getUserName().equals(session.currentUser)}" class="btn change-pass-btn"
+                <a th:if="${isAuthenticated} and (${isAdmin} or ${user.getUserName().equals(session.currentUser)})" class="btn change-pass-btn"
                    th:href="@{'/users/' + ${user.id} + '/change-password'}">Change password
                 </a>
             </div>
@@ -84,7 +84,7 @@
 
             </div>
         </li>
-        <li th:if="${vehiclesCount==0} and ${user.getUserName().equals(session.currentUser)}" class="vehicles">
+        <li th:if="${vehiclesCount==0} and ${isAuthenticated} and ${user.getUserName().equals(session.currentUser)}" class="vehicles">
             <a th:if="${user.getUserName().equals(session.currentUser)}" class="buttons btn create-vehicle"
                th:href="@{'/vehicles/create'}">
                 <i class="fa-solid fa-plus fa-bounce"></i>
@@ -92,7 +92,7 @@
             <h2 class="section-title">Vehicles</h2>
             <h3>Add your first vehicle</h3>
         </li>
-        <li th:if="${vehiclesCount>0} and ${user.getUserName().equals(session.currentUser)}" class="vehicles">
+        <li th:if="${vehiclesCount>0} and ${isAuthenticated} and  ${user.getUserName().equals(session.currentUser)}" class="vehicles">
             <a th:if="${user.getUserName().equals(session.currentUser)}" class="buttons btn create-vehicle"
                th:href="@{'/vehicles/create'}">
                 <i class="fa-solid fa-plus"></i>

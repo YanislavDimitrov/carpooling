@@ -10,7 +10,6 @@ import com.example.carpooling.models.dtos.UserUpdateDto;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.models.enums.UserRole;
 import com.example.carpooling.models.enums.UserStatus;
-import com.example.carpooling.repositories.contracts.TokenRepository;
 import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.repositories.contracts.VehicleRepository;
 import com.example.carpooling.services.contracts.UserService;
@@ -20,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -291,6 +289,11 @@ public class UserServiceImpl implements UserService {
                         : null;
 
         return userRepository.findAllPaginated(pageRequest, firstName, lastName, username, email, phoneNumber, criteriaRole, criteriaStatus, sort);
+    }
+
+    @Override
+    public List<User> findTopTenDrivers() {
+        return userRepository.findTopTenDrivers();
     }
 
     @Override

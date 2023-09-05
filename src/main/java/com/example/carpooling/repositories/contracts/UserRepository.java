@@ -90,4 +90,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             UserRole role,
             UserStatus status,
             Sort sort);
+
+    @Query("SELECT u FROM User u ORDER BY size(u.travelsAsDriver) DESC LIMIT 10")
+    List<User> findTopTenDrivers();
 }

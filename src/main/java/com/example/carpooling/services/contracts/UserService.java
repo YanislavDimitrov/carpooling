@@ -51,4 +51,5 @@ public interface UserService {
     void changePassword(User targetUser, UserChangePasswordDto dto, User loggedUser);
 
     Page<User> findAllPaginated(int page, int size, String firstName, String lastName, String username, String email, String phoneNumber, String userRole, String userStatus, Sort sort);
+    List<User> findTopTenDrivers();
 }

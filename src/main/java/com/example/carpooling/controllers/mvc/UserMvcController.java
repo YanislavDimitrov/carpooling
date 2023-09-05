@@ -90,17 +90,16 @@ public class UserMvcController {
 
     @GetMapping("/{id}")
     public String getUserById(@PathVariable Long id, Model model, HttpSession session) {
-        User loggedUser;
-        try {
-            loggedUser = authenticationHelper.tryGetUser(session);
-        } catch (AuthenticationFailureException e) {
-            return "redirect:/auth/login";
-        }
+//        User loggedUser;
+//        try {
+//            loggedUser = authenticationHelper.tryGetUser(session);
+//        } catch (AuthenticationFailureException e) {
+//            return "redirect:/auth/login";
+//        }
 
         try {
             User user = userService.getById(id);
-            if (user.getStatus().equals(UserStatus.DELETED) &&
-                    !loggedUser.getRole().equals(UserRole.ADMIN)) {
+            if (user.getStatus().equals(UserStatus.DELETED)) {
                 return "NotFoundView";
             }
             UserViewDto userNewViewDto = this.modelMapper.map(user, UserViewDto.class);

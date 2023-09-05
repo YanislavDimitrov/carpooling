@@ -2,6 +2,7 @@
 @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css");
 
 html {
+    font-size: 14px;
     font-family: "Poppins", sans-serif;
     background-color: #ffffff;
 }
@@ -24,14 +25,34 @@ html {
     object-fit: cover;
 }
 
-.hero .title {
+/*.hero .title {*/
+/*    color: white;*/
+/*    font-size: 3.2rem;*/
+/*    font-weight: 600;*/
+/*    position: absolute;*/
+/*    left: 50%;*/
+/*    top: 4rem;*/
+/*    transform: translate(-50%, -50%);*/
+/*}*/
+
+.hero .titles {
     color: white;
-    font-size: 3.2rem;
-    font-weight: 600;
     position: absolute;
     left: 50%;
     top: 4rem;
     transform: translate(-50%, -50%);
+}
+
+.hero .title{
+    font-size: 3.2rem;
+    font-weight: 600;
+}
+
+.hero .sub-title{
+    display: inline-block;
+    color: #054752;
+    font-size: 1.5rem;
+    font-weight: 500;
 }
 
 .additional-info {
@@ -39,8 +60,8 @@ html {
     display: grid;
     gap: 4rem;
     grid-template-columns: repeat(3, 1fr);
-    height: 34vh;
-    padding: 2rem 28rem;
+    min-height: 34vh;
+    padding: 2rem 20rem;
 }
 
 .additional-info .fa-solid {

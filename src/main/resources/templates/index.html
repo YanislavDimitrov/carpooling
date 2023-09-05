@@ -58,15 +58,15 @@
                     </a>
                 </li>
                 <li>
-                    <li class="link">
-                <a class="btn" th:href="@{/feedbacks/user}">
-                    <div>
-                        <i class="fa-solid fa-comment"></i>
-                        <span class="btn-content">Received feedbacks</span>
-                    </div>
-                    <i class="fa-solid fa-chevron-right"></i>
-                </a>
-            </li>
+                <li class="link">
+                    <a class="btn" th:href="@{/feedbacks/user}">
+                        <div>
+                            <i class="fa-solid fa-comment"></i>
+                            <span class="btn-content">Received feedbacks</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+                </li>
                 </li>
                 <li class="link">
                     <a class="btn" th:href="@{/auth/logout}">
@@ -88,7 +88,7 @@
         <a th:href="@{/admin/users}" th:if="${isAdmin}" class="admin-btn-container">
             <i class="fa-solid fa-gears"></i>Users
         </a>
-        <a th:if="${isAuthenticated}" class="search-btn-container" th:href="@{/feedbacks}" >
+        <a th:if="${isAuthenticated}" class="search-btn-container" th:href="@{/feedbacks}">
             <i class="fa-solid fa-magnifying-glass"></i>Feedbacks
         </a>
         <a class="create-btn-container" th:href="@{/travels/new}">
@@ -97,8 +97,10 @@
         <a id="avatar">
             <span class="avatar avatar-content-container">
                 <div class="avatar profile-picture-container">
-                    <img th:if="${hasProfilePicture}"  th:src="${profilePicture.getImageUrl()}" class="avatar profile-picture" src="../static/images/avatar.png">
-                    <img th:unless="${hasProfilePicture}"  th:src="@{/images/avatar.png}" class="avatar profile-picture" src="../static/images/avatar.png">
+                    <img th:if="${hasProfilePicture}" th:src="${profilePicture.getImageUrl()}"
+                         class="avatar profile-picture" src="../static/images/avatar.png">
+                    <img th:unless="${hasProfilePicture}" th:src="@{/images/avatar.png}" class="avatar profile-picture"
+                         src="../static/images/avatar.png">
                 </div>
 
                 <span class="avatar" th:text="${session.currentUser}" th:if="${isAuthenticated}"></span>
@@ -128,8 +130,13 @@
 
         <button type="submit" id="search">Search</button>
     </form>
-
-    <h1 class="title">Your pick of rides at low prices</h1>
+    <div class="titles">
+        <h1 class="title">Your pick of rides at low prices</h1>
+        <p class="sub-title"><span class="posts-count" th:text="${createdUsers}">32</span> decided to save the planet,
+        </p>
+        <p class="sub-title">by organizing <span class="users-count"
+                                                                  th:text="${completedTravels}">12</span> shared travels!</p>
+    </div>
     <img th:src="@{/images/CoverPicture.svg}" src="../static/images/CoverPicture.svg">
 </section>
 <section class="additional-info">
@@ -179,6 +186,18 @@
                     <div class="arrow"></div>
                     <a class="destination" th:href="@{/travels/{id}(id=${travel.id})}"
                        th:text="${travel.arrivalPoint}"></a>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="info-container">
+        <i class="fa-solid fa-car-side"></i>
+        <h2 class="info-title">Top Drivers</h2>
+        <ul role="list">
+            <li th:each="driver : ${topDrivers}">
+                <div class="travel-route">
+                    <a class="destination" th:href="@{/users/{id}(id=${driver.getId()})}"
+                       th:text="${driver.getFirstName()}+' '+${driver.getLastName()}"></a>
                 </div>
             </li>
         </ul>
