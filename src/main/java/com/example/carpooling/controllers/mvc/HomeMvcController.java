@@ -33,7 +33,7 @@ public class HomeMvcController {
 
     @GetMapping
     public String viewHomePage(Model model) {
-        model.addAttribute("completedTravels", travelService.countCompleted());
+        model.addAttribute("organizedTravels", travelService.countOrganized());
         model.addAttribute("createdUsers", userService.count());
         model.addAttribute("topDrivers", userService.findTopTenDrivers());
         return "index";

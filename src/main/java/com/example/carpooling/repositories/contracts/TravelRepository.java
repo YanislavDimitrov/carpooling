@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -119,6 +120,7 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
     List<Travel> findAllByStatusIs(TravelStatus status);
 
     Long countAllByStatusIs(TravelStatus status);
+    Long countAllByStatusIn(Collection<TravelStatus> status);
 
 
 }

@@ -434,6 +434,14 @@ public class TravelServiceImpl implements TravelService {
     public Long countCompleted() {
         return travelRepository.countAllByStatusIs(TravelStatus.COMPLETED);
     }
+    @Override
+    public Long countOrganized() {
+        return travelRepository.countAllByStatusIn(List.of(
+                TravelStatus.ACTIVE,
+                TravelStatus.COMPLETED,
+                TravelStatus.PLANNED));
+    }
+
 
     /**
      * Retrieves a list of non-deleted travels associated with a specific user who is the driver.
