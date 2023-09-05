@@ -11,6 +11,7 @@ import com.example.carpooling.models.User;
 import com.example.carpooling.models.dtos.FeedbackCreateDto;
 import com.example.carpooling.models.dtos.FeedbackFilterDto;
 import com.example.carpooling.models.enums.UserRole;
+import com.example.carpooling.models.enums.UserStatus;
 import com.example.carpooling.services.contracts.FeedbackService;
 import com.example.carpooling.services.contracts.TravelService;
 import com.example.carpooling.services.contracts.UserService;
@@ -159,6 +160,9 @@ public class FeedbackMvcController {
             if (!loggedUser.equals(feedbackOriginal.getCreator())) {
                 return "AccessDeniedView";
             }
+            if(loggedUser.getStatus() == UserStatus.BLOCKED) {
+                return "BlockedUserView";
+            }
             feedbackService.update(feedbackOriginal, feedbackToUpdate, loggedUser);
             return "redirect:/feedbacks";
         } catch (AuthenticationFailureException e) {
@@ -175,6 +179,9 @@ public class FeedbackMvcController {
         try {
             loggedUser = authenticationHelper.tryGetUser(session);
             feedback = feedbackService.getById(id);
+            if(loggedUser.getStatus() == UserStatus.BLOCKED) {
+                return "BlockedUserView";
+            }
             feedbackService.delete(feedback.getId(), loggedUser);
             return "redirect:/feedbacks";
         } catch (AuthenticationFailureException e) {
