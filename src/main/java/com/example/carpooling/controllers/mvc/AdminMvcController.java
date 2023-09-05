@@ -1,5 +1,4 @@
 package com.example.carpooling.controllers.mvc;
-
 import com.example.carpooling.exceptions.ActiveTravelException;
 import com.example.carpooling.exceptions.AuthenticationFailureException;
 import com.example.carpooling.exceptions.AuthorizationException;
@@ -22,7 +21,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-
 @Controller
 @RequestMapping("/admin")
 public class AdminMvcController {

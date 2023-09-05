@@ -1,5 +1,4 @@
 package com.example.carpooling.controllers.mvc;
-
 import com.example.carpooling.exceptions.AuthenticationFailureException;
 import com.example.carpooling.exceptions.AuthorizationException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
 @Controller
 @RequestMapping("/vehicles")
 public class VehicleMvcController {

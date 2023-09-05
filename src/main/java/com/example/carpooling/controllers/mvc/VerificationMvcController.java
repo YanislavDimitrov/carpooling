@@ -1,5 +1,4 @@
 package com.example.carpooling.controllers.mvc;
-
 import com.example.carpooling.exceptions.AuthenticationFailureException;
 import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.models.User;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
 @Controller
 @RequestMapping("/verification")
 public class VerificationMvcController {

@@ -1,5 +1,4 @@
 package com.example.carpooling.controllers.mvc;
-
 import com.example.carpooling.exceptions.AuthenticationFailureException;
 import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.models.Image;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
-
 @Controller
 @RequestMapping("/")
 public class HomeMvcController {
