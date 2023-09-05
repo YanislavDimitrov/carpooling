@@ -37,6 +37,8 @@ public interface FeedbackService {
 
     Feedback findByTravelIsAndCreatorAndRecipient(Travel travel, User creator, User recipient);
 
+    boolean haveTravelledTogether(Long travelId, User driver, User recipient);
+
 
     Feedback create(Travel travel, User creator, User recipient, Feedback feedback);
 

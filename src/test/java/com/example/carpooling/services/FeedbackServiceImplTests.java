@@ -1,12 +1,7 @@
 package com.example.carpooling.services;
 
-import com.example.carpooling.exceptions.AuthorizationException;
-import com.example.carpooling.exceptions.EntityNotFoundException;
-import com.example.carpooling.exceptions.TravelNotCompletedException;
-import com.example.carpooling.models.Feedback;
-import com.example.carpooling.models.Travel;
-import com.example.carpooling.models.TravelRequest;
-import com.example.carpooling.models.User;
+import com.example.carpooling.exceptions.*;
+import com.example.carpooling.models.*;
 import com.example.carpooling.models.enums.TravelRequestStatus;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.repositories.contracts.FeedbackRepository;
@@ -14,6 +9,7 @@ import com.example.carpooling.repositories.contracts.TravelRepository;
 import com.example.carpooling.repositories.contracts.TravelRequestRepository;
 import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.services.contracts.TravelService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -610,6 +606,247 @@ public class FeedbackServiceImplTests {
         travelRequest.setStatus(travelRequestStatus);
         return travelRequest;
     }
+    @Test
+    public void testHaveTravelledTogetherWhenDriverAndRecipientMatch() {
 
+        Long travelId = 1L;
+        User driver = new User();
+        User recipient = new User();
+        Travel travel = new Travel();
+        travel.setDriver(driver);
+        when(travelService.getById(travelId)).thenReturn(travel);
+
+
+        TravelRequest travelRequest = new TravelRequest();
+        travelRequest.setStatus(TravelRequestStatus.APPROVED);
+        travelRequest.setTravel(travel);
+        travelRequest.setPassenger(recipient);
+
+
+        boolean result = feedbackService.haveTravelledTogether(travelId, driver, recipient);
+
+
+        assertFalse(result);
+    }
+    @Test
+    public void testHaveTravelledTogetherWhenDriverIsRecipient() {
+        Long travelId = 1L;
+        User driver = new User();
+        driver.setId(1L);
+        Travel travel = new Travel();
+        travel.setDriver(driver);
+        when(travelService.getById(travelId)).thenReturn(travel);
+
+        TravelRequest driverTravelRequest = new TravelRequest();
+        driverTravelRequest.setTravel(travel);
+        driverTravelRequest.setStatus(TravelRequestStatus.APPROVED);
+        driver.getTravelsAsPassenger().add(driverTravelRequest);
+
+        boolean result = feedbackService.haveTravelledTogether(travelId, driver, driver);
+
+        assertTrue(result);
+    }
+    @Test
+    public void testHaveTravelledTogetherWhenDriverAndRecipientAreDifferent() {
+
+        Long travelId = 1L;
+        User driver = new User();
+        User recipient = new User();
+        Travel travel = new Travel();
+        travel.setDriver(driver);
+        when(travelService.getById(travelId)).thenReturn(travel);
+
+
+        TravelRequest recipientTravelRequest = new TravelRequest();
+        recipientTravelRequest.setTravel(travel);
+        recipientTravelRequest.setStatus(TravelRequestStatus.APPROVED);
+        recipient.getTravelsAsPassenger().add(recipientTravelRequest);
+
+
+        boolean result = feedbackService.haveTravelledTogether(travelId, driver, recipient);
+
+
+        assertTrue(result);
+    }
+    @Test
+    public void testHaveTravelledTogetherWhenRecipientIsDriverAndHasApprovedTravelRequest() {
+
+        Long travelId = 1L;
+        User driver = new User();
+        User recipient = new User();
+        Travel travel = new Travel();
+        travel.setDriver(recipient);
+        when(travelService.getById(travelId)).thenReturn(travel);
+
+        TravelRequest driverTravelRequest = new TravelRequest();
+        driverTravelRequest.setTravel(travel);
+        driverTravelRequest.setStatus(TravelRequestStatus.APPROVED);
+        recipient.getTravelsAsPassenger().add(driverTravelRequest);
+
+
+        boolean result = feedbackService.haveTravelledTogether(travelId, driver, recipient);
+
+        assertTrue(result);
+    }
+    @Test
+    public void testHaveTravelledTogetherWhenRecipientIsDriverButNoApprovedTravelRequest() {
+        // Arrange
+        Long travelId = 1L;
+        User driver = new User();
+        User recipient = new User();
+        Travel travel = new Travel();
+        travel.setDriver(recipient);
+        when(travelService.getById(travelId)).thenReturn(travel);
+
+
+        TravelRequest driverTravelRequest = new TravelRequest();
+        driverTravelRequest.setTravel(travel);
+        driverTravelRequest.setStatus(TravelRequestStatus.PENDING);
+        recipient.getTravelsAsPassenger().add(driverTravelRequest);
+
+
+        boolean result = feedbackService.haveTravelledTogether(travelId, driver, recipient);
+
+
+        assertFalse(result);
+    }
+    @Test
+    public void testHaveTravelledTogetherWhenRecipientIsDriverAndHasApprovedTravelRequestAsPassenger() {
+
+        Long travelId = 1L;
+        User driver = new User();
+        User recipient = new User();
+        Travel travel = new Travel();
+        travel.setDriver(recipient); // Set the driver of the travel to be the recipient
+        when(travelService.getById(travelId)).thenReturn(travel);
+
+
+        TravelRequest driverTravelRequest = new TravelRequest();
+        driverTravelRequest.setTravel(travel);
+        driverTravelRequest.setStatus(TravelRequestStatus.APPROVED);
+        recipient.getTravelsAsPassenger().add(driverTravelRequest);
+        Passenger passenger = new Passenger();
+        passenger.setTravel(travel);
+        passenger.setUser(driver);
+        passenger.setActive(true);
+
+        boolean result = feedbackService.haveTravelledTogether(travelId, driver, recipient);
+
+
+        assertTrue(result);
+    }
+    @Test
+    public void testCreateValidFeedback() {
+        Travel travel = new Travel();
+        travel.setId(1L);
+        User creator = new User();
+        creator.setId(2L);
+        User recipient = new User();
+        recipient.setId(3L);
+        Feedback feedback = new Feedback();
+        when(travelRepository.existsById(travel.getId())).thenReturn(true);
+        when(userRepository.existsById(recipient.getId())).thenReturn(true);
+        when(travelRepository.findById(travel.getId())).thenReturn(Optional.of(travel));
+        when(feedbackRepository.save(feedback)).thenReturn(feedback);
+      Assertions.assertThrows(TravelNotCompletedException.class,()->feedbackService.create(travel,creator,recipient,feedback));
+    }
+    @Test
+    public void testCreateFeedbackWithNonExistentTravel() {
+        Travel travel = new Travel();
+        travel.setId(1L);
+        User creator = new User();
+        User recipient = new User();
+        Feedback feedback = new Feedback();
+        when(travelRepository.existsById(travel.getId())).thenReturn(false);
+        assertThrows(EntityNotFoundException.class, () ->
+                feedbackService.create(travel, creator, recipient, feedback));
+    }
+    @Test
+    public void testCreateFeedbackWithNonExistentRecipient() {
+
+        Travel travel = new Travel();
+        travel.setId(1L);
+        User creator = new User();
+        creator.setId(2L);
+        User recipient = new User();
+        recipient.setId(3L);
+        Feedback feedback = new Feedback();
+        when(travelRepository.existsById(travel.getId())).thenReturn(true);
+        when(userRepository.existsById(recipient.getId())).thenReturn(false);
+        assertThrows(EntityNotFoundException.class, () ->
+                feedbackService.create(travel, creator, recipient, feedback));
+    }
+    @Test
+    public void testCreateFeedbackWithIncompleteTravel() {
+        // Arrange
+        Travel travel = new Travel();
+        travel.setId(1L);
+        travel.setStatus(TravelStatus.PLANNED); // Not completed
+        User creator = new User();
+        User recipient = new User();
+        Feedback feedback = new Feedback();
+        when(travelRepository.existsById(travel.getId())).thenReturn(true);
+        when(userRepository.existsById(recipient.getId())).thenReturn(true);
+        when(travelRepository.findById(travel.getId())).thenReturn(Optional.of(travel));
+
+        assertThrows(TravelNotCompletedException.class, () ->
+                feedbackService.create(travel, creator, recipient, feedback));
+    }
+    @Test
+    public void testCreateFeedbackForSameCreatorAndRecipient() {
+
+        Travel travel = new Travel();
+        travel.setId(1L);
+        User creator = new User();
+        creator.setId(2L);
+        User recipient = creator; // Same user
+        Feedback feedback = new Feedback();
+
+        assertThrows(EntityNotFoundException.class, () ->
+                feedbackService.create(travel, creator, recipient, feedback));
+    }
+    @Test
+    public void testCreateValidFeedbackForExistingFeedback() {
+
+        Travel travel = new Travel();
+        travel.setId(1L);
+        travel.setStatus(TravelStatus.COMPLETED);
+        User creator = new User();
+        creator.setId(2L);
+        User recipient = new User();
+        recipient.setId(3L);
+        Feedback feedback = new Feedback();
+        Feedback existingFeedback = new Feedback();
+        existingFeedback.setDeleted(true);
+        when(travelRepository.existsById(travel.getId())).thenReturn(true);
+        when(userRepository.existsById(recipient.getId())).thenReturn(true);
+        when(travelRepository.findById(travel.getId())).thenReturn(Optional.of(travel));
+        when(feedbackRepository.save(feedback)).thenReturn(feedback);
+        when(feedbackRepository.findByTravelIsAndCreatorAndRecipient(travel, creator, recipient))
+                .thenReturn(existingFeedback);
+
+Assertions.assertThrows(InvalidFeedbackException.class,()->feedbackService.create(travel,creator,recipient,feedback));
+
+    }
+    @Test
+    public void testCreateFeedbackForExistingDeletedFeedback() {
+        Travel travel = new Travel();
+        travel.setId(1L);
+        travel.setStatus(TravelStatus.COMPLETED);
+        User creator = new User();
+        creator.setId(2L);
+        User recipient = new User();
+        recipient.setId(3L);
+        Feedback feedback = new Feedback();
+        Feedback existingFeedback = new Feedback();
+        existingFeedback.setDeleted(true); // Deleted feedback
+        when(travelRepository.existsById(travel.getId())).thenReturn(true);
+        when(userRepository.existsById(recipient.getId())).thenReturn(true);
+        when(travelRepository.findById(travel.getId())).thenReturn(Optional.of(travel));
+        when(feedbackRepository.findByTravelIsAndCreatorAndRecipient(travel, creator, recipient))
+                .thenReturn(existingFeedback);
+        assertThrows(InvalidFeedbackException.class, () ->
+                feedbackService.create(travel, creator, recipient, feedback));
+    }
 
 }

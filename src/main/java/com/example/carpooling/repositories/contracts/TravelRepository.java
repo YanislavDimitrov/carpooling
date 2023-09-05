@@ -46,7 +46,7 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
             "WHERE (:departurePoint IS NULL OR :departurePoint = '' OR t.departurePoint LIKE %:departurePoint%) " +
             "AND (:arrivalPoint IS NULL OR :arrivalPoint = '' OR t.arrivalPoint LIKE %:arrivalPoint%) " +
             "AND (:departureTime IS NULL OR t.departureTime = :departureTime) " +
-            "AND (:freeSpots IS NULL OR t.freeSpots >= :freeSpots)" +
+            "AND (:freeSpots IS NULL OR :freeSpots = 0 or t.freeSpots >= :freeSpots)" +
             "AND t.status = 'PLANNED' " +
             "AND t.isDeleted = false")
     List<Travel> findByCustomSearchFilter(
@@ -59,7 +59,7 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
     List<Travel> findByStatusAndDepartureTimeBefore(TravelStatus status, LocalDateTime departureTime);
 
     @Query("SELECT t FROM Travel t WHERE " +
-            "(:freeSpots IS NULL OR t.freeSpots >=:freeSpots) " +
+            "(:freeSpots IS NULL  OR  t.freeSpots >=:freeSpots) " +
             "AND (:departedBefore IS NULL  OR FUNCTION('DATE', t.departureTime) >= :departedBefore) " +
             "AND(:departedAfter IS NULL OR FUNCTION('DATE', t.departureTime) < :departedAfter)" +
             "AND (:departurePoint IS NULL OR :departurePoint = '' OR t.departurePoint LIKE %:departurePoint%) " +
@@ -77,7 +77,7 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
                                          String price);
 
     @Query("SELECT t FROM Travel t WHERE " +
-            "(:freeSpots IS NULL OR t.freeSpots >=:freeSpots) " +
+            "(:freeSpots IS NULL  OR t.freeSpots >=:freeSpots) " +
             "AND (:departedBefore IS NULL  OR FUNCTION('DATE', t.departureTime) >= :departedBefore) " +
             "AND(:departedAfter IS NULL OR FUNCTION('DATE', t.departureTime) < :departedAfter)" +
             "AND (:departurePoint IS NULL OR :departurePoint = '' OR t.departurePoint LIKE %:departurePoint%) " +

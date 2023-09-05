@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 public class TravelFilterDto {
-    private short freeSpots;
+    private Short freeSpots;
     private LocalDate departedAfter;
     private LocalDate departedBefore;
     private String departurePoint;
