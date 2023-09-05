@@ -17,6 +17,19 @@ html {
     padding: 0 9rem;
 }
 
+.avatar-content-container{
+    position: relative;
+}
+
+
+.profile-picture-container .blocked{
+    position: absolute;
+    bottom: -.2rem;
+    left: 1.5rem;
+    width: 2rem;
+    height: 2rem;
+}
+
 .header i {
     margin-right: .6rem;
 }
@@ -96,7 +109,7 @@ html {
 }
 
 
-#avatar img {
+.avatar-content-container img {
     height: 3rem;
 }
 

@@ -95,8 +95,11 @@
             <i class="fa-solid fa-circle-plus"></i>Publish a ride
         </a>
         <a id="avatar">
+
             <span class="avatar avatar-content-container">
                 <div class="avatar profile-picture-container">
+                    <img th:if="${isBlocked}" th:src="@{/images/BlockedIcon.png}"
+                         class="blocked" src="../static/images/BlockedIcon.png">
                     <img th:if="${hasProfilePicture}" th:src="${profilePicture.getImageUrl()}"
                          class="avatar profile-picture" src="../static/images/avatar.png">
                     <img th:unless="${hasProfilePicture}" th:src="@{/images/avatar.png}" class="avatar profile-picture"

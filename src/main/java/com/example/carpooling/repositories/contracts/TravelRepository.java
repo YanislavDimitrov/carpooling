@@ -59,7 +59,7 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
     List<Travel> findByStatusAndDepartureTimeBefore(TravelStatus status, LocalDateTime departureTime);
 
     @Query("SELECT t FROM Travel t WHERE " +
-            "(:freeSpots IS NULL  OR t.freeSpots >=:freeSpots) " +
+            "(:freeSpots IS NULL OR t.freeSpots >=:freeSpots) " +
             "AND (:departedBefore IS NULL  OR FUNCTION('DATE', t.departureTime) >= :departedBefore) " +
             "AND(:departedAfter IS NULL OR FUNCTION('DATE', t.departureTime) < :departedAfter)" +
             "AND (:departurePoint IS NULL OR :departurePoint = '' OR t.departurePoint LIKE %:departurePoint%) " +
@@ -77,7 +77,7 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
                                          String price);
 
     @Query("SELECT t FROM Travel t WHERE " +
-            "(:freeSpots IS NULL  OR t.freeSpots >=:freeSpots) " +
+            "(:freeSpots IS NULL OR t.freeSpots >=:freeSpots) " +
             "AND (:departedBefore IS NULL  OR FUNCTION('DATE', t.departureTime) >= :departedBefore) " +
             "AND(:departedAfter IS NULL OR FUNCTION('DATE', t.departureTime) < :departedAfter)" +
             "AND (:departurePoint IS NULL OR :departurePoint = '' OR t.departurePoint LIKE %:departurePoint%) " +

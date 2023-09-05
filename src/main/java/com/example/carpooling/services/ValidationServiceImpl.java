@@ -3,12 +3,10 @@ package com.example.carpooling.services;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.VerificationToken;
 import com.example.carpooling.repositories.contracts.TokenRepository;
-import com.example.carpooling.services.contracts.BingMapsService;
 import com.example.carpooling.services.contracts.ValidationService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
@@ -16,24 +14,23 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-
-import static com.example.carpooling.services.UserServiceImpl.CONFIRMATION_EMAIL_TEMPLATE_PATH;
 
 @Service
 @PropertySource("classpath:application.properties")
 public class ValidationServiceImpl implements ValidationService {
     private final TokenRepository tokenRepository;
     private final JavaMailSender javaMailSender;
-    private final BingMapsService bingMapsService;
     private String baseUrl;
 
     @Autowired
-    public ValidationServiceImpl(Environment env, TokenRepository tokenRepository, JavaMailSender javaMailSender, BingMapsService bingMapsService) {
+    public ValidationServiceImpl(Environment env, TokenRepository tokenRepository, JavaMailSender javaMailSender) {
         this.tokenRepository = tokenRepository;
         this.javaMailSender = javaMailSender;
-        this.bingMapsService = bingMapsService;
         this.baseUrl = env.getProperty("env.basepath");
     }
 
