@@ -41,7 +41,7 @@ public class ValidationServiceImpl implements ValidationService {
     public void validate(User user) throws IOException, MessagingException {
         VerificationToken verificationToken = new VerificationToken(user);
         tokenRepository.save(verificationToken);
-        String verificationLink = baseUrl + "/verification/validate?token=" + verificationToken.getToken();
+        String verificationLink = baseUrl + "verification/validate?token=" + verificationToken.getToken();
         String htmlContent = readHtmlFromFile();
         htmlContent = htmlContent.replace("verificationLinkPlaceholder", verificationLink);
         sendVerificationEmail(user.getEmail(), htmlContent);
