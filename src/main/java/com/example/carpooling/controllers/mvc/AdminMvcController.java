@@ -74,6 +74,7 @@ public class AdminMvcController {
         }
     }
 
+
     @GetMapping("/users")
     public String getUsers(@RequestParam(defaultValue = "0") int page,
                            @RequestParam(defaultValue = "1") int size,
@@ -142,6 +143,7 @@ public class AdminMvcController {
         return "redirect:/admin/users";
     }
 
+
     @GetMapping("/{id}/downgrade")
     public String downgradeUser(@PathVariable Long id, HttpSession session) {
 
@@ -161,6 +163,7 @@ public class AdminMvcController {
         }
         return "redirect:/admin/users";
     }
+
 
     @GetMapping("/{id}/block")
     public String blockUser(@PathVariable Long id, Model model, HttpSession session) {
@@ -186,6 +189,7 @@ public class AdminMvcController {
         return "redirect:/admin/users";
     }
 
+
     @GetMapping("/{id}/unblock")
     public String unblockUser(@PathVariable Long id, HttpSession session) {
 
@@ -206,6 +210,7 @@ public class AdminMvcController {
         return "redirect:/admin/users";
     }
 
+
     @GetMapping("{id}/complete-travels-block")
     public String completeActiveTravelsAndBlockUser(@PathVariable Long id, HttpSession session) {
         User loggedUser;
@@ -225,6 +230,7 @@ public class AdminMvcController {
             return "AccessDeniedView";
         }
     }
+
     private String extractParametersSection(Map<String, String[]> parameterMap) {
         StringBuilder builder = new StringBuilder();
         for (String key : parameterMap.keySet()) {

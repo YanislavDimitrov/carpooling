@@ -25,7 +25,6 @@ public class TravelRequest {
     @Enumerated(EnumType.STRING)
     private TravelRequestStatus status;
 
-
     public TravelRequest() {
         status = TravelRequestStatus.PENDING;
     }

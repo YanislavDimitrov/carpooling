@@ -164,7 +164,7 @@ public class VehicleMvcController {
         }
 
         try {
-            this.vehicleService.delete(id,loggedUser);
+            this.vehicleService.delete(id, loggedUser);
         } catch (EntityNotFoundException e) {
             return "NotFoundView";
         } catch (AuthorizationException e) {

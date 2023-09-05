@@ -102,7 +102,7 @@
             <div class="user-info-container">
                 <a class="user-names"
                    th:href="@{'/users/' + ${currentUser.getId()}}"
-                    th:text="${currentUser.getFirstName()}+' '+${currentUser.getLastName()}+' ('+${currentUser.getUserName()}+')'">
+                   th:text="${currentUser.getFirstName()}+' '+${currentUser.getLastName()}+' ('+${currentUser.getUserName()}+')'">
                     Yanislav
                     Dimitrov (yanidim)</a>
                 <h3 class="user-username" th:text="${currentUser.getEmail()}">yanidim@gmail.com</h3>
@@ -187,7 +187,7 @@
         <!-- Next Page -->
         <li th:class="${userPage.last ? 'disabled' : 'edge-page'}">
             <a
-               th:href="@{'/admin/users' +'?page='+${userPage.getNumber()+1}+${filterParams}}"><i
+                    th:href="@{'/admin/users' +'?page='+${userPage.getNumber()+1}+${filterParams}}"><i
                     class="fa-solid fa-chevron-right"></i></a>
         </li>
         <!-- Last Page -->

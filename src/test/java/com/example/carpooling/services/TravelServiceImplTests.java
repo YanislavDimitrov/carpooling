@@ -536,7 +536,7 @@ public class TravelServiceImplTests {
         Travel travel = createTravel(2L, LocalDateTime.now());
         User driver = createUser();
 
-         travelService.checkIfTheTravelTimeFrameIsValid(oldTravel, travel, driver);
+        travelService.checkIfTheTravelTimeFrameIsValid(oldTravel, travel, driver);
 
     }
 
@@ -752,7 +752,8 @@ public class TravelServiceImplTests {
         travelRequests.add(travelRequest1);
         return travelRequests;
     }
-    public Travel createTravel (Long id , User user , boolean isDeleted) {
+
+    public Travel createTravel(Long id, User user, boolean isDeleted) {
         Travel travel = new Travel();
         travel.setId(id);
         travel.setDriver(user);
@@ -767,6 +768,7 @@ public class TravelServiceImplTests {
                 createTravel(3L, user, false)
         ).collect(Collectors.toList());
     }
+
     @Test
     void testCheckIfTheTravelTimeFrameIsValidd_NoConflicts() {
         Travel travel = new Travel();

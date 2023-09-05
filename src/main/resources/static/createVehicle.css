@@ -8,6 +8,7 @@ input:-webkit-autofill:active {
     -webkit-box-shadow: 0 0 0 30px white inset !important;
 
 }
+
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -107,20 +108,19 @@ html {
 .form input[type="text"],
 .form input[type="password"],
 .form input[type="email"],
-.form input[type="number"]{
+.form input[type="number"] {
     all: unset;
     border: none;
     width: 95%;
     transition: color ease-in-out .1s;
 }
 
-select{
+select {
     border: none;
     outline: none;
     background-color: transparent;
     width: 95%;
 }
-
 
 
 .form input:focus::placeholder {

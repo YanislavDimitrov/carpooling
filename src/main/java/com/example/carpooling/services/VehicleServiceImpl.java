@@ -6,7 +6,6 @@ import com.example.carpooling.models.User;
 import com.example.carpooling.models.Vehicle;
 import com.example.carpooling.models.dtos.VehicleUpdateDto;
 import com.example.carpooling.models.enums.UserRole;
-import com.example.carpooling.repositories.contracts.UserRepository;
 import com.example.carpooling.repositories.contracts.VehicleRepository;
 import com.example.carpooling.services.contracts.VehicleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static com.example.carpooling.helpers.ConstantMessages.*;
+import static com.example.carpooling.helpers.ConstantMessages.DELETE_VEHICLE_AUTHORIZATION_MESSAGE;
+import static com.example.carpooling.helpers.ConstantMessages.UPDATE_VEHICLE_AUTHORIZATION_MESSAGE;
 
 @Service
 public class VehicleServiceImpl implements VehicleService {

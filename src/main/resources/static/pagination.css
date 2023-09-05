@@ -12,20 +12,23 @@
     color: #0b2b3a;
 }
 
-.main .pagination .dots{
+.main .pagination .dots {
     font-size: 2rem;
 }
-.main .pagination .edge-page{
+
+.main .pagination .edge-page {
     color: inherit;
 }
 
-.main .pagination .disabled *{
+.main .pagination .disabled * {
     pointer-events: none;
     color: #bebebe;
 }
-.main .pagination a:visited{
+
+.main .pagination a:visited {
     color: inherit;
 }
-.main .pagination .current-page{
+
+.main .pagination .current-page {
     font-size: 2rem;
 }

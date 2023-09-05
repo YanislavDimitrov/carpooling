@@ -37,23 +37,18 @@ public class Travel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vehicle_id")
     private Vehicle vehicle;
-
     @Enumerated(EnumType.STRING)
     private TravelStatus status;
-
     @Column(name = "distance")
     private String distance;
     @Column(name = "duration")
     private String travelDuration;
     @Column(name = "arrival_time")
     private LocalDateTime estimatedTimeOfArrival;
-
     @OneToMany(mappedBy = "travel", fetch = FetchType.EAGER)
     private List<TravelRequest> travelRequests;
-
     @Column(name = "is_deleted")
     private boolean isDeleted;
-
     @Column(name = "price")
     private String price;
 

@@ -1,6 +1,5 @@
 package com.example.carpooling.services;
 
-import com.cloudinary.Cloudinary;
 import com.example.carpooling.models.Image;
 import com.example.carpooling.repositories.contracts.ImageRepository;
 import org.junit.jupiter.api.Test;

@@ -14,60 +14,61 @@
 <header th:replace="index.html :: header"></header>
 <section class="main">
     <div id="content">
-    <h1 class="form-title">Update Travel</h1>
-        <form class="form" th:action="@{'/travels/' + ${travelId} + '/update'}" th:object="${updateTravel}" method="post">
-        <div class="names-container">
-            <div class="field-container">
-                <label th:text="#{travel.label.departure-point}">Departure Point</label>
-                <input type="text" id="title" th:field="*{departurePoint}" placeholder="Start Destination">
-                <label class="error" th:errors="*{departurePoint}">Departure point cannot be empty field!></label>
-            </div>
-            <div class="field-container">
-                <div class="content-characters">
-                    <label th:text="#{travel.label.arrival-point}">Arrival point </label>
-                    <input type="text" th:field="*{arrivalPoint}" placeholder="Arrival Destination">
-                    <label class="error" th:errors="*{arrivalPoint}">Arrival point field cannot be empty!</label>
+        <h1 class="form-title">Update Travel</h1>
+        <form class="form" th:action="@{'/travels/' + ${travelId} + '/update'}" th:object="${updateTravel}"
+              method="post">
+            <div class="names-container">
+                <div class="field-container">
+                    <label th:text="#{travel.label.departure-point}">Departure Point</label>
+                    <input type="text" id="title" th:field="*{departurePoint}" placeholder="Start Destination">
+                    <label class="error" th:errors="*{departurePoint}">Departure point cannot be empty field!></label>
+                </div>
+                <div class="field-container">
+                    <div class="content-characters">
+                        <label th:text="#{travel.label.arrival-point}">Arrival point </label>
+                        <input type="text" th:field="*{arrivalPoint}" placeholder="Arrival Destination">
+                        <label class="error" th:errors="*{arrivalPoint}">Arrival point field cannot be empty!</label>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="names-container">
-            <div class="field-container">
-                <label th:text="#{travel.label.free-spots}">Free Spots</label>
-                <input type="number" th:field="*{freeSpots}" placeholder="Free Spots ">
+            <div class="names-container">
+                <div class="field-container">
+                    <label th:text="#{travel.label.free-spots}">Free Spots</label>
+                    <input type="number" th:field="*{freeSpots}" placeholder="Free Spots ">
+                </div>
+                <div class="field-container">
+                    <label th:text="#{travel.label.departure-time}">Departure Time</label>
+                    <input type="datetime-local" th:field="*{departureTime}" placeholder="Departure Time">
+                    <label class="error" th:errors="*{departureTime}">Departure time should be present or future
+                        date!></label>
+                </div>
             </div>
-            <div class="field-container">
-                <label th:text="#{travel.label.departure-time}">Departure Time</label>
-                <input type="datetime-local" th:field="*{departureTime}" placeholder="Departure Time">
-                <label class="error" th:errors="*{departureTime}">Departure time should be present or future
-                    date!></label>
+            <div class="names-container">
+                <div class="field-container">
+                    <label th:text="#{travel.label.comment}">Comment</label>
+                    <input type="text" th:field="*{comment}"
+                           placeholder="Comment">
+                </div>
+                <div class="field-container">
+                    <label th:text="#{travel.label.price}">Price</label>
+                    <input type="number" th:field="*{price}"
+                           placeholder="Price">
+                </div>
             </div>
-        </div>
-        <div class="names-container">
-            <div class="field-container">
-                <label th:text="#{travel.label.comment}">Comment</label>
-                <input type="text" th:field="*{comment}"
-                       placeholder="Comment">
+            <div class="names-container">
+                <div id="vehicle" class="field-container">
+                    <label th:text="#{travel.label.vehicle}">Vehicle</label>
+                    <select th:field="*{vehicle}">
+                        <option th:each="vehicle : ${vehicles}"
+                                th:value="${vehicle.getId()}"
+                                th:text="${vehicle.getMake() +' ' } + ${vehicle.getModel()}">
+                        </option>
+                    </select>
+                    <label class="error" th:errors="*{vehicle}">Vehicle error placeholder</label>
+                </div>
             </div>
-            <div class="field-container">
-                <label th:text="#{travel.label.price}">Price</label>
-                <input type="number" th:field="*{price}"
-                       placeholder="Price">
-            </div>
-        </div>
-        <div class="names-container">
-            <div id="vehicle" class="field-container">
-                <label th:text="#{travel.label.vehicle}">Vehicle</label>
-                <select th:field="*{vehicle}">
-                    <option th:each="vehicle : ${vehicles}"
-                            th:value="${vehicle.getId()}"
-                            th:text="${vehicle.getMake() +' ' } + ${vehicle.getModel()}">
-                    </option>
-                </select>
-                <label class="error" th:errors="*{vehicle}">Vehicle error placeholder</label>
-            </div>
-        </div>
-        <button type="submit" value="Update Travel">Update Travel</button>
-    </form>
+            <button type="submit" value="Update Travel">Update Travel</button>
+        </form>
     </div>
 </section>
 <footer th:replace="index.html :: footer"></footer>

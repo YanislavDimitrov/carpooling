@@ -21,7 +21,7 @@
                 <div>
                     <label for="free-spots">Free Spots</label>
                     <i class="fa-solid fa-people-simple"></i>
-                    <input  id="free-spots" type="number" name="freeSpots" value="1" placeholder="Free Spots">
+                    <input id="free-spots" type="number" name="freeSpots" value="1" placeholder="Free Spots">
                 </div>
 
             </div>
@@ -29,7 +29,7 @@
                 <div>
                     <label for="departed-after">Departure After</label>
                     <i class="fa-solid fa-calendar-days"></i>
-                    <input  id="departed-after" type="date" th:field="*{departedAfter}"  onfocus="this.showPicker()">
+                    <input id="departed-after" type="date" th:field="*{departedAfter}" onfocus="this.showPicker()">
                 </div>
 
             </div>
@@ -45,14 +45,14 @@
                 <div>
                     <label for="departure-point">Departure Destination</label>
                     <i class="fa-sharp fa-solid fa-location-pin"></i>
-                    <input id="departure-point"  type="text" th:field="*{departurePoint}" placeholder="Departure Point">
+                    <input id="departure-point" type="text" th:field="*{departurePoint}" placeholder="Departure Point">
                 </div>
             </div>
             <div class="select input-container">
                 <div>
                     <label for="arrival-point">Arrival Destination</label>
                     <i class="fa-sharp fa-solid fa-location-pin"></i>
-                    <input  id="arrival-point"  type="text" th:field="*{arrivalPoint}" placeholder="Arrival Point">
+                    <input id="arrival-point" type="text" th:field="*{arrivalPoint}" placeholder="Arrival Point">
                 </div>
             </div>
             <div class="select input-container">
@@ -100,7 +100,7 @@
                     <p th:text="${'Free Spots: ' + travel.freeSpots}">Free Spots: 2</p>
                 </div>
 
-                    <span th:text="${travel.status}">Completed</span>
+                <span th:text="${travel.status}">Completed</span>
 
             </div>
         </div>

@@ -20,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+
 @RestController
 @RequestMapping("api/feedbacks")
 public class FeedbackRestController {
@@ -31,6 +32,7 @@ public class FeedbackRestController {
 
     private final FeedbackMapper feedbackMapper;
     private final AuthenticationHelper authenticationHelper;
+
     @Autowired
     public FeedbackRestController(FeedbackService feedbackService, TravelService travelService, UserService userService, FeedbackMapper feedbackMapper, AuthenticationHelper authenticationHelper) {
         this.feedbackService = feedbackService;
@@ -39,6 +41,8 @@ public class FeedbackRestController {
         this.feedbackMapper = feedbackMapper;
         this.authenticationHelper = authenticationHelper;
     }
+
+
     @GetMapping
     public List<FeedbackViewDto> get(@RequestHeader HttpHeaders headers,
                                      @RequestParam(required = false) Short rating,
@@ -69,6 +73,8 @@ public class FeedbackRestController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, NOT_AUTHORIZED);
         }
     }
+
+
     @GetMapping("/{id}")
     public FeedbackViewDto get(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         try {
@@ -80,22 +86,26 @@ public class FeedbackRestController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
+
+
     @GetMapping("/user/{id}")
-    public List<FeedbackViewDto> getByUser(@PathVariable Long id , @RequestHeader HttpHeaders headers) {
+    public List<FeedbackViewDto> getByUser(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         try {
             User user = authenticationHelper.tryGetUser(headers);
-      User userToCheck = userService.getById(id);
-          return  feedbackService.getByRecipientIs(userToCheck)
-                  .stream()
-                  .filter(feedback -> !feedback.isDeleted())
-                  .map(feedbackMapper::toDtoFromFeedback)
-                  .toList();
+            User userToCheck = userService.getById(id);
+            return feedbackService.getByRecipientIs(userToCheck)
+                    .stream()
+                    .filter(feedback -> !feedback.isDeleted())
+                    .map(feedbackMapper::toDtoFromFeedback)
+                    .toList();
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthenticationFailureException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,e.getMessage());
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
+
+
     @PostMapping("/travel/{travelId}/user/{userId}")
     public FeedbackViewDto create(@PathVariable Long travelId,
                                   @PathVariable Long userId,
@@ -105,16 +115,18 @@ public class FeedbackRestController {
             Travel travel = travelService.getById(travelId);
             User creator = authenticationHelper.tryGetUser(headers);
             User recipient = userService.getById(userId);
-            Feedback feedback = feedbackMapper.fromCreationDto(feedbackCreateDto,creator,recipient,travel);
+            Feedback feedback = feedbackMapper.fromCreationDto(feedbackCreateDto, creator, recipient, travel);
             return feedbackMapper.toDtoFromFeedback(feedbackService.create(travel, creator, recipient, feedback));
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (AuthenticationFailureException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        } catch ( TravelNotCompletedException | InvalidFeedbackException | InvalidOperationException e) {
+        } catch (TravelNotCompletedException | InvalidFeedbackException | InvalidOperationException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
+
+
     @PutMapping("/{id}")
     public FeedbackViewDto update(@PathVariable Long id,
                                   @RequestHeader HttpHeaders headers,
@@ -122,23 +134,25 @@ public class FeedbackRestController {
         try {
             User editor = authenticationHelper.tryGetUser(headers);
             Feedback originalFeedback = feedbackService.getById(id);
-            Feedback feedbackUpdate = feedbackMapper.fromUpdateToFeedback(feedbackCreateDto,id  );
-           return feedbackMapper.toDtoFromFeedback(feedbackService.update(originalFeedback,feedbackUpdate,editor));
+            Feedback feedbackUpdate = feedbackMapper.fromUpdateToFeedback(feedbackCreateDto, id);
+            return feedbackMapper.toDtoFromFeedback(feedbackService.update(originalFeedback, feedbackUpdate, editor));
         } catch (AuthenticationFailureException | AuthorizationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
+
+
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable Long id , @RequestHeader HttpHeaders headers) {
+    public String delete(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         try {
             User editor = authenticationHelper.tryGetUser(headers);
             Feedback feedback = feedbackService.getById(id);
-            feedbackService.delete(feedback.getId(),editor);
-            return String.format(FEEDBACK_DELETED,id,editor.getUserName());
+            feedbackService.delete(feedback.getId(), editor);
+            return String.format(FEEDBACK_DELETED, id, editor.getUserName());
         } catch (AuthenticationFailureException | AuthorizationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,e.getMessage());
-        }catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,e.getMessage());
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
 }

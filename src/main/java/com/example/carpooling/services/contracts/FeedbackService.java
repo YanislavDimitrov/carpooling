@@ -26,12 +26,16 @@ public interface FeedbackService {
                                     User creator,
                                     User recipient,
                                     Travel travel);
+
     List<Feedback> findByTravelId(Long id);
 
     List<Feedback> findAll(Sort sort);
-    boolean existsByTravelAndRecipientAndCreator(Travel travel , User recipient , User creator);
+
+    boolean existsByTravelAndRecipientAndCreator(Travel travel, User recipient, User creator);
+
     boolean existsByTravelAndCreator(Travel travel, User creator);
-    Feedback findByTravelIsAndCreatorAndRecipient(Travel travel ,User creator , User recipient);
+
+    Feedback findByTravelIsAndCreatorAndRecipient(Travel travel, User creator, User recipient);
 
 
     Feedback create(Travel travel, User creator, User recipient, Feedback feedback);
@@ -39,5 +43,6 @@ public interface FeedbackService {
     Feedback update(Feedback originalFeedback, Feedback updateFeedback, User editor);
 
     void delete(Long id, User editor);
+
     Long count();
 }

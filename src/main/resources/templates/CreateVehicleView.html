@@ -1,92 +1,93 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Create Vehicle</title>
-  <link rel="website icon" th:type="png" th:href="@{/images/carpool_simplelogo.png}">
-  <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
-  <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
-  <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">
-  <link rel="stylesheet" href="../static/createVehicle.css" th:href="@{/createVehicle.css}">
+    <meta charset="UTF-8">
+    <title>Create Vehicle</title>
+    <link rel="website icon" th:type="png" th:href="@{/images/carpool_simplelogo.png}">
+    <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
+    <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
+    <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">
+    <link rel="stylesheet" href="../static/createVehicle.css" th:href="@{/createVehicle.css}">
 </head>
 <body>
 <!--HEADER-->
 <header th:replace="index.html :: header"></header>
 <section class="main">
 
-  <h1 class="login-title">Create vehicle</h1>
-  <form id="search-form" class="form" th:action="@{/vehicles/create}" th:object="${vehicle}" method="post">
-    <div>
-      <div class="input-container">
+    <h1 class="login-title">Create vehicle</h1>
+    <form id="search-form" class="form" th:action="@{/vehicles/create}" th:object="${vehicle}" method="post">
         <div>
-          <i class="fa-solid fa-car"></i>
-          <input type="text" th:field="*{make}" placeholder="Make">
-        </div>
+            <div class="input-container">
+                <div>
+                    <i class="fa-solid fa-car"></i>
+                    <input type="text" th:field="*{make}" placeholder="Make">
+                </div>
 
-      </div>
-      <div class="input-container">
-        <div>
-          <i class="fa-solid fa-car"></i>
-          <input type="text" th:field="*{model}" placeholder="Model">
-        </div>
+            </div>
+            <div class="input-container">
+                <div>
+                    <i class="fa-solid fa-car"></i>
+                    <input type="text" th:field="*{model}" placeholder="Model">
+                </div>
 
-      </div>
-    </div>
-    <div>
-      <div class="input-container">
-        <div>
-          <i class="fa-solid fa-hashtag"></i>
-          <input type="text" th:field="*{licencePlateNumber}" placeholder="Licence plate number">
+            </div>
         </div>
-      </div>
+        <div>
+            <div class="input-container">
+                <div>
+                    <i class="fa-solid fa-hashtag"></i>
+                    <input type="text" th:field="*{licencePlateNumber}" placeholder="Licence plate number">
+                </div>
+            </div>
 
-      <div class="input-container">
-        <div>
-          <i class="fa-regular fa-calendar"></i>
-          <input type="number" min="1900" max="2099" th:field="*{yearOfProduction}" placeholder="Year of production" />
+            <div class="input-container">
+                <div>
+                    <i class="fa-regular fa-calendar"></i>
+                    <input type="number" min="1900" max="2099" th:field="*{yearOfProduction}"
+                           placeholder="Year of production"/>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-    <div>
-      <div class="input-container">
         <div>
-          <i class="fa-solid fa-palette"></i>
-          <select id="type" th:field="*{color}">
-            <option value="">Color</option>
-            <option value="White">White</option>
-            <option value="Black">Black</option>
-            <option value="Red">Red</option>
-            <option value="Yellow">Yellow</option>
-            <option value="Green">Green</option>
-            <option value="Blue">Blue</option>
-            <option value="Beige">Beige</option>
-            <option value="Purple">Purple</option>
-            <option value="Silver">Silver</option>
-            <option value="Grey">Grey</option>
-            <option value="Brown">Brown</option>
-          </select>
+            <div class="input-container">
+                <div>
+                    <i class="fa-solid fa-palette"></i>
+                    <select id="type" th:field="*{color}">
+                        <option value="">Color</option>
+                        <option value="White">White</option>
+                        <option value="Black">Black</option>
+                        <option value="Red">Red</option>
+                        <option value="Yellow">Yellow</option>
+                        <option value="Green">Green</option>
+                        <option value="Blue">Blue</option>
+                        <option value="Beige">Beige</option>
+                        <option value="Purple">Purple</option>
+                        <option value="Silver">Silver</option>
+                        <option value="Grey">Grey</option>
+                        <option value="Brown">Brown</option>
+                    </select>
+                </div>
+            </div>
+            <div class="input-container">
+                <div>
+                    <i class="fa-solid fa-truck-pickup"></i>
+                    <select id="color" th:field="*{type}">
+                        <option value="">Vehicle type</option>
+                        <option value="SALOON">Saloon</option>
+                        <option value="SUV">SUV</option>
+                        <option value="HATCHBACK">Hatchback</option>
+                        <option value="CABRIOLET">Cabriolet</option>
+                        <option value="STATION_WAGON">Station wagon</option>
+                    </select>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="input-container">
-        <div>
-          <i class="fa-solid fa-truck-pickup"></i>
-          <select id="color" th:field="*{type}">
-            <option value="">Vehicle type</option>
-            <option value="SALOON">Saloon</option>
-            <option value="SUV">SUV</option>
-            <option value="HATCHBACK">Hatchback</option>
-            <option value="CABRIOLET">Cabriolet</option>
-            <option value="STATION_WAGON">Station wagon</option>
-          </select>
+        <div class="errors">
+            <label class="error" th:errors="*{color}">Vehicle color error placeholder</label>
+            <label class="error" th:errors="*{type}">Vehicle type error placeholder</label>
         </div>
-      </div>
-    </div>
-    <div class="errors">
-      <label class="error" th:errors="*{color}">Vehicle color error placeholder</label>
-      <label class="error" th:errors="*{type}">Vehicle type error placeholder</label>
-    </div>
-    <button onclick="myFunction()" type="submit" id="search">Register</button>
-  </form>
+        <button onclick="myFunction()" type="submit" id="search">Register</button>
+    </form>
 </section>
 <!--FOOTER-->
 <header th:replace="index.html :: footer"></header>

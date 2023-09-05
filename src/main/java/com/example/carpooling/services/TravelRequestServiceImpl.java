@@ -1,6 +1,9 @@
 package com.example.carpooling.services;
 
-import com.example.carpooling.exceptions.*;
+import com.example.carpooling.exceptions.AuthorizationException;
+import com.example.carpooling.exceptions.EntityNotFoundException;
+import com.example.carpooling.exceptions.InvalidOperationException;
+import com.example.carpooling.exceptions.VehicleIsFullException;
 import com.example.carpooling.exceptions.duplicate.DuplicateEntityException;
 import com.example.carpooling.models.Passenger;
 import com.example.carpooling.models.Travel;
@@ -88,10 +91,10 @@ public class TravelRequestServiceImpl implements TravelRequestService {
 
     @Override
     public List<TravelRequest> findByTravelIsAndStatus(Travel travel, TravelRequestStatus status) {
-        if(!travelRepository.existsById(travel.getId())) {
-            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND,travel.getId()));
+        if (!travelRepository.existsById(travel.getId())) {
+            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, travel.getId()));
         }
-        return travelRequestRepository.findByTravelIsAndStatus(travel,TravelRequestStatus.PENDING);
+        return travelRequestRepository.findByTravelIsAndStatus(travel, TravelRequestStatus.PENDING);
     }
 
     /**

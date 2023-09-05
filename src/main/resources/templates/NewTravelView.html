@@ -13,49 +13,52 @@
 <!--HEADER-->
 <header th:replace="index.html :: header"></header>
 <section class="main">
-<div id="content">
+    <div id="content">
         <h1 class="form-title">Create New Travel</h1>
-        <form  id="search-form" class="form" th:action="@{/travels/new}" th:object="${travel}" action="#" method="post">
-           <div class="names-container">
-            <div class="field-container">
-                <label th:text="#{travel.label.departure-point}">Departure Point</label>
-                <label>
-                    <input type="text" th:field="*{departurePoint}" placeholder="Departure Point">
-                </label>
-                <div id="departurePointError" class="error" th:errors="*{departurePoint}">Departure point field cannot be empty!</div>
-<!--                <label class="error" th:errors="*{departurePoint}">Departure point field cannot be empty!</label>-->
-            </div>
-            <div class="field-container">
-                <label th:text="#{travel.label.arrival-point}">Arrival Point</label>
-                <label>
-                    <input type="text" th:field="*{arrivalPoint}" placeholder="Arrival Point">
-                </label>
-                <label class="error" th:errors="*{arrivalPoint}">Arrival point field cannot be empty!</label>
-            </div>
+        <form id="search-form" class="form" th:action="@{/travels/new}" th:object="${travel}" action="#" method="post">
+            <div class="names-container">
+                <div class="field-container">
+                    <label th:text="#{travel.label.departure-point}">Departure Point</label>
+                    <label>
+                        <input type="text" th:field="*{departurePoint}" placeholder="Departure Point">
+                    </label>
+                    <div id="departurePointError" class="error" th:errors="*{departurePoint}">Departure point field
+                        cannot be empty!
+                    </div>
+                    <!--                <label class="error" th:errors="*{departurePoint}">Departure point field cannot be empty!</label>-->
+                </div>
+                <div class="field-container">
+                    <label th:text="#{travel.label.arrival-point}">Arrival Point</label>
+                    <label>
+                        <input type="text" th:field="*{arrivalPoint}" placeholder="Arrival Point">
+                    </label>
+                    <label class="error" th:errors="*{arrivalPoint}">Arrival point field cannot be empty!</label>
+                </div>
             </div>
             <div class="names-container">
-               <div class="field-container">
-                   <label th:text="#{travel.label.free-spots}">Free Spots</label>
-                   <label>
-                       <input type="number" th:field="*{freeSpots}" placeholder="Free Spots">
-                   </label>
-                   <label class="error" th:errors="*{freeSpots}">Free spots field cannot be empty!</label>
-               </div>
-            <div class="field-container">
-                <label th:text="#{travel.label.departure-time}">Departure Time</label>
-                <label>
-                    <input type="datetime-local" th:field="*{departureTime}" placeholder="Departure Time" data-error-id="departureTimeError">
-                </label>
-                <label class="errors" th:errors="*{departureTime}">Departure time field cannot be empty!</label>
-            </div>
+                <div class="field-container">
+                    <label th:text="#{travel.label.free-spots}">Free Spots</label>
+                    <label>
+                        <input type="number" th:field="*{freeSpots}" placeholder="Free Spots">
+                    </label>
+                    <label class="error" th:errors="*{freeSpots}">Free spots field cannot be empty!</label>
+                </div>
+                <div class="field-container">
+                    <label th:text="#{travel.label.departure-time}">Departure Time</label>
+                    <label>
+                        <input type="datetime-local" th:field="*{departureTime}" placeholder="Departure Time"
+                               data-error-id="departureTimeError">
+                    </label>
+                    <label class="errors" th:errors="*{departureTime}">Departure time field cannot be empty!</label>
+                </div>
             </div>
             <div class="names-container">
-            <div class="field-container">
-                <label th:text="#{travel.label.comment}">Comment</label>
-                <label>
-                    <input type="text" th:field="*{comment}" placeholder="Comment">
-                </label>
-            </div>
+                <div class="field-container">
+                    <label th:text="#{travel.label.comment}">Comment</label>
+                    <label>
+                        <input type="text" th:field="*{comment}" placeholder="Comment">
+                    </label>
+                </div>
                 <div class="field-container">
                     <label th:text="#{travel.label.price}">Price</label>
                     <label>
@@ -65,21 +68,21 @@
                 </div>
             </div>
             <div class="names-container">
-            <div  id="vehicle" class="field-container">
-                <label th:text="#{travel.label.vehicle}">Vehicle</label>
-                <select th:field="*{vehicle}">
-                    <option th:each="vehicle : ${vehicles}"
-                            th:value="${vehicle.getId()}"
-                            th:text="${vehicle.getMake() +' ' } + ${vehicle.getModel()}">
-                    </option>
-                </select>
-                <label class="error" th:errors="*{vehicle}">Vehicle error placeholder</label>
-            </div>
+                <div id="vehicle" class="field-container">
+                    <label th:text="#{travel.label.vehicle}">Vehicle</label>
+                    <select th:field="*{vehicle}">
+                        <option th:each="vehicle : ${vehicles}"
+                                th:value="${vehicle.getId()}"
+                                th:text="${vehicle.getMake() +' ' } + ${vehicle.getModel()}">
+                        </option>
+                    </select>
+                    <label class="error" th:errors="*{vehicle}">Vehicle error placeholder</label>
                 </div>
+            </div>
             <button type="submit" value="Create Travel">Create Travel</button>
         </form>
-<!--    </div>-->
-</div>
+        <!--    </div>-->
+    </div>
 </section>
 <!--FOOTER-->
 <footer th:replace="index.html :: footer"></footer>

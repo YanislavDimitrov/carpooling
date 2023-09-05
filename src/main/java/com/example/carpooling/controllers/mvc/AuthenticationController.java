@@ -1,8 +1,8 @@
 package com.example.carpooling.controllers.mvc;
 
 import com.example.carpooling.exceptions.AuthenticationFailureException;
-import com.example.carpooling.exceptions.duplicate.DuplicateEmailException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
+import com.example.carpooling.exceptions.duplicate.DuplicateEmailException;
 import com.example.carpooling.exceptions.duplicate.DuplicatePhoneNumberException;
 import com.example.carpooling.exceptions.duplicate.DuplicateUsernameException;
 import com.example.carpooling.helpers.AuthenticationHelper;
@@ -56,6 +56,7 @@ public class AuthenticationController {
             return false;
         }
     }
+
     @ModelAttribute("isBlocked")
     public boolean populateIsActive(HttpSession session) {
         try {
@@ -65,6 +66,7 @@ public class AuthenticationController {
             return false;
         }
     }
+
     @ModelAttribute("hasProfilePicture")
     public Boolean hasProfilePicture(HttpSession session) {
         try {
@@ -85,16 +87,20 @@ public class AuthenticationController {
         }
     }
 
+
     @GetMapping("/login")
     public String showLoginPage(Model model) {
         model.addAttribute("login", new LoginDto());
         return "LoginView";
         //Todo LoginView
     }
+
+
     @GetMapping("/recovered")
     public String recoverAccountPage() {
         return "DeletedUserView";
     }
+
 
     @PostMapping("/login")
     public String handleLogin(@Valid @ModelAttribute("login") LoginDto dto,
@@ -126,17 +132,20 @@ public class AuthenticationController {
         }
     }
 
+
     @GetMapping("/logout")
     public String handleLogout(HttpSession session) {
         session.removeAttribute("currentUser");
         return "redirect:/";
     }
 
+
     @GetMapping("/register")
     public String showRegisterPage(Model model) {
         model.addAttribute("register", new RegisterDto());
         return "RegisterView";
     }
+
 
     @PostMapping("/register")
     public String handleRegister(@Valid @ModelAttribute("register") RegisterDto registerDto,

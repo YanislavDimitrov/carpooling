@@ -15,9 +15,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+
 /**
  * A service class that interacts with Bing Maps API to retrieve location information, calculate travel distances and durations.
- *
+ * <p>
  * This class provides methods for working with Bing Maps API to perform location-based operations, including obtaining location data,
  * calculating travel distances and durations, and parsing coordinates. It serves as an interface between the application and Bing Maps services.
  * The class utilizes a predefined API key for authentication and provides error handling for various scenarios, such as invalid locations or
@@ -79,7 +80,7 @@ public class BingMapsServiceImpl implements BingMapsService {
 
     /**
      * Reads data from the provided HTTP connection and returns the response as a string.
-     *
+     * <p>
      * This method reads data from an established HTTP connection and processes the response, returning it as a string. It is typically used
      * to retrieve data from a web service endpoint. The method handles HTTP response codes, and if the response code is not HTTP_OK (200),
      * it logs an error message indicating the failure.

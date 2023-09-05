@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
+
 /**
  * The {@code FeedbackServiceImpl} class provides implementation for managing feedback related operations.
  * It allows creating, updating, deleting, and retrieving feedback objects, as well as various query operations.
@@ -147,9 +147,9 @@ public class FeedbackServiceImpl implements FeedbackService {
     /**
      * Checks if a feedback exists for a specific travel, recipient, and creator combination.
      *
-     * @param travel   The travel associated with the feedback.
+     * @param travel    The travel associated with the feedback.
      * @param recipient The recipient of the feedback.
-     * @param creator  The creator of the feedback.
+     * @param creator   The creator of the feedback.
      * @return true if a feedback exists for the specified combination, otherwise false.
      */
     @Override
@@ -201,16 +201,16 @@ public class FeedbackServiceImpl implements FeedbackService {
     /**
      * Creates a new feedback for a travel, specifying the creator, recipient, and feedback details.
      *
-     * @param travel   The travel associated with the feedback.
-     * @param creator  The creator of the feedback.
+     * @param travel    The travel associated with the feedback.
+     * @param creator   The creator of the feedback.
      * @param recipient The recipient of the feedback.
-     * @param feedback The feedback to be created.
+     * @param feedback  The feedback to be created.
      * @return The newly created feedback.
-     * @throws EntityNotFoundException       If the travel or recipient with the given IDs do not exist.
-     * @throws TravelNotCompletedException   If the associated travel is not marked as completed.
-     * @throws InvalidFeedbackException      If the creator tries to give feedback to themselves,
-     *                                       or if feedback for the same person on the same travel already exists and is not deleted.
-     * @throws InvalidOperationException      If an attempt is made to give feedback again for the same person on the same travel.
+     * @throws EntityNotFoundException     If the travel or recipient with the given IDs do not exist.
+     * @throws TravelNotCompletedException If the associated travel is not marked as completed.
+     * @throws InvalidFeedbackException    If the creator tries to give feedback to themselves,
+     *                                     or if feedback for the same person on the same travel already exists and is not deleted.
+     * @throws InvalidOperationException   If an attempt is made to give feedback again for the same person on the same travel.
      */
     @Override
     public Feedback create(Travel travel, User creator, User recipient, Feedback feedback) {
@@ -259,13 +259,13 @@ public class FeedbackServiceImpl implements FeedbackService {
      */
     @Override
     public boolean existsByTravelAndCreator(Travel travel, User creator) {
-        if(!travelRepository.existsById(travel.getId())) {
-            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND,travel.getId()));
+        if (!travelRepository.existsById(travel.getId())) {
+            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, travel.getId()));
         }
-        if(!userRepository.existsById(creator.getId())) {
-            throw new EntityNotFoundException(String.format(USER_NOT_FOUND,creator.getId()));
+        if (!userRepository.existsById(creator.getId())) {
+            throw new EntityNotFoundException(String.format(USER_NOT_FOUND, creator.getId()));
         }
-        return feedbackRepository.existsByTravelAndCreator(travel,creator);
+        return feedbackRepository.existsByTravelAndCreator(travel, creator);
     }
 
     /**
@@ -276,7 +276,7 @@ public class FeedbackServiceImpl implements FeedbackService {
      * @param editor           The user attempting to update the feedback.
      * @return The updated feedback after the changes.
      * @throws EntityNotFoundException If the original feedback does not exist.
-     * @throws AuthorizationException   If the editor is not authorized to update the feedback.
+     * @throws AuthorizationException  If the editor is not authorized to update the feedback.
      */
     @Override
     public Feedback update(Feedback originalFeedback, Feedback feedbackUpdate, User editor) {
@@ -298,7 +298,7 @@ public class FeedbackServiceImpl implements FeedbackService {
      * @param id     The ID of the feedback to be deleted.
      * @param editor The user attempting to delete the feedback.
      * @throws EntityNotFoundException If the feedback with the given ID does not exist.
-     * @throws AuthorizationException If the editor is not authorized to delete the feedback.
+     * @throws AuthorizationException  If the editor is not authorized to delete the feedback.
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
@@ -316,9 +316,9 @@ public class FeedbackServiceImpl implements FeedbackService {
     /**
      * Checks whether two users, a driver, and a recipient have traveled together on a specific travel.
      *
-     * @param travelId   The ID of the travel to check.
-     * @param driver     The driver user.
-     * @param recipient  The recipient user.
+     * @param travelId  The ID of the travel to check.
+     * @param driver    The driver user.
+     * @param recipient The recipient user.
      * @return true if the driver and recipient have traveled together on the specified travel; false otherwise.
      */
     public boolean haveTravelledTogether(Long travelId, User driver, User recipient) {
@@ -347,7 +347,7 @@ public class FeedbackServiceImpl implements FeedbackService {
      * @param recipient        The recipient user.
      * @param travelRepository The repository for travel operations.
      * @param travelNotFound   The error message for a non-existent travel.
-     * @param userRepository    The repository for user operations.
+     * @param userRepository   The repository for user operations.
      * @param userNotFound     The error message for a non-existent user.
      * @throws EntityNotFoundException If the travel or users do not exist.
      */

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -12,63 +11,63 @@
 </head>
 <body>
 <div class="background-image">
-<!--HEADER-->
-<header th:replace="index.html :: header"></header>
-<section class="main">
-    <div id="content">
-        <h1 id="driver-title">Travels as driver</h1>
-        <div class="no-travels" th:if="${travels.isEmpty()}">
-            <h2 id="no-travels-to-show" th:text="#{travel.label.no-travels}">No travels to show</h2>
-        </div>
-        <div th:unless="${travels.isEmpty()}" class="travel-cards-container">
-            <div th:each="travel : ${travels}" class="travel-card" th:attr="data-id=${travel.id}">
-                <div class="travel-card-content">
-                    <h2 th:text="${'Driver: ' + travel.driverName}">Driver: John Doe</h2>
-                    <p th:text="${'Departure: ' + travel.departurePoint}">Departure: Burgas</p>
-                    <p th:text="${'Arrival: ' + travel.arrivalPoint}">Arrival: Sofia</p>
-                    <p th:text="${'Free Spots: ' + travel.freeSpots}">Free Spots: 2</p>
+    <!--HEADER-->
+    <header th:replace="index.html :: header"></header>
+    <section class="main">
+        <div id="content">
+            <h1 id="driver-title">Travels as driver</h1>
+            <div class="no-travels" th:if="${travels.isEmpty()}">
+                <h2 id="no-travels-to-show" th:text="#{travel.label.no-travels}">No travels to show</h2>
+            </div>
+            <div th:unless="${travels.isEmpty()}" class="travel-cards-container">
+                <div th:each="travel : ${travels}" class="travel-card" th:attr="data-id=${travel.id}">
+                    <div class="travel-card-content">
+                        <h2 th:text="${'Driver: ' + travel.driverName}">Driver: John Doe</h2>
+                        <p th:text="${'Departure: ' + travel.departurePoint}">Departure: Burgas</p>
+                        <p th:text="${'Arrival: ' + travel.arrivalPoint}">Arrival: Sofia</p>
+                        <p th:text="${'Free Spots: ' + travel.freeSpots}">Free Spots: 2</p>
+                    </div>
+
+                    <span class="text" th:text="${travel.status}">Completed</span>
+
                 </div>
+            </div>
+            <h1 id="passenger-title">Travels as passenger</h1>
+            <div class="no-travels" th:if="${travelsAsPassenger.isEmpty()}">
+                <h2 id="no-travels-as-passenger" th:text="#{travel.label.no-travels}">No travels to show</h2>
+            </div>
+            <div th:unless="${travelsAsPassenger.isEmpty()}" class="travel-cards-container">
+                <!-- Dynamically generate travel cards -->
 
-                <span class="text"  th:text="${travel.status}">Completed</span>
+                <div th:each="travel : ${travelsAsPassenger}" class="travel-card" th:attr="data-id=${travel.id}">
+                    <div class="travel-card-content">
+                        <h2 th:text="${'Driver: ' + travel.driverName}">Driver: John Doe</h2>
+                        <p th:text="${'Departure: ' + travel.departurePoint}">Departure: Burgas</p>
+                        <p th:text="${'Arrival: ' + travel.arrivalPoint}">Arrival: Sofia</p>
+                        <p th:text="${'Free Spots: ' + travel.freeSpots}">Free Spots: 2</p>
+                    </div>
 
+                    <span class="text" th:text="${travel.status}">Completed</span>
+
+                </div>
             </div>
         </div>
-        <h1 id="passenger-title">Travels as passenger</h1>
-        <div class="no-travels" th:if="${travelsAsPassenger.isEmpty()}">
-            <h2 id="no-travels-as-passenger" th:text="#{travel.label.no-travels}">No travels to show</h2>
-        </div>
-        <div th:unless="${travelsAsPassenger.isEmpty()}" class="travel-cards-container">
-            <!-- Dynamically generate travel cards -->
-
-            <div th:each="travel : ${travelsAsPassenger}" class="travel-card" th:attr="data-id=${travel.id}">
-                <div class="travel-card-content">
-                    <h2 th:text="${'Driver: ' + travel.driverName}">Driver: John Doe</h2>
-                    <p th:text="${'Departure: ' + travel.departurePoint}">Departure: Burgas</p>
-                    <p th:text="${'Arrival: ' + travel.arrivalPoint}">Arrival: Sofia</p>
-                    <p th:text="${'Free Spots: ' + travel.freeSpots}">Free Spots: 2</p>
-                </div>
-
-                <span class="text" th:text="${travel.status}">Completed</span>
-
-            </div>
-        </div>
-    </div>
-</section>
-<footer th:replace="index.html :: footer"></footer>
-<script type="text/javascript" src="../static/js/showDropdown.js" th:src="@{/js/showDropdown.js}"></script>
-<script type="text/javascript">
-    document.addEventListener("DOMContentLoaded", () => {
-        const travelCards = document.querySelectorAll('.travel-card');
-        travelCards.forEach(card => {
-            card.addEventListener('click', () => {
-                const travelId = card.getAttribute('data-id');
-                if (travelId) {
-                    window.location.href = `/travels/${travelId}`;
-                }
+    </section>
+    <footer th:replace="index.html :: footer"></footer>
+    <script type="text/javascript" src="../static/js/showDropdown.js" th:src="@{/js/showDropdown.js}"></script>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", () => {
+            const travelCards = document.querySelectorAll('.travel-card');
+            travelCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const travelId = card.getAttribute('data-id');
+                    if (travelId) {
+                        window.location.href = `/travels/${travelId}`;
+                    }
+                });
             });
         });
-    });
-</script>
+    </script>
 </div>
 </body>
 </html>

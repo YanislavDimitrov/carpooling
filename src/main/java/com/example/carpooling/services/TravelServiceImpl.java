@@ -567,9 +567,10 @@ public class TravelServiceImpl implements TravelService {
             }
         }
     }
+
     /**
      * Checks if the departure time of a provided travel falls within valid time frames when compared to another travel.
-     *
+     * <p>
      * This method compares the departure time of the provided travel with the departure time and estimated time of arrival of another travel,
      * and checks whether they fall within valid time frames based on the status of the other travel. It throws an exception if any of the
      * following conditions are met:
@@ -577,10 +578,10 @@ public class TravelServiceImpl implements TravelService {
      * 2. The departure time of the provided travel falls within the planned period of the other travel.
      * 3. The departure time of the provided travel is the same as the departure time of the other travel.
      *
-     * @param travel The travel for which the departure time is being checked.
+     * @param travel        The travel for which the departure time is being checked.
      * @param travelToCheck The travel to compare against for valid time frames.
      * @throws InvalidOperationException if any of the specified conditions are met,
-     * indicating that the departure time is not within a valid time frame.
+     *                                   indicating that the departure time is not within a valid time frame.
      */
     private static void checkIfDepartureTimeIsWithingValidTimeFrame(Travel travel, Travel travelToCheck) {
         // Check if the departure time of the provided travel falls within the active period of the other travel.
@@ -610,6 +611,7 @@ public class TravelServiceImpl implements TravelService {
 
         }
     }
+
     /**
      * Checks if the time frame of a new travel is valid concerning the specified driver's existing travels.
      * This method validates the time frame of a new travel by comparing it against the time frames of the driver's existing travels.
@@ -619,10 +621,10 @@ public class TravelServiceImpl implements TravelService {
      * overlap with the new travel's time frame.
      *
      * @param oldTravel The existing travel being updated (may be null for new travel creation).
-     * @param travel The new travel to be checked for a valid time frame.
-     * @param driver The driver whose existing travels are considered for time frame validation.
+     * @param travel    The new travel to be checked for a valid time frame.
+     * @param driver    The driver whose existing travels are considered for time frame validation.
      * @throws InvalidOperationException if the new travel's departure time overlaps with the time frame of any existing travel of the driver
-     *                                    or if there are any existing travels where the user is a passenger that overlap with the new travel.
+     *                                   or if there are any existing travels where the user is a passenger that overlap with the new travel.
      */
     public void checkIfTheTravelTimeFrameIsValid(Travel oldTravel, Travel travel, User driver) {
         List<Travel> travelsToCheck = driver.getTravelsAsDriver();
@@ -634,9 +636,10 @@ public class TravelServiceImpl implements TravelService {
         }
         checkIfThereAreAnyTravelsAsPassengerWithingThisTimeFrame(travel, driver);
     }
+
     /**
      * Checks if the time frame of a new travel is valid concerning the specified driver's existing travels using a database query.
-     *
+     * <p>
      * This method validates the time frame of a new travel by querying the database to count the number of existing travels for the
      * specified driver that conflict with the new travel's time frame. If any conflicting travels are found, an exception is thrown,
      * indicating that the new travel's time frame is invalid.
@@ -644,7 +647,7 @@ public class TravelServiceImpl implements TravelService {
      * @param travel The new travel to be checked for a valid time frame.
      * @param driver The driver whose existing travels are considered for time frame validation.
      * @throws InvalidOperationException if there are any existing travels for the specified driver that conflict with the new travel's
-     *                                    time frame, as determined by the database query.
+     *                                   time frame, as determined by the database query.
      */
     public void checkIfTheTravelTimeFrameIsValidWithQuery(Travel travel, User driver) {
         // Query the database to count the number of conflicting travels for the specified driver.
@@ -659,9 +662,10 @@ public class TravelServiceImpl implements TravelService {
             throw new InvalidOperationException(EXISTING_TRAVEL);
         }
     }
+
     /**
      * Calculates the distance, duration, and estimated time of arrival for a travel based on departure and arrival locations.
-     *
+     * <p>
      * This method calculates the distance and duration of a travel between the provided departure and arrival locations using a mapping service.
      * It also calculates the estimated time of arrival by adding the calculated duration to the departure time. The results are then
      * stored in the "travel" object.
@@ -720,6 +724,7 @@ public class TravelServiceImpl implements TravelService {
             }
         }
     }
+
     /**
      * Completes all active travels associated with the specified user as a driver.
      * This method marks all active travels of the user as a driver as "completed" and sets them as "deleted." Completed travels typically

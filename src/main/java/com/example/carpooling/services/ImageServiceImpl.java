@@ -2,7 +2,6 @@ package com.example.carpooling.services;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.Uploader;
-import com.cloudinary.Url;
 import com.cloudinary.utils.ObjectUtils;
 import com.example.carpooling.models.Image;
 import com.example.carpooling.repositories.contracts.ImageRepository;
@@ -46,7 +45,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public void destroyImage(Image image,String username) throws IOException {
+    public void destroyImage(Image image, String username) throws IOException {
         Uploader uploader = cloudinary.uploader();
         uploader.destroy(username, null);
     }

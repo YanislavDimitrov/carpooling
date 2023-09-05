@@ -1,33 +1,32 @@
-
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Carpool</title>
-  <link rel="website icon" th:type="png" th:href="@{/images/carpool_simplelogo.png}">
-  <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
-  <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
-  <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">
-  <link rel="stylesheet" href="../static/blockedUser.css" th:href="@{/blockedUser.css}">
+    <meta charset="UTF-8">
+    <title>Carpool</title>
+    <link rel="website icon" th:type="png" th:href="@{/images/carpool_simplelogo.png}">
+    <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
+    <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
+    <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">
+    <link rel="stylesheet" href="../static/blockedUser.css" th:href="@{/blockedUser.css}">
 </head>
 <body>
 <!--HEADER-->
 <header th:replace="index.html :: header"></header>
 <section class="main">
-  <h1 class="title">Request cancelled successfully!</h1>
-  <p>You can either continue browsing through our travels, <br> or go back to our home page.
-  <div class="options-container">
-    <a class="btn"
-       th:href="@{/travels/search}">
-      <i class="fa-solid fa-flag-checkered"></i>Travels
-    </a>
-    <p>or</p>
-    <a class="btn"
-       th:href="@{/}">
-      <i class="fa-solid fa-magnifying-glass"></i> Home page
-    </a>
-  </div>
-  <img src="../static/images/ActiveTravels.png" th:src="@{/images/ActiveTravels.png}">
+    <h1 class="title">Request cancelled successfully!</h1>
+    <p>You can either continue browsing through our travels, <br> or go back to our home page.
+    <div class="options-container">
+        <a class="btn"
+           th:href="@{/travels/search}">
+            <i class="fa-solid fa-flag-checkered"></i>Travels
+        </a>
+        <p>or</p>
+        <a class="btn"
+           th:href="@{/}">
+            <i class="fa-solid fa-magnifying-glass"></i> Home page
+        </a>
+    </div>
+    <img src="../static/images/ActiveTravels.png" th:src="@{/images/ActiveTravels.png}">
 </section>
 <!--FOOTER-->
 <header th:replace="index.html :: footer"></header>

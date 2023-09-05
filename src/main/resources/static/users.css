@@ -51,21 +51,24 @@
     color: #0b2b3a;
 }
 
-.main .pagination .dots{
+.main .pagination .dots {
     font-size: 2rem;
 }
-.main .pagination .edge-page{
+
+.main .pagination .edge-page {
     color: inherit;
 }
 
-.main .pagination .disabled *{
+.main .pagination .disabled * {
     pointer-events: none;
     color: #bebebe;
 }
-.main .pagination a:visited{
+
+.main .pagination a:visited {
     color: inherit;
 }
-.main .pagination .current-page{
+
+.main .pagination .current-page {
     font-size: 2rem;
 }
 
@@ -100,6 +103,7 @@
     font-weight: 600;
     font-size: 1.6rem;
 }
+
 .main .user .user-names {
     cursor: pointer;
 }
@@ -172,7 +176,7 @@ html {
     padding-top: 2rem;
 }
 
-.filter-buttons .btn{
+.filter-buttons .btn {
     padding: 0.5rem 1rem;
     border-radius: .8rem;
 }
@@ -209,7 +213,7 @@ input:-webkit-autofill:active {
     -webkit-box-shadow: 0 0 0 30px white inset !important;
 }
 
-.main .matches{
+.main .matches {
     font-weight: 500;
     font-size: 1.5rem;
 }
