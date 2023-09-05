@@ -13,8 +13,10 @@ FROM amazoncorretto:17.0.7-al2
 
 EXPOSE 8080
 
-RUN mkdir /app
+WORKDIR /app
 
-COPY --from=build /home/gradle/src/build/libs/*.jar /app/carpooling-0.0.1-SNAPSHOT.jar
+ARG DEPENDENCY=/home/gradle/src/build/libs
+
+COPY --from=build ${DEPENDENCY} .
 
 ENTRYPOINT ["java", "-jar", "/app/carpooling-0.0.1-SNAPSHOT.jar"]
