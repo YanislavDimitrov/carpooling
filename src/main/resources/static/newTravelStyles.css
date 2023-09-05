@@ -1,12 +1,178 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
 @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css");
 
-/*SET Browser background Autocomplete to background color*/
 input:-webkit-autofill,
-textarea:-webkit-autofill,
-select:-webkit-autofill {
-    /*-webkit-box-shadow: 0 0 0 1000px #060e1a inset !important;*/
-    /*-webkit-text-fill-color: white !important;*/
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+}
+
+html {
+    font-size: 14px;
+    font-family: "Poppins", sans-serif;
+    background-color: #ffffff;
+}
+
+.main {
+    min-height: 84vh;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.6),
+    rgba(0, 0, 0, 0.3)), url(images/CoverPicture.svg);
+    background-position: center center;
+    background-size: cover;
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form .errors {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .5rem;
+}
+
+.error {
+    font-weight: 400;
+    color: #ea5f5f;
+}
+
+.login-title {
+    font-weight: 500;
+    color: white;
+    margin-top: 2rem;
+}
+
+.password {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+.password:hover {
+    cursor: pointer;
+}
+
+.form {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    border-radius: 1rem;
+    overflow: hidden;
+    justify-content: center;
+}
+
+.form > * {
+    margin: 1rem;
+}
+
+.form > div {
+    display: flex;
+    gap: 1rem;
+    justify-content: left;
+    align-items: center;
+}
+
+.form .input-container {
+    position: relative;
+    background-color: white;
+    width: 100%;
+    white-space: nowrap;
+    padding: .9rem 1rem;
+    border-radius: 1rem;
+    box-shadow: 5px 5px 10px 3px rgba(0, 0, 0, 0.25);
+}
+
+.form i {
+    width: 1rem;
+    color: rgb(65, 89, 96);
+}
+
+.form .input-container:not(:first-child) {
+    border-left: 1px rgba(65, 89, 96, 0.51) solid;
+}
+
+.form input[type="text"],
+.form input[type="password"],
+.form input[type="email"],
+.form input[type="number"] {
+    all: unset;
+    border: none;
+    width: 95%;
+    height: 1.8rem;
+    transition: color ease-in-out .1s;
+}
+
+h1 {
+    font-weight: 500;
+    color: white;
+    margin-top: 2rem;
+}
+
+.form select,
+.form input[type="datetime-local"] {
+    width: 95%;
+    height: 1.8rem;
+    border: none;
+    outline: none;
+}
+
+.form .comment-container {
+    display: flex;
+    align-items: flex-start;
+    gap: .2rem;
+}
+
+.form textarea {
+    all: unset;
+    border: none;
+    width: 95%;
+    transition: color ease-in-out .1s;
+    white-space: normal;
+    height: 8rem;
+    overflow: auto;
+}
+
+input[type="datetime-local"]::-webkit-inner-spin-button,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+}
+
+.form input::placeholder {
+    color: #00aff5;
+    font-weight: 500;
+}
+
+.form textarea::placeholder {
+    color: #00aff5;
+    font-weight: 500;
+}
+
+.form input[type="datetime-local"]::placeholder {
+    color: #00aff5;
+    font-weight: 500;
+}
+
+.form input:focus::placeholder {
+    color: transparent;
+}
+
+.form button:hover {
+    cursor: pointer;
+    background-color: #008cc4;
+}
+
+.form .checkbox label {
+    color: white;
+}
+
+.form .field-container.checkbox {
+    display: inline-block;
+    margin: 0 1rem;
+    text-align: left;
 }
 
 button {
@@ -17,245 +183,4 @@ button {
     height: 3.6rem;
     transition: ease-in-out .1s;
     border-radius: 1rem;
-}
-
-body {
-    height: 85vh;
-    text-align: center;
-    background-image: url(images/CoverPicture.svg);
-    background-size: cover;
-}
-
-.names-container {
-    display: flex;
-    justify-content: space-between;
-}
-
-.names-container .field-container {
-    width: 47%;
-}
-
-#vehicle {
-    width: 100%
-}
-
-#content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 85vh;
-    margin: auto;
-    width: 100%;
-
-}
-
-.form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-
-.form {
-    position: marker;
-    width: 70rem;
-    height: 70vh;
-    background-image: url(images/CoverPicture.svg);
-    background-size: cover;
-    padding: 50px 220px 100px;
-    box-sizing: border-box;
-    border: 0px solid whitesmoke;
-    border-radius: 150px;
-    box-shadow: inset 0 0 1px white;
-
-}
-
-
-.main {
-    padding: 0px 18rem;
-    min-height: 84vh;
-}
-
-.main .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px white solid;
-}
-
-.main .header .links {
-    display: flex;
-    gap: 1.6rem;
-    align-items: center;
-    transition: scale 300ms ease;
-}
-
-.main .header .link {
-    font-size: 1.1rem;
-    align-content: center;
-    padding: .2rem;
-}
-
-.main .header .logo {
-    font-size: 2rem;
-    font-weight: bold;
-    color: white;
-    text-decoration: none;
-    transition: ease-in-out .2s;
-}
-
-.login-links-container {
-    display: flex;
-    gap: .8rem;
-    align-items: center;
-}
-
-.main .links .link a {
-    text-decoration: none;
-    color: rgb(255, 255, 255);
-}
-
-
-.main .links .nav-link {
-    transition: ease-in-out .2s;
-    padding: 1rem;
-}
-
-.btn {
-    all: unset;
-    text-align: center;
-    background-color: #174456;
-    color: rgb(255, 255, 255);
-    padding: 0.25rem 1.75rem;
-    border-radius: 3rem;
-    transition: background-color 300ms ease;
-}
-
-.btn:hover {
-    cursor: pointer;
-    background-color: #0b2b3a;
-    border: none;
-    color: white;
-}
-
-body {
-    font-family: "Poppins", sans-serif;
-    animation: fadeInAnimation ease 0.3s;
-    animation-iteration-count: 1;
-    animation-fill-mode: revert;
-}
-
-html {
-    font-size: 14px;
-}
-
-#content .title {
-    font-size: 2.5rem;
-    text-align: center;
-    color: whitesmoke;
-    font-weight: bold;
-    margin: auto;
-}
-
-.form button {
-    background-color: #ae4237;
-    border: none;
-    padding: 9px 22px;
-    border-radius: 20px;
-    color: #fff;
-    font-size: 1.1rem;
-    text-align: center;
-}
-
-.form button {
-
-    background: linear-gradient(to left, dodgerblue 50%, royalblue 50%);
-    border: none;
-    padding: 9px 22px;
-    border-radius: 20px;
-    color: #fff;
-    font-size: 1.1rem;
-}
-
-.form button:hover {
-    background-color: #0e3a0b;
-    border: none;
-    color: white;
-}
-
-input:focus {
-    color: white;
-    box-shadow: blue;
-    background: linear-gradient(white, dodgerblue);
-    animation: glow 0.8s ease-out infinite alternate;
-}
-
-@keyframes glow {
-    0% {
-        border-color: dodgerblue;
-    }
-    100% {
-        border-color: dodgerblue;
-        box-shadow: dodgerblue;
-    }
-}
-
-.field-container {
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    margin-bottom: 10px;
-}
-
-.field-container label {
-    font-size: 18px;
-    color: ghostwhite;
-    display: block;
-    margin-bottom: 5px;
-}
-
-.field-container input,
-.field-container select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 30px;
-}
-
-.error {
-    color: red;
-    font-size: 12px;
-    display: none;
-}
-
-.form-title {
-    color: white;
-    font-size: 50px;
-    text-align: center;
-    margin-bottom: -3px;
-}
-
-button[type="submit"] {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    background-color: #007bff;
-    color: black;
-    border: none;
-    border-radius: 30px;
-    cursor: pointer;
-}
-
-.footer {
-    background-color: white;
-}
-
-#price::before {
-    content: "$";
-    position: absolute;
-    left: 5px; /* Adjust the left position to align the dollar sign as needed */
-    top: 50%; /* Adjust the top position to center the dollar sign vertically */
-    transform: translateY(-50%);
-    z-index: 1;
-    color: #333; /* Optional: Set the color of the dollar sign */
 }

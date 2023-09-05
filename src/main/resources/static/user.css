@@ -2,6 +2,7 @@
 @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css");
 
 html {
+    font-size: 14px;
     font-family: "Poppins", sans-serif;
     background-color: #ffffff;
 }
@@ -49,7 +50,7 @@ input[type=file]::file-selector-button:hover {
 
 .main {
     min-height: 84vh;
-    padding: 2rem 24rem;
+    padding: 2rem 18rem;
 }
 
 .main ul {

@@ -60,7 +60,7 @@ html {
     gap: 4rem;
     grid-template-columns: repeat(3, 1fr);
     min-height: 34vh;
-    padding: 2rem 20rem;
+    padding: 2rem 18rem;
 }
 
 .additional-info .fa-solid {
