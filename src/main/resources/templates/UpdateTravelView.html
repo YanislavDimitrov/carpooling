@@ -7,71 +7,126 @@
     <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
     <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
     <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">
-    <link rel="stylesheet" href="../static/newTravelStyles.css" th:href="@{/newTravelStyles.css}">
+    <link rel="stylesheet" href="../static/updateTravelStyles.css" th:href="@{/updateTravelStyles.css}">
 </head>
 <body>
 
 <header th:replace="index.html :: header"></header>
 <section class="main">
-    <div id="content">
-        <h1 class="form-title">Update Travel</h1>
-        <form class="form" th:action="@{'/travels/' + ${travelId} + '/update'}" th:object="${updateTravel}"
-              method="post">
-            <div class="names-container">
-                <div class="field-container">
-                    <label th:text="#{travel.label.departure-point}">Departure Point</label>
-                    <input type="text" id="title" th:field="*{departurePoint}" placeholder="Start Destination">
-                    <label class="error" th:errors="*{departurePoint}">Departure point cannot be empty field!></label>
+    <h1 class="form-title">Update Travel</h1>
+    <form id="search-form" class="form" th:action="@{'/travels/' + ${travelId} + '/update'}" th:object="${updateTravel}"
+          action="#" method="post">
+        <div>
+            <div class="input-container">
+                <div>
+                    <i class="fa-solid fa-circle-dot"></i>
+                    <input type="text" th:field="*{departurePoint}" placeholder="Departure Point">
                 </div>
-                <div class="field-container">
-                    <div class="content-characters">
-                        <label th:text="#{travel.label.arrival-point}">Arrival point </label>
-                        <input type="text" th:field="*{arrivalPoint}" placeholder="Arrival Destination">
-                        <label class="error" th:errors="*{arrivalPoint}">Arrival point field cannot be empty!</label>
-                    </div>
+
+            </div>
+            <div class="input-container">
+                <div>
+                    <i class="fa-solid fa-circle-dot"></i>
+                    <input type="text" th:field="*{arrivalPoint}" placeholder="Arrival Point">
+                </div>
+
+            </div>
+        </div>
+        <div>
+            <div class="input-container">
+                <div>
+                    <i class="fa-solid fa-calendar"></i>
+                    <input id="date-input" onfocus="toDateType()" onblur="toTextType()" type="text"
+                           th:field="*{departureTime}" placeholder="Departure Time"
+                           data-error-id="departureTimeError">
                 </div>
             </div>
-            <div class="names-container">
-                <div class="field-container">
-                    <label th:text="#{travel.label.free-spots}">Free Spots</label>
-                    <input type="number" th:field="*{freeSpots}" placeholder="Free Spots ">
-                </div>
-                <div class="field-container">
-                    <label th:text="#{travel.label.departure-time}">Departure Time</label>
-                    <input type="datetime-local" th:field="*{departureTime}" placeholder="Departure Time">
-                    <label class="error" th:errors="*{departureTime}">Departure time should be present or future
-                        date!></label>
+            <div class="input-container">
+                <div>
+                    <i class="fa-solid fa-user"></i>
+                    <input type="number" th:field="*{freeSpots}" placeholder="Free Spots">
                 </div>
             </div>
-            <div class="names-container">
-                <div class="field-container">
-                    <label th:text="#{travel.label.comment}">Comment</label>
-                    <input type="text" th:field="*{comment}"
-                           placeholder="Comment">
-                </div>
-                <div class="field-container">
-                    <label th:text="#{travel.label.price}">Price</label>
-                    <input type="number" th:field="*{price}"
-                           placeholder="Price">
+        </div>
+        <div>
+            <div class="input-container">
+                <div class="comment-container">
+                    <i class="fa-solid fa-comment"></i>
+                    <textarea th:field="*{comment}" placeholder="Comment..."></textarea>
                 </div>
             </div>
-            <div class="names-container">
-                <div id="vehicle" class="field-container">
-                    <label th:text="#{travel.label.vehicle}">Vehicle</label>
+        </div>
+
+        <div>
+            <div class="input-container">
+                <div>
+                    <i class="fa-solid fa-coins"></i>
+                    <input id="price" type="text" th:field="*{price}" placeholder="Price $">
+                </div>
+            </div>
+            <div class="input-container">
+                <div>
+                    <i class="fa-solid fa-car"></i>
                     <select th:field="*{vehicle}">
                         <option th:each="vehicle : ${vehicles}"
                                 th:value="${vehicle.getId()}"
                                 th:text="${vehicle.getMake() +' ' } + ${vehicle.getModel()}">
                         </option>
                     </select>
-                    <label class="error" th:errors="*{vehicle}">Vehicle error placeholder</label>
                 </div>
             </div>
-            <button type="submit" value="Update Travel">Update Travel</button>
-        </form>
-    </div>
+        </div>
+        <div class="errors">
+            <label class="error" th:errors="*{departurePoint}">Departure point cannot be empty</label>
+            <label class="error" th:errors="*{arrivalPoint}">Arrival point cannot be empty</label>
+            <label class="error" th:errors="*{freeSpots}">Free spots field cannot be empty!</label>
+            <label class="error" th:errors="*{departureTime}">Departure time field cannot be empty!</label>
+            <label class="error" th:errors="*{price}">Price cannot be negative!</label>
+            <label class="error" th:errors="*{vehicle}">Vehicle error placeholder</label>
+        </div>
+
+        <button type="submit">Update Travel</button>
+    </form>
 </section>
 <footer th:replace="index.html :: footer"></footer>
+<script>
+    // Get the input element
+    var priceInput = document.getElementById("price");
+
+    // Add an event listener to the input element
+    priceInput.addEventListener("input", function () {
+        // Get the input value
+        var inputValue = this.value;
+
+        // Remove any non-numeric characters (except the dollar sign)
+        inputValue = inputValue.replace(/[^0-9]/g, '');
+
+        // Limit the input to a maximum of 10 digits
+        if (inputValue.length > 10) {
+            inputValue = inputValue.substr(0, 10);
+        }
+
+        // Add a dollar sign after the formatted input value
+        this.value = inputValue === '' ? '' : inputValue + '$';
+    });
+</script>
 <script type="text/javascript" src="../static/js/showDropdown.js" th:src="@{/js/showDropdown.js}"></script>
+<script>
+    function toDateType() {
+        const dateInput = document.getElementById("date-input");
+        console.log(dateInput.value);
+        dateInput.type = "datetime-local";
+        dateInput.showPicker();
+    }
+</script>
+<script>
+    function toTextType() {
+        const dateInput = document.getElementById("date-input");
+        console.log(dateInput.value);
+        if (dateInput.value===''){
+            dateInput.type = "text";
+        }
+    }
+</script>
 </body>
 </html>
