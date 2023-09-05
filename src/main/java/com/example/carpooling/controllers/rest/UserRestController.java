@@ -1,6 +1,9 @@
 package com.example.carpooling.controllers.rest;
 
-import com.example.carpooling.exceptions.*;
+import com.example.carpooling.exceptions.ActiveTravelException;
+import com.example.carpooling.exceptions.AuthenticationFailureException;
+import com.example.carpooling.exceptions.AuthorizationException;
+import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.exceptions.duplicate.DuplicateEntityException;
 import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.models.User;
@@ -19,6 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("api/users")
@@ -48,6 +52,7 @@ public class UserRestController {
      * @param sortOrder   specifies the sort order (Descending or Ascending)
      * @return List of users that suit all provided set of filtering parameters
      */
+
     @GetMapping()
     public List<UserViewDto> getAllUsers(
             @RequestParam(required = false) String firstName,

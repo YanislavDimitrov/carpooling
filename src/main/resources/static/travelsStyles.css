@@ -2,9 +2,8 @@
 body {
     height: 85vh;
     text-align: center;
-    background-size:cover;
+    background-size: cover;
 }
-
 
 
 /* Header and Footer Styles */
@@ -22,7 +21,7 @@ header {
     padding: 2rem 14rem;
 }
 
-input{
+input {
     outline: none;
     border: none;
 }
@@ -57,6 +56,7 @@ input{
     color: black;
     font-size: 30px;
 }
+
 .travel-card-content {
     color: black;
 }
@@ -66,8 +66,9 @@ input{
     flex-grow: 1;
     margin-right: 20px;
 }
+
 .text {
-    color: black    ;
+    color: black;
 }
 
 .travel-info h2 {
@@ -121,5 +122,5 @@ input{
 }
 
 footer {
-     border-bottom: 1px solid #e1e1e1;
+    border-bottom: 1px solid #e1e1e1;
 }

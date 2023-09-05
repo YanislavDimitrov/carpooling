@@ -1,14 +1,11 @@
 package com.example.carpooling.services;
 
 import com.example.carpooling.exceptions.EntityNotFoundException;
-import com.example.carpooling.exceptions.InvalidOperationException;
 import com.example.carpooling.exceptions.VehicleIsFullException;
-import com.example.carpooling.exceptions.duplicate.DuplicateEntityException;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.TravelRequestStatus;
-import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.repositories.contracts.TravelRepository;
 import com.example.carpooling.repositories.contracts.TravelRequestRepository;
 import com.example.carpooling.repositories.contracts.UserRepository;
@@ -17,14 +14,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 
 public class TravelRequestServiceImplTests {
@@ -50,12 +46,14 @@ public class TravelRequestServiceImplTests {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
+
     @Test
     public void testGetTravelRequestByIdNotFound() {
         long requestId = 1;
         when(travelRequestRepository.findById(requestId)).thenReturn(Optional.empty());
         assertThrows(EntityNotFoundException.class, () -> travelRequestService.get(requestId));
     }
+
     @Test
     public void testCreateRequestVehicleIsFull() {
         Travel travel = new Travel();
@@ -84,6 +82,7 @@ public class TravelRequestServiceImplTests {
         List<TravelRequest> actualPendingRequests = travelRequestService.getPending();
         assertEquals(2, actualPendingRequests.size());
     }
+
     @Test
     public void testGetByTravel() {
         long travelId = 1;
@@ -106,6 +105,7 @@ public class TravelRequestServiceImplTests {
         when(travelRepository.existsById(travelId)).thenReturn(false);
         assertThrows(EntityNotFoundException.class, () -> travelRequestService.getByTravel(travel));
     }
+
     @Test
     public void testFindByTravelAndPassengerAndStatus() {
         Travel travel = new Travel();
@@ -129,6 +129,7 @@ public class TravelRequestServiceImplTests {
         TravelRequest actualRequest = travelRequestService.findByTravelIsAndPassengerIsAndStatus(travel, passenger, status);
         assertNull(actualRequest);
     }
+
     @Test
     public void testFindByTravelAndStatus() {
 

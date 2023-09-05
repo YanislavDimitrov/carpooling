@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class FeedbackFilterDto {
-    private short rating;
+    private Short rating;
     private User creator;
     private User recipient;
     private Travel travel;

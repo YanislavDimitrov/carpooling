@@ -6,10 +6,7 @@ import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.helpers.ExtractionHelper;
 import com.example.carpooling.helpers.mappers.FeedbackMapper;
 import com.example.carpooling.helpers.mappers.TravelMapper;
-import com.example.carpooling.models.Feedback;
-import com.example.carpooling.models.Travel;
-import com.example.carpooling.models.TravelRequest;
-import com.example.carpooling.models.User;
+import com.example.carpooling.models.*;
 import com.example.carpooling.models.dtos.FeedbackCreateDto;
 import com.example.carpooling.models.dtos.TravelCreationOrUpdateDto;
 import com.example.carpooling.models.dtos.TravelFilterDto;
@@ -17,6 +14,7 @@ import com.example.carpooling.models.dtos.TravelFrontEndView;
 import com.example.carpooling.models.enums.TravelRequestStatus;
 import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.models.enums.UserRole;
+import com.example.carpooling.models.enums.UserStatus;
 import com.example.carpooling.services.contracts.FeedbackService;
 import com.example.carpooling.services.contracts.TravelRequestService;
 import com.example.carpooling.services.contracts.TravelService;
@@ -230,6 +228,7 @@ public class TravelMvcController {
         }
         model.addAttribute("travel", new TravelCreationOrUpdateDto());
         model.addAttribute("vehicles", loggedUser.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
+        model.addAttribute("loggedUser",loggedUser);
         return "NewTravelView";
     }
 
@@ -243,12 +242,20 @@ public class TravelMvcController {
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         }
+        if (driver.getStatus() == UserStatus.BLOCKED) {
+            return "BlockedUserView";
+        }
+        if(!driver.isValidated()) {
+            model.addAttribute("loggedUser",driver);
+            return "NotValidatedUser";
+        }
         if (errors.hasErrors()) {
             model.addAttribute("vehicles", driver.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
             return "NewTravelView";
         }
-        Travel newTravel = travelMapper.toTravelFromTravelCreationDto(travel);
+      Travel newTravel;
         try {
+             newTravel = travelMapper.toTravelFromTravelCreationDto(travel);
             travelService.create(newTravel, driver);
         } catch (InvalidOperationException e) {
             errors.rejectValue("departureTime", "creation_error", e.getMessage());
@@ -297,7 +304,9 @@ public class TravelMvcController {
         User loggedUser = this.authenticationHelper.tryGetUser(session);
         Travel travel = travelService.getById(id);
         Travel travelToCheckIfValid = travelMapper.fromTravelCreateToTestDepartureTime(travelUpdateDto);
-
+        if (loggedUser.getStatus() == UserStatus.BLOCKED) {
+            return "BlockedUserView";
+        }
         try {
             travelService.checkIfTheTravelTimeFrameIsValid(travel, travelToCheckIfValid, loggedUser);
 
@@ -562,6 +571,25 @@ public class TravelMvcController {
             return loggedUser.getRole() == UserRole.ADMIN;
         } catch (AuthenticationFailureException e) {
             return false;
+        }
+    }
+    @ModelAttribute("hasProfilePicture")
+    public Boolean hasProfilePicture(HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            return loggedUser.getProfilePicture() != null;
+        } catch (AuthenticationFailureException e) {
+            return false;
+        }
+    }
+
+    @ModelAttribute("profilePicture")
+    public Image populateProfilePicture(HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            return loggedUser.getProfilePicture();
+        } catch (AuthenticationFailureException e) {
+            return null;
         }
     }
 

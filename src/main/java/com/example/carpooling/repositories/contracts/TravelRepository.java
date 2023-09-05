@@ -84,14 +84,13 @@ public interface TravelRepository extends JpaRepository<Travel, Long> {
             "AND (:price IS NULL OR :price = '' OR t.price LIKE :price)" +
             "AND t.isDeleted = false")
     Page<Travel> findAllPaginated(PageRequest pageRequest,
-                                         Sort sort,
-                                         Short freeSpots,
-                                         LocalDate departedBefore,
-                                         LocalDate departedAfter,
-                                         String departurePoint,
-                                         String arrivalPoint,
-                                         String price);
-
+                                  Sort sort,
+                                  Short freeSpots,
+                                  LocalDate departedBefore,
+                                  LocalDate departedAfter,
+                                  String departurePoint,
+                                  String arrivalPoint,
+                                  String price);
 
 
     @Modifying

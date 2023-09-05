@@ -1,10 +1,12 @@
 package com.example.carpooling.controllers.mvc;
 
-import com.example.carpooling.exceptions.*;
+import com.example.carpooling.exceptions.AuthenticationFailureException;
+import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.helpers.ExtractionHelper;
 import com.example.carpooling.helpers.mappers.FeedbackMapper;
 import com.example.carpooling.models.Feedback;
+import com.example.carpooling.models.Image;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.dtos.FeedbackCreateDto;
@@ -130,8 +132,8 @@ public class FeedbackMvcController {
                 return "AccessDeniedView";
             }
             FeedbackCreateDto feedbackCreateDto = feedbackMapper.fromFeedback(feedback);
-            model.addAttribute("feedback",feedbackCreateDto);
-            model.addAttribute("feedbackId",feedback.getId());
+            model.addAttribute("feedback", feedbackCreateDto);
+            model.addAttribute("feedbackId", feedback.getId());
             return "UpdateFeedbackView";
 
         } catch (AuthenticationFailureException e) {
@@ -140,12 +142,13 @@ public class FeedbackMvcController {
             return "NotFoundView";
         }
     }
+
     @PostMapping("/{id}/update")
     public String updateFeedback(@Valid @ModelAttribute("feedback") FeedbackCreateDto feedbackCreateDto,
                                  BindingResult bindingResult,
-                                 @PathVariable Long id ,
+                                 @PathVariable Long id,
                                  HttpSession session) {
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             return "UpdateFeedbackView";
         }
         User loggedUser;
@@ -154,30 +157,31 @@ public class FeedbackMvcController {
         try {
             loggedUser = authenticationHelper.tryGetUser(session);
             feedbackOriginal = feedbackService.getById(id);
-            feedbackToUpdate = feedbackMapper.fromUpdateToFeedback(feedbackCreateDto,feedbackOriginal.getId());
-            if(!loggedUser.equals(feedbackOriginal.getCreator())) {
+            feedbackToUpdate = feedbackMapper.fromUpdateToFeedback(feedbackCreateDto, feedbackOriginal.getId());
+            if (!loggedUser.equals(feedbackOriginal.getCreator())) {
                 return "AccessDeniedView";
             }
-            feedbackService.update(feedbackOriginal,feedbackToUpdate,loggedUser);
+            feedbackService.update(feedbackOriginal, feedbackToUpdate, loggedUser);
             return "redirect:/feedbacks";
-        } catch (AuthenticationFailureException e ) {
+        } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
-        } catch (EntityNotFoundException e ) {
+        } catch (EntityNotFoundException e) {
             return "NotFoundView";
         }
     }
+
     @GetMapping("/{id}/delete")
-    public String deleteFeedback(@PathVariable Long id ,HttpSession session) {
+    public String deleteFeedback(@PathVariable Long id, HttpSession session) {
         User loggedUser;
-        Feedback feedback ;
+        Feedback feedback;
         try {
             loggedUser = authenticationHelper.tryGetUser(session);
             feedback = feedbackService.getById(id);
-            feedbackService.delete(feedback.getId(),loggedUser);
+            feedbackService.delete(feedback.getId(), loggedUser);
             return "redirect:/feedbacks";
-        } catch (AuthenticationFailureException e ) {
+        } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
-        }catch (EntityNotFoundException e) {
+        } catch (EntityNotFoundException e) {
             return "NotFoundView";
         }
     }
@@ -189,6 +193,25 @@ public class FeedbackMvcController {
             return loggedUser.getRole() == UserRole.ADMIN;
         } catch (AuthenticationFailureException e) {
             return false;
+        }
+    }
+    @ModelAttribute("hasProfilePicture")
+    public Boolean hasProfilePicture(HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            return loggedUser.getProfilePicture() != null;
+        } catch (AuthenticationFailureException e) {
+            return false;
+        }
+    }
+
+    @ModelAttribute("profilePicture")
+    public Image populateProfilePicture(HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            return loggedUser.getProfilePicture();
+        } catch (AuthenticationFailureException e) {
+            return null;
         }
     }
 

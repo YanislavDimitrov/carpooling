@@ -35,12 +35,14 @@ html {
     color: white;
     margin-top: 10rem;
 }
-.show-password{
+
+.show-password {
     position: absolute;
-    top:1rem;
+    top: 1rem;
     right: 1rem;
 }
-.show-password:hover{
+
+.show-password:hover {
     cursor: pointer;
 }
 
@@ -61,13 +63,15 @@ html {
     align-items: center;
 }
 
-.forum div{
+.forum div {
     width: 100%;
 }
-.form .inputs-container{
+
+.form .inputs-container {
     width: 100%;
 }
-.form .inputs-container div{
+
+.form .inputs-container div {
     width: 50%;
 }
 
@@ -95,8 +99,7 @@ html {
 }
 
 .form input[type="text"]::placeholder,
-.form input[type="password"]::placeholder
-{
+.form input[type="password"]::placeholder {
     color: #00aff5;
     font-weight: 500;
 }
@@ -120,17 +123,19 @@ html {
     background-color: #008cc4;
 }
 
-.sign-up{
+.sign-up {
     color: white;
     width: 30%;
     text-align: left;
 }
-.sign-up a{
+
+.sign-up a {
     text-decoration: none;
     color: #00aff5;
     transition: color ease-in-out .1s;
 }
-.sign-up a:hover{
-   cursor: pointer;
+
+.sign-up a:hover {
+    cursor: pointer;
     color: #009bd9;
 }

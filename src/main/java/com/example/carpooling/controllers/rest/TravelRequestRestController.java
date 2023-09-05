@@ -19,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @RestController
 @RequestMapping("/api/travel-requests")
 public class TravelRequestRestController {
@@ -41,6 +42,7 @@ public class TravelRequestRestController {
         this.userService = userService;
     }
 
+
     @GetMapping
     public List<TravelRequestViewDto> get(@RequestHeader HttpHeaders headers) {
         try {
@@ -53,6 +55,7 @@ public class TravelRequestRestController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
+
 
     @GetMapping("/travels/{travelId}")
     public List<TravelRequestViewDto> getByTravel(@RequestHeader HttpHeaders headers, @PathVariable Long travelId) {
@@ -71,6 +74,7 @@ public class TravelRequestRestController {
         }
     }
 
+
     @PostMapping("/{id}/apply")
     public String applyForTravel(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         try {
@@ -87,7 +91,7 @@ public class TravelRequestRestController {
         }
     }
 
-    // ToDo - to ask whether I should add the ID of the request as path variable or with body/parameter to add the username of the passenger
+
     @PostMapping("/approve/travel/{travelId}/user/{userId}")
     public String approveRequest(@PathVariable Long travelId, @PathVariable Long userId, @RequestHeader HttpHeaders headers) {
         try {
@@ -105,13 +109,14 @@ public class TravelRequestRestController {
         }
     }
 
+
     @PostMapping("/reject/travel/{travelId}/user/{userId}")
     public String rejectRequest(@PathVariable Long travelId, @PathVariable Long userId, @RequestHeader HttpHeaders headers) {
         try {
             Travel travel = travelService.getById(travelId);
             User editor = authenticationHelper.tryGetUser(headers);
             User requestCreator = userService.getById(userId);
-            travelRequestService.rejectRequest(travel, editor,requestCreator);
+            travelRequestService.rejectRequest(travel, editor, requestCreator);
             return "Your request for travel was rejected by the driver!";
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());

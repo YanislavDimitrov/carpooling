@@ -1,57 +1,59 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Create Travel</title>
-  <link rel="website icon" th:type="png" th:href="@{/images/carpool_simplelogo.png}">
-  <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
-  <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
-  <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">
-  <link rel="stylesheet" href="../static/newTravelStyles.css" th:href="@{/newTravelStyles.css}">
-  <link rel="stylesheet" href="../static/feedbackStyles.css" th:href="@{/feedbackStyles.css}">
+    <meta charset="UTF-8">
+    <title>Create Travel</title>
+    <link rel="website icon" th:type="png" th:href="@{/images/carpool_simplelogo.png}">
+    <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
+    <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
+    <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">
+    <link rel="stylesheet" href="../static/newTravelStyles.css" th:href="@{/newTravelStyles.css}">
+    <link rel="stylesheet" href="../static/feedbackStyles.css" th:href="@{/feedbackStyles.css}">
 </head>
 <body>
 <!--HEADER-->
 <header th:replace="index.html :: header"></header>
 <section class="main">
 
-  <h1 class="form-title">Create New Feedback</h1>
-  <form id="search-form" class="form" th:action="@{/feedbacks/{id}/update(id=${feedbackId})}" th:object="${feedback}" method="post">
-    <div class="names-container">
-      <div class="field-container">
-        <label th:text="#{feedback.label.comment}">Comment</label>
-        <label>
-          <textarea rows="5" cols="15" th:field="*{comment}" placeholder="Comment (optional)">Comment</textarea>
-        </label>
-      </div>
-    </div>
-    <div class="rating">
-      <span class="star" data-value="1">&#9733;</span>
-      <span class="star" data-value="2">&#9733;</span>
-      <span class="star" data-value="3">&#9733;</span>
-      <span class="star" data-value="4">&#9733;</span>
-      <span class="star" data-value="5">&#9733;</span>
-    </div>
-    <input type="hidden"  th:field="*{rating}" id="ratingValue" name="rating" value="0">
-    <label class="error" th:errors="*{rating}"></label>
-    <button type="submit" value="Leave feedback">Leave feedback</button>
-  </form>
+    <h1 class="form-title">Create New Feedback</h1>
+    <form id="search-form" class="form" th:action="@{/feedbacks/{id}/update(id=${feedbackId})}" th:object="${feedback}"
+          method="post">
+        <div class="names-container">
+            <div class="field-container">
+                <label th:text="#{feedback.label.comment}">Comment</label>
+                <label>
+                    <textarea rows="5" cols="15" th:field="*{comment}"
+                              placeholder="Comment (optional)">Comment</textarea>
+                </label>
+            </div>
+        </div>
+        <div class="rating">
+            <span class="star" data-value="1">&#9733;</span>
+            <span class="star" data-value="2">&#9733;</span>
+            <span class="star" data-value="3">&#9733;</span>
+            <span class="star" data-value="4">&#9733;</span>
+            <span class="star" data-value="5">&#9733;</span>
+        </div>
+        <input type="hidden" th:field="*{rating}" id="ratingValue" name="rating" value="0">
+        <label class="error" th:errors="*{rating}"></label>
+        <button type="submit" value="Leave feedback">Leave feedback</button>
+    </form>
 </section>
 <footer th:replace="index.html :: footer"></footer>
 <script type="text/javascript" src="../static/js/showDropdown.js" th:src="@{/js/showDropdown.js}"></script>
 <script type="text/javascript">
-  const stars = document.querySelectorAll('.star');
-  const ratingValueInput = document.getElementById('ratingValue');
+    const stars = document.querySelectorAll('.star');
+    const ratingValueInput = document.getElementById('ratingValue');
 
-  stars.forEach(star => {
-    star.addEventListener('click', () => {
-      const rating = star.getAttribute('data-value');
-      ratingValueInput.value = rating;
+    stars.forEach(star => {
+        star.addEventListener('click', () => {
+            const rating = star.getAttribute('data-value');
+            ratingValueInput.value = rating;
 
-      stars.forEach(s => s.classList.remove('active'));
-      star.classList.add('active');
+            stars.forEach(s => s.classList.remove('active'));
+            star.classList.add('active');
+        });
     });
-  });
 </script>
 
 </body>

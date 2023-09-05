@@ -23,10 +23,11 @@ html {
     width: 20%;
 }
 
-.main .options-container{
+.main .options-container {
     display: flex;
     gap: 2rem;
 }
+
 .options-container .btn {
     padding: 0.2rem 1rem;
     font-weight: 600;
@@ -38,11 +39,11 @@ html {
     text-decoration: none;
 }
 
-.btn:hover{
+.btn:hover {
     cursor: pointer;
     background-color: rgb(53, 74, 82);
 }
 
-.btn i{
+.btn i {
     padding-right: .5rem;
 }

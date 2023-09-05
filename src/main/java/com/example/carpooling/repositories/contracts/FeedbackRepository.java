@@ -34,7 +34,7 @@ public interface FeedbackRepository extends JpaRepository<Feedback, Long> {
 
 
     @Query("SELECT f FROM Feedback f WHERE " +
-            "(:rating IS NULL  OR f.rating = :rating) " +
+            "(:rating IS NULL  OR f.rating=0 or f.rating = :rating) " +
             "AND (:creator IS NULL  OR  f.creator =:creator) " +
             "AND(:recipient IS NULL OR f.recipient =:recipient)" +
             "AND(:travel IS NULL OR f.travel =:travel)" +

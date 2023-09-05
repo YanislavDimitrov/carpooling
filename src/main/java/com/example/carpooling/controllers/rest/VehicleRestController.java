@@ -8,12 +8,14 @@ import com.example.carpooling.models.User;
 import com.example.carpooling.models.dtos.VehicleUpdateDto;
 import com.example.carpooling.models.dtos.VehicleViewDto;
 import com.example.carpooling.services.contracts.VehicleService;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
 
 @RequestMapping("api/vehicles")
 @RestController
@@ -29,6 +31,7 @@ public class VehicleRestController {
         this.modelMapper = modelMapper;
     }
 
+
     @PutMapping("{id}/delete")
     public void deleteVehicle(@PathVariable Long id, @RequestHeader HttpHeaders headers) {
         try {
@@ -40,6 +43,7 @@ public class VehicleRestController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
+
 
     @PutMapping("/{id}")
     public VehicleViewDto updateVehicle(@PathVariable Long id,

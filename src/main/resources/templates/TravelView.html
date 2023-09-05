@@ -52,7 +52,8 @@
 
                 </td>
                 <td th:if="${isPassenger} and ${travel.status == T(com.example.carpooling.models.enums.TravelStatus).COMPLETED}">
-                    <a id="feedback-button"   class="btn delete" th:href="@{/travels/{travelId}/new/feedback/recipient/{recipientId}(travelId=${travel.id},recipientId=${driverId})}">
+                    <a id="feedback-button" class="btn delete"
+                       th:href="@{/travels/{travelId}/new/feedback/recipient/{recipientId}(travelId=${travel.id},recipientId=${driverId})}">
                         <i class="fa-solid fa-comment"></i>
                     </a>
                 </td>
@@ -63,7 +64,7 @@
                             class="fa-solid fa-trash-can"></i></a>
                 </td>
                 <td th:if="${!travel.getDriverName().equals(session.currentUser)} and ${!isPassenger} and ${travel.status == T(com.example.carpooling.models.enums.TravelStatus).PLANNED}">
-                    <a  class="btn delete" href="#" th:href="@{/travels/{id}/apply(id=${travel.getId()})}">
+                    <a class="btn delete" href="#" th:href="@{/travels/{id}/apply(id=${travel.getId()})}">
                         <button class="btn"
                                 th:text="${isRequestedByUser ? 'Cancel Request' : 'Apply for Travel'}"></button>
                     </a>
@@ -74,7 +75,7 @@
                         <i class="fa-solid fa-check"></i></a>
                 </td>
                 <td th:if="${travel.getDriverName().equals(session.currentUser)} and ${travel.status ==T(com.example.carpooling.models.enums.TravelStatus).PLANNED}">
-                    <a  class="btn" href="#" th:href="@{/travels/{id}/cancel(id=${travel.getId()})}">Cancel Travel</a>
+                    <a class="btn" href="#" th:href="@{/travels/{id}/cancel(id=${travel.getId()})}">Cancel Travel</a>
                 </td>
                 <td th:if="${isPassenger} and ${travel.getStatus() == T(com.example.carpooling.models.enums.TravelStatus).PLANNED}">
                     <a class="btn edit" href="#" th:href="@{/travels/{id}/delete-request(id=${travel.getId()})}">Withdraw
@@ -102,12 +103,12 @@
                 <td>
                     <span th:text="${passenger.firstName} + ' ' + ${passenger.lastName} + ' (' + ${passenger.userName} + ')'"></span>
                     <span th:if="${travel.getDriverName().equals(session.currentUser)}">
-                <a  th:if="${travel.getDriverName().equals(session.currentUser)}
+                <a th:if="${travel.getDriverName().equals(session.currentUser)}
                 and ${travel.status == T(com.example.carpooling.models.enums.TravelStatus).PLANNED}"
-                    class="btn"  th:href="@{/travels/{id}/remove/user/{userId}
+                   class="btn" th:href="@{/travels/{id}/remove/user/{userId}
                     (id=${travel.getId()},userId=${passenger.getId()})}">
                     <i class="fa-sharp fa-solid fa-trash"></i></a>
-                      <a   id="feedbackButton"   th:if="${travel.getDriverName().equals(session.currentUser)}
+                      <a id="feedbackButton" th:if="${travel.getDriverName().equals(session.currentUser)}
                       and ${travel.status == T(com.example.carpooling.models.enums.TravelStatus).COMPLETED} "
                          class="btn delete" th:href="@{/travels/{travelId}/new/feedback/recipient/{recipientId}
                          (travelId=${travel.id},recipientId=${passenger.id})}">
@@ -135,8 +136,12 @@
             <tr th:each="travelRequest : ${travelRequestForThisTravel}">
                 <td th:text="${travelRequest.passenger.firstName} + ' ' + ${travelRequest.passenger.lastName}"></td>
                 <td th:if="${travel.getDriverName().equals(session.currentUser)}">
-                    <a class="btn"  th:href="@{/travels/{id}/approve/user/{userId}(id=${travel.getId()},userId=${travelRequest.getPassenger().getId()})}"><i class="fa-solid fa-check"></i></a>
-                    <a  class="btn" th:href="@{/travels/{id}/reject/user/{userId}(id=${travel.getId()},userId=${travelRequest.getPassenger().getId()})}"><i class="fa-sharp fa-solid fa-trash"></i></a>
+                    <a class="btn"
+                       th:href="@{/travels/{id}/approve/user/{userId}(id=${travel.getId()},userId=${travelRequest.getPassenger().getId()})}"><i
+                            class="fa-solid fa-check"></i></a>
+                    <a class="btn"
+                       th:href="@{/travels/{id}/reject/user/{userId}(id=${travel.getId()},userId=${travelRequest.getPassenger().getId()})}"><i
+                            class="fa-sharp fa-solid fa-trash"></i></a>
                 </td>
             </tr>
         </table>
@@ -173,7 +178,7 @@
 <script>
     var mapContainer = document.getElementById('mapContainer');
 
-    mapContainer.addEventListener('wheel', function(event) {
+    mapContainer.addEventListener('wheel', function (event) {
         event.stopPropagation();
     });
 </script>

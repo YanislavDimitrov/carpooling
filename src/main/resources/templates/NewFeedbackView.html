@@ -19,7 +19,7 @@
     <form class="form"
           th:action="@{/travels/{travelId}/new/feedback/recipient/{recipientId}(travelId=${travelId},recipientId=${recipientId})}"
           th:object="${feedback}" method="post">
-                    <textarea id="textarea" th:field="*{comment}" placeholder="Comment (optional)"></textarea>
+        <textarea id="textarea" th:field="*{comment}" placeholder="Comment (optional)"></textarea>
         <div class="stars-container">
             <span class="rating-label">Rating:</span>
             <div class="stars">

@@ -9,20 +9,35 @@ import java.util.List;
 
 public interface TravelRequestService {
     List<TravelRequest> get();
+
     TravelRequest get(Long id);
+
     List<TravelRequest> getPending();
+
     List<TravelRequest> getByTravel(Travel travel);
-    TravelRequest findByTravelIsAndPassengerIsAndStatus(Travel travel , User passenger , TravelRequestStatus status);
-    List<TravelRequest> findByTravelIsAndStatus(Travel travel , TravelRequestStatus status);
+
+    TravelRequest findByTravelIsAndPassengerIsAndStatus(Travel travel, User passenger, TravelRequestStatus status);
+
+    List<TravelRequest> findByTravelIsAndStatus(Travel travel, TravelRequestStatus status);
+
     void createRequest(Travel travel, User user);
+
     void update(TravelRequest travelRequest, User editor);
-    void delete(Long id,User editor);
+
+    void delete(Long id, User editor);
+
     void deleteByTravelAndAndPassenger(Travel travel, User user);
-    void approveRequest(Travel travel, User editor , User requestCreator);
-    void rejectRequest(Travel travel , User editor , User requestCreator);
-    void rejectRequestWhenUserIsAlreadyPassenger(Travel travel  , User user , User editor);
-    void rejectWhenAlreadyPassenger(Long id , User editor , Travel travel);
+
+    void approveRequest(Travel travel, User editor, User requestCreator);
+
+    void rejectRequest(Travel travel, User editor, User requestCreator);
+
+    void rejectRequestWhenUserIsAlreadyPassenger(Travel travel, User user, User editor);
+
+    void rejectWhenAlreadyPassenger(Long id, User editor, Travel travel);
+
     boolean existsTravelRequestByTravelAndPassengerAndStatus(Travel travel, User user, TravelRequestStatus status);
-    boolean existsByTravelAndPassenger(Travel travel , User user);
+
+    boolean existsByTravelAndPassenger(Travel travel, User user);
 
 }

@@ -177,8 +177,9 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     background-color: black;
     margin: 0 10px;
 }
+
 .gap {
-    gap: 5rem!important;
+    gap: 5rem !important;
 }
 
 

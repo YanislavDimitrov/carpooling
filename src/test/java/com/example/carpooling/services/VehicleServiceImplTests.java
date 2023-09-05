@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 
@@ -134,7 +133,7 @@ public class VehicleServiceImplTests {
         Mockito.when(mockRepository.findById(Mockito.any(Long.class))).thenReturn(Optional.of(mockVehicle));
 
         //Act
-        vehicleService.update(mockVehicle.getId(),dto, mockUserLogged);
+        vehicleService.update(mockVehicle.getId(), dto, mockUserLogged);
 
         //Assert
         Mockito.verify(mockRepository, Mockito.times(1))

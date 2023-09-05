@@ -23,16 +23,16 @@ html {
     width: 10%;
 }
 
-.main .options-container{
+.main .options-container {
     display: flex;
     gap: 2rem;
 }
 
-.btn:hover{
+.btn:hover {
     cursor: pointer;
     background-color: rgb(53, 74, 82);
 }
 
-.btn i{
+.btn i {
     padding-right: .5rem;
 }

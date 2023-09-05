@@ -76,7 +76,9 @@ public interface TravelService {
     Travel update(Travel travelToUpdate, User editor);
 
     void delete(Long id, User editor);
+
     void checkIfTheTravelTimeFrameIsValidWithQuery(Travel travel, User driver);
+
     void checkIfTheTravelTimeFrameIsValid(Travel oldTravel, Travel travel, User driver);
 
     void completeTravel(Long id, User editor);

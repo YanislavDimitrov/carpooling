@@ -1,51 +1,51 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>Travels</title>
-  <link rel="website icon" th:type="png" th:href="@{/images/carpool_simplelogo.png}">
-  <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
-  <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
-  <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">
-  <link rel="stylesheet" href="../static/travelsStyles.css" th:href="@{/travelsStyles.css}">
-  <link rel="stylesheet" href="../static/filter.css" th:href="@{/filter.css}">
-  <link rel="stylesheet" href="../static/pagination.css" th:href="@{/pagination.css}">
+    <meta charset="UTF-8">
+    <title>Travels</title>
+    <link rel="website icon" th:type="png" th:href="@{/images/carpool_simplelogo.png}">
+    <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
+    <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
+    <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">
+    <link rel="stylesheet" href="../static/travelsStyles.css" th:href="@{/travelsStyles.css}">
+    <link rel="stylesheet" href="../static/filter.css" th:href="@{/filter.css}">
+    <link rel="stylesheet" href="../static/pagination.css" th:href="@{/pagination.css}">
 </head>
 <body>
 <!--HEADER-->
 <header th:replace="index.html :: header"></header>
 <section class="main">
-  <div id="content">
-    <div class="no-feedbacks" th:if="${feedbacks.isEmpty()}">
-      <h2 th:text="#{feedback.label.no-feedbacks}">No feedbacks to show</h2>
-    </div>
-    <div class="travel-cards-container">
-      <div th:each="feedback :${feedbacks}" class="travel-card" th:attr="data-id=${feedback.id}">
-        <div class="travel-card-content">
-          <h2 th:text="${'Creator: ' +feedback.creator.getUserName()}"></h2>
-          <p th:text="${'Recipient: ' + feedback.recipient.getUserName()}"></p>
-          <p th:text="${'Rating: ' + feedback.rating}"></p>
-          <p th:text="${'Comment: ' + feedback.comment}"></p>
+    <div id="content">
+        <div class="no-feedbacks" th:if="${feedbacks.isEmpty()}">
+            <h2 th:text="#{feedback.label.no-feedbacks}">No feedbacks to show</h2>
         </div>
-      </div>
+        <div class="travel-cards-container">
+            <div th:each="feedback :${feedbacks}" class="travel-card" th:attr="data-id=${feedback.id}">
+                <div class="travel-card-content">
+                    <h2 th:text="${'Creator: ' +feedback.creator.getUserName()}"></h2>
+                    <p th:text="${'Recipient: ' + feedback.recipient.getUserName()}"></p>
+                    <p th:text="${'Rating: ' + feedback.rating}"></p>
+                    <p th:text="${'Comment: ' + feedback.comment}"></p>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </section>
 <footer th:replace="index.html :: footer"></footer>
 <script type="text/javascript" src="../static/js/showDropdown.js" th:src="@{/js/showDropdown.js}"></script>
 <script type="text/javascript" src="../static/js/reset.js" th:src="@{/js/reset.js}"></script>
 <script type="text/javascript" src="../static/js/displayDots.js" th:src="@{/js/displayDots.js}"></script>
 <script type="text/javascript">
-  document.addEventListener("DOMContentLoaded", () => {
-    const travelCards = document.querySelectorAll('.travel-card');
-    travelCards.forEach(card => {
-      card.addEventListener('click', () => {
-        const travelId = card.getAttribute('data-id');
-        if (travelId) {
-          window.location.href = `/feedbacks/${id}`;
-        }
-      });
+    document.addEventListener("DOMContentLoaded", () => {
+        const travelCards = document.querySelectorAll('.travel-card');
+        travelCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const travelId = card.getAttribute('data-id');
+                if (travelId) {
+                    window.location.href = `/feedbacks/${id}`;
+                }
+            });
+        });
     });
-  });
 </script>
 </body>

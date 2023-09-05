@@ -1,6 +1,5 @@
 package com.example.carpooling.repositories.contracts;
 
-import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.models.Passenger;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.User;
@@ -16,13 +15,16 @@ import java.util.List;
 public interface PassengerRepository extends JpaRepository<Passenger, Long> {
 
     List<Passenger> findAllByTravelIs(Travel travel);
-    Passenger findByUserAndTravel(User user , Travel travel);
 
-    boolean existsByUserAndTravel(User user , Travel travel);
+    Passenger findByUserAndTravel(User user, Travel travel);
+
+    boolean existsByUserAndTravel(User user, Travel travel);
+
     @Modifying
     @Transactional
-    @Query ("update Passenger  as p set p.isActive = false where p.travel =:travel")
+    @Query("update Passenger  as p set p.isActive = false where p.travel =:travel")
     void setStatusForPassengersOfATravelToInActive(Travel travel);
+
     @Modifying
     void deleteAllByTravel(Travel travel);
 }

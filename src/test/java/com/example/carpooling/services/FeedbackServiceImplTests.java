@@ -600,6 +600,7 @@ public class FeedbackServiceImplTests {
                 travel, creator, recipient, travelRepository, "Travel not found", userRepository, "User not found"
         ));
     }
+
     public TravelRequest createRequest(Travel travel, User recipient, TravelRequestStatus travelRequestStatus) {
         TravelRequest travelRequest = new TravelRequest();
         travelRequest.setTravel(travel);
