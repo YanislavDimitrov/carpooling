@@ -394,6 +394,10 @@ public class TravelMvcController {
                 );
                 return "RequestCancelledView";
             }
+
+            if(loggedUser.getStatus() == UserStatus.BLOCKED) {
+                return "BlockedUserView";
+            }
             travelRequestService.createRequest(travel, loggedUser);
             return "RequestSentView";
         } catch (
@@ -516,6 +520,9 @@ public class TravelMvcController {
             creator = authenticationHelper.tryGetUser(session);
             travel = travelService.getById(travelId);
             recipient = userService.getById(recipientId);
+            if(creator.getStatus() == UserStatus.BLOCKED) {
+                return "BlockedUserView";
+            }
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         } catch (EntityNotFoundException e) {
