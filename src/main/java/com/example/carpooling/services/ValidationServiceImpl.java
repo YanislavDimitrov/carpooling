@@ -9,6 +9,8 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -20,18 +22,19 @@ import java.nio.charset.StandardCharsets;
 import static com.example.carpooling.services.UserServiceImpl.CONFIRMATION_EMAIL_TEMPLATE_PATH;
 
 @Service
+@PropertySource("classpath:application.properties")
 public class ValidationServiceImpl implements ValidationService {
     private final TokenRepository tokenRepository;
     private final JavaMailSender javaMailSender;
     private final BingMapsService bingMapsService;
-    @Value("env.basepath")
     private String baseUrl;
 
     @Autowired
-    public ValidationServiceImpl(TokenRepository tokenRepository, JavaMailSender javaMailSender, BingMapsService bingMapsService) {
+    public ValidationServiceImpl(Environment env, TokenRepository tokenRepository, JavaMailSender javaMailSender, BingMapsService bingMapsService) {
         this.tokenRepository = tokenRepository;
         this.javaMailSender = javaMailSender;
         this.bingMapsService = bingMapsService;
+        this.baseUrl = env.getProperty("env.basepath");
     }
 
     @Override
