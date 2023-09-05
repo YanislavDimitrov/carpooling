@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.IOException;
-
 @Controller
 @RequestMapping("/auth")
 public class AuthenticationController {

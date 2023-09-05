@@ -1,5 +1,4 @@
 package com.example.carpooling.controllers.mvc;
-
 import com.example.carpooling.exceptions.ActiveTravelException;
 import com.example.carpooling.exceptions.AuthenticationFailureException;
 import com.example.carpooling.exceptions.AuthorizationException;
@@ -29,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-
 @Controller
 @RequestMapping("/users")
 public class UserMvcController {

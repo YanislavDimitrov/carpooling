@@ -1,5 +1,4 @@
 package com.example.carpooling.controllers.mvc;
-
 import com.example.carpooling.exceptions.AuthenticationFailureException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
 import com.example.carpooling.helpers.AuthenticationHelper;
@@ -28,7 +27,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-
 @Controller
 @RequestMapping("/feedbacks")
 public class FeedbackMvcController {
