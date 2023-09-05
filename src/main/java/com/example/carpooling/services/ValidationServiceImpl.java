@@ -13,9 +13,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 import static com.example.carpooling.services.UserServiceImpl.CONFIRMATION_EMAIL_TEMPLATE_PATH;
 
@@ -43,8 +42,11 @@ public class ValidationServiceImpl implements ValidationService {
     }
 
     private static String readHtmlFromFile() throws IOException {
+        ClassPathResource resource = new ClassPathResource("templates/WelcomeTemplateEmail.html");
+        InputStream inputStream = resource.getInputStream();
+
         StringBuilder content = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new FileReader(CONFIRMATION_EMAIL_TEMPLATE_PATH))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 content.append(line);
@@ -57,7 +59,7 @@ public class ValidationServiceImpl implements ValidationService {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-        ClassPathResource imageResource = new ClassPathResource("src/main/resources/static/images/CoverPicture.svg");
+        ClassPathResource imageResource = new ClassPathResource("static/images/CoverPicture.svg");
         helper.addInline("image123", imageResource);
 
         helper.setFrom("carpoolingalpha@gmail.com");
