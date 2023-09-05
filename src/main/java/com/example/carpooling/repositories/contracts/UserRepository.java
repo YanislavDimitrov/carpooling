@@ -93,4 +93,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u ORDER BY size(u.travelsAsDriver) DESC LIMIT 10")
     List<User> findTopTenDrivers();
+    @Query("SELECT u FROM User u ORDER BY size(u.travelsAsPassenger) DESC LIMIT 10")
+    List<User> findTopTenPassengers();
 }

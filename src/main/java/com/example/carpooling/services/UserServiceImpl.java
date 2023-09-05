@@ -300,6 +300,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> findTopTenPassengers() {
+        return userRepository.findTopTenPassengers();
+    }
+
+    @Override
     @Transactional
     public void unverify(Long id) {
         Optional<User> optionalUserToInvalidate = this.userRepository.findById(id);

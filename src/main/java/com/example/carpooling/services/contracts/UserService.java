@@ -52,4 +52,6 @@ public interface UserService {
 
     Page<User> findAllPaginated(int page, int size, String firstName, String lastName, String username, String email, String phoneNumber, String userRole, String userStatus, Sort sort);
     List<User> findTopTenDrivers();
+
+    List<User> findTopTenPassengers();
 }

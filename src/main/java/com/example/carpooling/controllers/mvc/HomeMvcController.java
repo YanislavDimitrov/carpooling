@@ -36,6 +36,7 @@ public class HomeMvcController {
         model.addAttribute("organizedTravels", travelService.countOrganized());
         model.addAttribute("createdUsers", userService.count());
         model.addAttribute("topDrivers", userService.findTopTenDrivers());
+        model.addAttribute("topPassengers", userService.findTopTenPassengers());
         return "index";
     }
 

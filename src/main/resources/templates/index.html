@@ -166,14 +166,16 @@
 </section>
 <section class=" additional-info">
     <div class="info-container">
-        <i class="fa-solid fa-car"></i>
-        <h2 class="info-title">All directories</h2>
-        <a class="destination" href="#" th:href="@{/travels}">
-            <p class="destination">All carpool routes</p>
-        </a>
-        <a class="destination" href="#" th:href="@{/travels/completed}">
-            <p class="destination">Completed travels</p>
-        </a>
+        <i class="fa-solid fa-car-side"></i>
+        <h2 class="info-title">Top Drivers</h2>
+        <ul role="list">
+            <li th:each="driver : ${topDrivers}">
+                <div class="travel-route">
+                    <a class="destination" th:href="@{/users/{id}(id=${driver.getId()})}"
+                       th:text="${driver.getFirstName()}+' '+${driver.getLastName()}"></a>
+                </div>
+            </li>
+        </ul>
     </div>
     <div class="info-container">
         <i class="fa-solid fa-star-half-stroke"></i>
@@ -192,12 +194,12 @@
     </div>
     <div class="info-container">
         <i class="fa-solid fa-car-side"></i>
-        <h2 class="info-title">Top Drivers</h2>
+        <h2 class="info-title">Top Passengers</h2>
         <ul role="list">
-            <li th:each="driver : ${topDrivers}">
+            <li th:each="passenger : ${topPassengers}">
                 <div class="travel-route">
-                    <a class="destination" th:href="@{/users/{id}(id=${driver.getId()})}"
-                       th:text="${driver.getFirstName()}+' '+${driver.getLastName()}"></a>
+                    <a class="destination" th:href="@{/users/{id}(id=${passenger.getId()})}"
+                       th:text="${passenger.getFirstName()}+' '+${passenger.getLastName()}"></a>
                 </div>
             </li>
         </ul>
