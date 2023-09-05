@@ -87,13 +87,7 @@ public class UserMvcController {
     }
 
     @GetMapping("/{id}")
-    public String getUserById(@PathVariable Long id, Model model, HttpSession session) {
-//        User loggedUser;
-//        try {
-//            loggedUser = authenticationHelper.tryGetUser(session);
-//        } catch (AuthenticationFailureException e) {
-//            return "redirect:/auth/login";
-//        }
+    public String getUserById(@PathVariable Long id, Model model) {
 
         try {
             User user = userService.getById(id);
