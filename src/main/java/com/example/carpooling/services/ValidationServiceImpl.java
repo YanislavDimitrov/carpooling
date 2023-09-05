@@ -8,6 +8,7 @@ import com.example.carpooling.services.contracts.ValidationService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -24,6 +25,8 @@ public class ValidationServiceImpl implements ValidationService {
     private final TokenRepository tokenRepository;
     private final JavaMailSender javaMailSender;
     private final BingMapsService bingMapsService;
+    @Value("env.basepath")
+    private String baseUrl;
 
     @Autowired
     public ValidationServiceImpl(TokenRepository tokenRepository, JavaMailSender javaMailSender, BingMapsService bingMapsService) {
@@ -36,7 +39,7 @@ public class ValidationServiceImpl implements ValidationService {
     public void validate(User user) throws IOException, MessagingException {
         VerificationToken verificationToken = new VerificationToken(user);
         tokenRepository.save(verificationToken);
-        String verificationLink = "http://localhost:8080/verification/validate?token=" + verificationToken.getToken();
+        String verificationLink = baseUrl + "/verification/validate?token=" + verificationToken.getToken();
         String htmlContent = readHtmlFromFile();
         htmlContent = htmlContent.replace("verificationLinkPlaceholder", verificationLink);
         sendVerificationEmail(user.getEmail(), htmlContent);
