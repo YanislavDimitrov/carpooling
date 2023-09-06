@@ -722,7 +722,7 @@ public class TravelServiceImpl implements TravelService {
      * This method is scheduled to run periodically.
      */
     @Override
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 6000)
     public void updateTravelStatus() {
         List<Travel> plannedTravels = findPlannedTravelsWithPastDepartureTime();
         for (Travel travel : plannedTravels) {

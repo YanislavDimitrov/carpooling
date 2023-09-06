@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.env.Environment;
 
 import java.io.IOException;
 
@@ -39,18 +40,20 @@ public class ImageServiceImplTests {
         Mockito.verify(uploader, Mockito.times(1))
                 .upload(any(), any());
     }
+
     @Test
-    public void destroy_Should_Invoke_Ddestroy() throws IOException {
+    public void destroy_Should_Invoke_Destroy() throws IOException {
         //Arrange
         Uploader uploader = mock(Uploader.class);
+        Image mockImage = createMockImage();
         Mockito.when(mockCloudinary.uploader()).thenReturn(uploader);
 
         //Act
-        imageService.uploadImage(new byte[5], "username");
+        imageService.destroyImage(mockImage, "username");
 
         //Assert
         Mockito.verify(uploader, Mockito.times(1))
-                .upload(any(), any());
+                .destroy(any(), any());
     }
 
     @Test

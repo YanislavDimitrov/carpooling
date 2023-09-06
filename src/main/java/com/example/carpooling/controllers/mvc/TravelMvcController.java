@@ -222,6 +222,9 @@ public class TravelMvcController {
         User loggedUser;
         try {
             loggedUser = authenticationHelper.tryGetUser(session);
+            if(loggedUser.getStatus() == UserStatus.BLOCKED) {
+                return "BlockedUserView";
+            }
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         }
@@ -278,6 +281,9 @@ public class TravelMvcController {
             travel = travelService.getById(id);
             if (!travel.getDriver().equals(loggedUser)) {
                 return "AccessDeniedView";
+            }
+            if(loggedUser.getStatus() == UserStatus.BLOCKED) {
+                return "BlockedUserView";
             }
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
@@ -353,13 +359,16 @@ public class TravelMvcController {
             if (!loggedUser.equals(travel.getDriver()) && loggedUser.getRole() != UserRole.ADMIN) {
                 return "AccessDeniedView";
             }
+            if(loggedUser.getStatus() == UserStatus.BLOCKED) {
+                return "BlockedUserView";
+            }
             travelService.delete(id, loggedUser);
         } catch (EntityNotFoundException | AuthorizationException e) {
             return "AccessDeniedView";
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         }
-        return "redirect:/travels/user";
+        return "redirect:/travels/search";
     }
 
     @GetMapping("/{id}/cancel")
@@ -369,6 +378,9 @@ public class TravelMvcController {
             Travel travel = travelService.getById(id);
             if (!loggedUser.equals(travel.getDriver()) && loggedUser.getRole() != UserRole.ADMIN) {
                 return "AccessDeniedView";
+            }
+            if(loggedUser.getStatus() == UserStatus.BLOCKED) {
+                return "BlockedUserView";
             }
             travelService.cancelTravel(id, loggedUser);
             return "redirect:/travels/user";
@@ -394,6 +406,10 @@ public class TravelMvcController {
                 );
                 return "RequestCancelledView";
             }
+
+            if(loggedUser.getStatus() == UserStatus.BLOCKED) {
+                return "BlockedUserView";
+            }
             travelRequestService.createRequest(travel, loggedUser);
             return "RequestSentView";
         } catch (
@@ -418,6 +434,9 @@ public class TravelMvcController {
             User loggedUser = authenticationHelper.tryGetUser(session);
             User requestCreator = userService.getById(userId);
             Travel travel = travelService.getById(id);
+            if(loggedUser.getStatus() == UserStatus.BLOCKED || requestCreator.getStatus() == UserStatus.BLOCKED) {
+                return "BlockedUserView";
+            }
             travelRequestService.approveRequest(travel, loggedUser, requestCreator);
             return "redirect:/travels/" + travel.getId();
         } catch (EntityNotFoundException e) {
@@ -435,6 +454,9 @@ public class TravelMvcController {
             User loggedUser = authenticationHelper.tryGetUser(session);
             Travel travel = travelService.getById(id);
             User requestCreator = userService.getById(userId);
+            if(loggedUser.getStatus() == UserStatus.BLOCKED) {
+                return "BlockedUserView";
+            }
             travelRequestService.rejectRequest(travel, loggedUser, requestCreator);
             return "redirect:/travels/" + travel.getId();
         } catch (AuthenticationFailureException e) {
@@ -452,6 +474,9 @@ public class TravelMvcController {
             User loggedUser = authenticationHelper.tryGetUser(session);
             User passenger = userService.getById(userId);
             Travel travel = travelService.getById(id);
+            if(loggedUser.getStatus() == UserStatus.BLOCKED) {
+                return "BlockedUserView";
+            }
             travelRequestService.rejectRequestWhenUserIsAlreadyPassenger(travel, passenger, loggedUser);
             return "redirect:/travels/" + travel.getId();
         } catch (EntityNotFoundException e) {
@@ -490,6 +515,9 @@ public class TravelMvcController {
                 throw new InvalidTravelException(WITHDRAWAL_REJECTED);
             }
             loggedUser = authenticationHelper.tryGetUser(session);
+            if(loggedUser.getStatus() == UserStatus.BLOCKED) {
+                return "BlockedUserView";
+            }
             boolean isPassengerInThisTravel = travelService.isPassengerInThisTravel(loggedUser, travel);
             if (isPassengerInThisTravel) {
                 travelRequestService.deleteByTravelAndAndPassenger(travel, loggedUser);
@@ -516,6 +544,9 @@ public class TravelMvcController {
             creator = authenticationHelper.tryGetUser(session);
             travel = travelService.getById(travelId);
             recipient = userService.getById(recipientId);
+            if(creator.getStatus() == UserStatus.BLOCKED) {
+                return "BlockedUserView";
+            }
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         } catch (EntityNotFoundException e) {
@@ -581,6 +612,16 @@ public class TravelMvcController {
             return false;
         }
     }
+    @ModelAttribute("isBlocked")
+    public boolean populateIsActive(HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            return loggedUser.getStatus() == UserStatus.BLOCKED;
+        } catch (AuthenticationFailureException e) {
+            return false;
+        }
+    }
+
 
     @ModelAttribute("profilePicture")
     public Image populateProfilePicture(HttpSession session) {

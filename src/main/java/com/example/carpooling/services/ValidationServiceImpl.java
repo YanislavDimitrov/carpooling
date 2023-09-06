@@ -3,7 +3,6 @@ package com.example.carpooling.services;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.VerificationToken;
 import com.example.carpooling.repositories.contracts.TokenRepository;
-import com.example.carpooling.services.contracts.BingMapsService;
 import com.example.carpooling.services.contracts.ValidationService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -26,14 +25,12 @@ import java.nio.charset.StandardCharsets;
 public class ValidationServiceImpl implements ValidationService {
     private final TokenRepository tokenRepository;
     private final JavaMailSender javaMailSender;
-    private final BingMapsService bingMapsService;
     private String baseUrl;
 
     @Autowired
-    public ValidationServiceImpl(Environment env, TokenRepository tokenRepository, JavaMailSender javaMailSender, BingMapsService bingMapsService) {
+    public ValidationServiceImpl(Environment env, TokenRepository tokenRepository, JavaMailSender javaMailSender) {
         this.tokenRepository = tokenRepository;
         this.javaMailSender = javaMailSender;
-        this.bingMapsService = bingMapsService;
         this.baseUrl = env.getProperty("env.basepath");
     }
 

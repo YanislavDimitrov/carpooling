@@ -1,0 +1,186 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
+@import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css");
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+}
+
+html {
+    font-size: 14px;
+    font-family: "Poppins", sans-serif;
+    background-color: #ffffff;
+}
+
+.main {
+    min-height: 84vh;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.6),
+    rgba(0, 0, 0, 0.3)), url(images/CoverPicture.svg);
+    background-position: center center;
+    background-size: cover;
+    display: flex;
+    gap: 1rem;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form .errors {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .5rem;
+}
+
+.error {
+    font-weight: 400;
+    color: #ea5f5f;
+}
+
+.login-title {
+    font-weight: 500;
+    color: white;
+    margin-top: 2rem;
+}
+
+.password {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+.password:hover {
+    cursor: pointer;
+}
+
+.form {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    border-radius: 1rem;
+    overflow: hidden;
+    justify-content: center;
+}
+
+.form > * {
+    margin: 1rem;
+}
+
+.form > div {
+    display: flex;
+    gap: 1rem;
+    justify-content: left;
+    align-items: center;
+}
+
+.form .input-container {
+    position: relative;
+    background-color: white;
+    width: 100%;
+    white-space: nowrap;
+    padding: .9rem 1rem;
+    border-radius: 1rem;
+    box-shadow: 5px 5px 10px 3px rgba(0, 0, 0, 0.25);
+}
+
+.form i {
+    width: 1rem;
+    color: rgb(65, 89, 96);
+}
+
+.form .input-container:not(:first-child) {
+    border-left: 1px rgba(65, 89, 96, 0.51) solid;
+}
+
+.form input[type="text"],
+.form input[type="password"],
+.form input[type="email"],
+.form input[type="number"] {
+    all: unset;
+    border: none;
+    width: 95%;
+    height: 1.8rem;
+    transition: color ease-in-out .1s;
+}
+
+h1 {
+    font-weight: 500;
+    color: white;
+    margin-top: 2rem;
+}
+
+.form select,
+.form input[type="datetime-local"] {
+    width: 95%;
+    height: 1.8rem;
+    border: none;
+    outline: none;
+}
+
+.form .comment-container {
+    display: flex;
+    align-items: flex-start;
+    gap: .2rem;
+}
+
+.form textarea {
+    all: unset;
+    border: none;
+    width: 95%;
+    transition: color ease-in-out .1s;
+    white-space: normal;
+    height: 8rem;
+    overflow: auto;
+}
+
+input[type="datetime-local"]::-webkit-inner-spin-button,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+}
+
+.form input::placeholder {
+    color: #00aff5;
+    font-weight: 500;
+}
+
+.form textarea::placeholder {
+    color: #00aff5;
+    font-weight: 500;
+}
+
+.form input[type="datetime-local"]::placeholder {
+    color: #00aff5;
+    font-weight: 500;
+}
+
+.form input:focus::placeholder {
+    color: transparent;
+}
+
+.form button:hover {
+    cursor: pointer;
+    background-color: #008cc4;
+}
+
+.form .checkbox label {
+    color: white;
+}
+
+.form .field-container.checkbox {
+    display: inline-block;
+    margin: 0 1rem;
+    text-align: left;
+}
+
+button {
+    border: none;
+    background-color: #00aff5;
+    color: white;
+    text-align: center;
+    height: 3.6rem;
+    transition: ease-in-out .1s;
+    border-radius: 1rem;
+}

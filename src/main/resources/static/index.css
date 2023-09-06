@@ -153,7 +153,6 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator {
     display: none;
     -webkit-appearance: none;
 }
-
 .travel-route {
     display: flex;
     align-items: center;

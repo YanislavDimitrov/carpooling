@@ -1,4 +1,5 @@
 package com.example.carpooling.controllers.mvc;
+
 import com.example.carpooling.exceptions.AuthenticationFailureException;
 import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.models.Image;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
+
 @Controller
 @RequestMapping("/")
 public class HomeMvcController {
@@ -48,6 +50,16 @@ public class HomeMvcController {
         try {
             User loggedUser = authenticationHelper.tryGetUser(session);
             return loggedUser.getRole() == UserRole.ADMIN;
+        } catch (AuthenticationFailureException e) {
+            return false;
+        }
+    }
+
+    @ModelAttribute("isBlocked")
+    public boolean populateIsBlocked(HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            return loggedUser.getStatus().equals(UserStatus.BLOCKED);
         } catch (AuthenticationFailureException e) {
             return false;
         }
