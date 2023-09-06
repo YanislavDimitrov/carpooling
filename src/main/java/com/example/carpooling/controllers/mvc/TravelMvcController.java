@@ -368,7 +368,7 @@ public class TravelMvcController {
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         }
-        return "redirect:/travels/user";
+        return "redirect:/travels/search";
     }
 
     @GetMapping("/{id}/cancel")
