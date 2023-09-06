@@ -191,7 +191,7 @@ public class FeedbackMvcController {
         }
     }
     @ModelAttribute("isBlocked")
-    public boolean populateIsActive(HttpSession session) {
+    public boolean populateIsBlocked(HttpSession session) {
         try {
             User loggedUser = authenticationHelper.tryGetUser(session);
             return loggedUser.getStatus() == UserStatus.BLOCKED;

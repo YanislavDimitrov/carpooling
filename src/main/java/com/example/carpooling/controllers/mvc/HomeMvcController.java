@@ -85,15 +85,7 @@ public class HomeMvcController {
         }
     }
 
-    @ModelAttribute("isBlocked")
-    public boolean populateIsActive(HttpSession session) {
-        try {
-            User loggedUser = authenticationHelper.tryGetUser(session);
-            return loggedUser.getStatus() == UserStatus.BLOCKED;
-        } catch (AuthenticationFailureException e) {
-            return false;
-        }
-    }
+
 
     @ModelAttribute("latestTravels")
     public List<Travel> populateMostPopularTravels() {

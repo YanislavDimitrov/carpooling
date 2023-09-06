@@ -86,6 +86,16 @@ public class UserMvcController {
         }
     }
 
+    @ModelAttribute("isBlocked")
+    public boolean populateIsBlocked(HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            return loggedUser.getStatus() == UserStatus.BLOCKED;
+        } catch (AuthenticationFailureException e) {
+            return false;
+        }
+    }
+
     @GetMapping("/{id}")
     public String getUserById(@PathVariable Long id, Model model) {
 

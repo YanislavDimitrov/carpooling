@@ -85,7 +85,7 @@
     </a>
     </a>
     <div class="btns">
-        <a th:href="@{/admin/users}" th:if="${isAdmin}" class="admin-btn-container">
+        <a th:href="@{/admin/users}" th:if="!${isBlocked} and ${isAdmin}" class="admin-btn-container">
             <i class="fa-solid fa-gears"></i>Users
         </a>
         <a th:if="${isAuthenticated}" class="search-btn-container" th:href="@{/feedbacks}">
