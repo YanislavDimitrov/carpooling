@@ -23,8 +23,8 @@ public interface FeedbackService {
                                     int size,
                                     Sort sort,
                                     Short rating,
-                                    User creator,
-                                    User recipient,
+                                    String creator,
+                                    String recipient,
                                     Travel travel);
 
     List<Feedback> findByTravelId(Long id);

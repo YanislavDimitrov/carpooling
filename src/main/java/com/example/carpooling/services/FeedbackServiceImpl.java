@@ -124,7 +124,7 @@ public class FeedbackServiceImpl implements FeedbackService {
      * @return A paginated list of feedbacks that match the specified criteria.
      */
     @Override
-    public Page<Feedback> findAllPaginated(int page, int size, Sort sort, Short rating, User creator, User recipient, Travel travel) {
+    public Page<Feedback> findAllPaginated(int page, int size, Sort sort, Short rating, String creator , String recipient ,Travel travel) {
         PageRequest pageRequest = PageRequest.of(page, size);
         return feedbackRepository.findAllPaginated(pageRequest, sort, rating, creator, recipient, travel);
     }

@@ -18,11 +18,6 @@
     <form id="filters-form" class="form" action="#" th:action="@{/feedbacks}" th:object="${filter}" method="get">
         <div class="inputs-container">
             <div class="select input-container">
-                <!--                <div>-->
-                <!--                    <label for="rating">Rating</label>-->
-                <!--                    <i class="fa-solid fa-star"></i>-->
-                <!--                    <input id="rating" type="number" th:field="*{rating}" value="0" placeholder="Rating">-->
-                <!--                </div>-->
                 <div class="stars-container">
                     <label for="creator">Rating:</label>
                     <div class="stars">
@@ -49,25 +44,15 @@
             <div class="select input-container">
                 <div>
                     <label for="creator">Creator</label>
-                    <select id="creator" th:field="*{creator}">
-                        <option value="">Users</option>
-                        <option th:each="user : ${users}"
-                                th:value="${user.getId()}"
-                                th:text="${user.getUserName()}">
-                        </option>
-                    </select>
+                    <input type="text" th:field="*{creator}" id="creator" placeholder="Creator">
+                    <label for="creator" class="error" th:errors="*{creator}"></label>
                 </div>
             </div>
             <div class="select input-container">
                 <div>
                     <label for="recipient">Recipient</label>
-                    <select id="recipient" th:field="*{recipient}">
-                        <option value="">Users</option>
-                        <option th:each="user : ${users}"
-                                th:value="${user.getId()}"
-                                th:text="${user.getUserName()}">
-                        </option>
-                    </select>
+                    <input type="text" id="recipient" th:field="*{recipient}" placeholder="Recipient">
+                    <label for="recipient" class="error" th:errors="*{recipient}"></label>
                 </div>
             </div>
             <div class="select input-container">

@@ -181,12 +181,12 @@ public class FeedbackServiceImplTests {
         feedbackList.add(new Feedback());
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<Feedback> paginatedFeedbackPage = new PageImpl<>(feedbackList, pageRequest, feedbackList.size());
-        when(feedbackRepository.findAllPaginated(pageRequest, sort, rating, creator, recipient, travel)).thenReturn(paginatedFeedbackPage);
-        Page<Feedback> result = feedbackService.findAllPaginated(page, size, sort, rating, creator, recipient, travel);
+        when(feedbackRepository.findAllPaginated(pageRequest, sort, rating, creator.getUserName(), recipient.getUserName(), travel)).thenReturn(paginatedFeedbackPage);
+        Page<Feedback> result = feedbackService.findAllPaginated(page, size, sort, rating, creator.getUserName(), recipient.getUserName(), travel);
         assertNotNull(result);
         assertEquals(2, result.getTotalElements());
         assertEquals(2, result.getContent().size());
-        verify(feedbackRepository, times(1)).findAllPaginated(pageRequest, sort, rating, creator, recipient, travel);
+        verify(feedbackRepository, times(1)).findAllPaginated(pageRequest, sort, rating, creator.getUserName(), recipient.getUserName(), travel);
     }
 
     @Test
@@ -201,12 +201,12 @@ public class FeedbackServiceImplTests {
         List<Feedback> emptyList = new ArrayList<>();
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<Feedback> emptyPage = new PageImpl<>(emptyList, pageRequest, emptyList.size());
-        when(feedbackRepository.findAllPaginated(pageRequest, sort, rating, creator, recipient, travel)).thenReturn(emptyPage);
-        Page<Feedback> result = feedbackService.findAllPaginated(page, size, sort, rating, creator, recipient, travel);
+        when(feedbackRepository.findAllPaginated(pageRequest, sort, rating, creator.getUserName(), recipient.getUserName(), travel)).thenReturn(emptyPage);
+        Page<Feedback> result = feedbackService.findAllPaginated(page, size, sort, rating, creator.getUserName(), recipient.getUserName(), travel);
         assertNotNull(result);
         assertEquals(0, result.getTotalElements());
         assertEquals(0, result.getContent().size());
-        verify(feedbackRepository, times(1)).findAllPaginated(pageRequest, sort, rating, creator, recipient, travel);
+        verify(feedbackRepository, times(1)).findAllPaginated(pageRequest, sort, rating, creator.getUserName(), recipient.getUserName(), travel);
     }
 
     @Test

@@ -11,8 +11,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class FeedbackFilterDto {
     private Short rating;
-    private User creator;
-    private User recipient;
+    private String creator;
+    private String recipient;
     private Travel travel;
     private String sortBy = "id";
     private String sortOrder = "asc";
