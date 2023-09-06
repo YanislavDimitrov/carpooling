@@ -8,6 +8,7 @@ import com.example.carpooling.models.Image;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.dtos.UserFilterDto;
 import com.example.carpooling.models.enums.UserRole;
+import com.example.carpooling.models.enums.UserStatus;
 import com.example.carpooling.services.contracts.TravelService;
 import com.example.carpooling.services.contracts.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -69,6 +70,15 @@ public class AdminMvcController {
             return loggedUser.getProfilePicture();
         } catch (AuthenticationFailureException e) {
             return null;
+        }
+    }
+    @ModelAttribute("isBlocked")
+    public boolean populateIsBlocked(HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            return loggedUser.getStatus() == UserStatus.BLOCKED;
+        } catch (AuthenticationFailureException e) {
+            return false;
         }
     }
 

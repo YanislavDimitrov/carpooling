@@ -1,9 +1,11 @@
 package com.example.carpooling.controllers.mvc;
 import com.example.carpooling.exceptions.AuthenticationFailureException;
 import com.example.carpooling.helpers.AuthenticationHelper;
+import com.example.carpooling.models.Image;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.VerificationToken;
 import com.example.carpooling.models.enums.UserRole;
+import com.example.carpooling.models.enums.UserStatus;
 import com.example.carpooling.services.contracts.TokenService;
 import com.example.carpooling.services.contracts.UserService;
 import jakarta.servlet.http.HttpSession;
@@ -37,6 +39,35 @@ public class VerificationMvcController {
         try {
             User loggedUser = authenticationHelper.tryGetUser(session);
             return loggedUser.getRole() == UserRole.ADMIN;
+        } catch (AuthenticationFailureException e) {
+            return false;
+        }
+    }
+    @ModelAttribute("hasProfilePicture")
+    public Boolean hasProfilePicture(HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            return loggedUser.getProfilePicture() != null;
+        } catch (AuthenticationFailureException e) {
+            return false;
+        }
+    }
+
+    @ModelAttribute("profilePicture")
+    public Image populateProfilePicture(HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            return loggedUser.getProfilePicture();
+        } catch (AuthenticationFailureException e) {
+            return null;
+        }
+    }
+
+    @ModelAttribute("isBlocked")
+    public boolean populateIsBlocked(HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            return loggedUser.getStatus() == UserStatus.BLOCKED;
         } catch (AuthenticationFailureException e) {
             return false;
         }

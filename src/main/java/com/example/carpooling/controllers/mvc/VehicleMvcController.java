@@ -9,6 +9,7 @@ import com.example.carpooling.models.Vehicle;
 import com.example.carpooling.models.dtos.VehicleCreateDto;
 import com.example.carpooling.models.dtos.VehicleUpdateDto;
 import com.example.carpooling.models.enums.UserRole;
+import com.example.carpooling.models.enums.UserStatus;
 import com.example.carpooling.repositories.contracts.VehicleRepository;
 import com.example.carpooling.services.contracts.VehicleService;
 import jakarta.servlet.http.HttpSession;
@@ -59,6 +60,15 @@ public class VehicleMvcController {
             return loggedUser.getProfilePicture();
         } catch (AuthenticationFailureException e) {
             return null;
+        }
+    }
+    @ModelAttribute("isBlocked")
+    public boolean populateIsBlocked(HttpSession session) {
+        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
+            return loggedUser.getStatus() == UserStatus.BLOCKED;
+        } catch (AuthenticationFailureException e) {
+            return false;
         }
     }
 
