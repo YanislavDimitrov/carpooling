@@ -434,6 +434,7 @@ public class TravelServiceImpl implements TravelService {
     public Long countCompleted() {
         return travelRepository.countAllByStatusIs(TravelStatus.COMPLETED);
     }
+
     @Override
     public Long countOrganized() {
         return travelRepository.countAllByStatusIn(List.of(

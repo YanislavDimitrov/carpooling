@@ -17,15 +17,37 @@ import java.util.Optional;
 import static com.example.carpooling.helpers.ConstantMessages.DELETE_VEHICLE_AUTHORIZATION_MESSAGE;
 import static com.example.carpooling.helpers.ConstantMessages.UPDATE_VEHICLE_AUTHORIZATION_MESSAGE;
 
+/**
+ * The {@code VehicleServiceImpl} class provides services related to vehicle management.
+ * It allows users to perform actions such as updating, deleting, and retrieving vehicles.
+ * This class ensures proper authorization checks before performing vehicle-related actions.
+ *
+ * @author Yanislav Dimitrov & Ivan Boev
+ * @version 1.0
+ * @since 06.09.23
+ */
 @Service
 public class VehicleServiceImpl implements VehicleService {
     private final VehicleRepository vehicleRepository;
 
+    /**
+     * Constructs a new {@code VehicleServiceImpl} with the specified dependencies.
+     *
+     * @param vehicleRepository The repository for managing vehicle data.
+     */
     @Autowired
     public VehicleServiceImpl(VehicleRepository vehicleRepository) {
         this.vehicleRepository = vehicleRepository;
     }
 
+    /**
+     * Deletes a vehicle with the given ID, subject to authorization checks.
+     *
+     * @param id         The ID of the vehicle to delete.
+     * @param loggedUser The user attempting the deletion.
+     * @throws EntityNotFoundException If the vehicle with the given ID does not exist.
+     * @throws AuthorizationException  If the user is not authorized to delete the vehicle.
+     */
     @Override
     @Transactional
     public void delete(Long id, User loggedUser) {
@@ -45,6 +67,16 @@ public class VehicleServiceImpl implements VehicleService {
         }
     }
 
+    /**
+     * Updates a vehicle's details with the given information, subject to authorization checks.
+     *
+     * @param id             The ID of the vehicle to update.
+     * @param payloadVehicle The updated vehicle information.
+     * @param loggedUser     The user attempting the update.
+     * @return The updated vehicle.
+     * @throws EntityNotFoundException If the vehicle with the given ID does not exist.
+     * @throws AuthorizationException  If the user is not authorized to update the vehicle.
+     */
     @Override
     public Vehicle update(Long id, VehicleUpdateDto payloadVehicle, User loggedUser) {
         Optional<Vehicle> optionalTargetVehicle = this.vehicleRepository.findById(id);
@@ -72,6 +104,13 @@ public class VehicleServiceImpl implements VehicleService {
         }
     }
 
+    /**
+     * Retrieves a vehicle by its ID.
+     *
+     * @param id The ID of the vehicle to retrieve.
+     * @return The retrieved vehicle.
+     * @throws EntityNotFoundException If the vehicle with the given ID does not exist.
+     */
     @Override
     public Vehicle getById(Long id) {
         Optional<Vehicle> optionalVehicle = this.vehicleRepository.findById(id);
@@ -81,10 +120,23 @@ public class VehicleServiceImpl implements VehicleService {
         return optionalVehicle.get();
     }
 
+    /**
+     * Checks if a user has administrator (admin) privileges.
+     *
+     * @param loggedUser The user to check for admin privileges.
+     * @return {@code true} if the user has admin privileges, {@code false} otherwise.
+     */
     private boolean isAdmin(User loggedUser) {
         return loggedUser.getRole().equals(UserRole.ADMIN);
     }
 
+    /**
+     * Checks if two users are the same user based on their usernames.
+     *
+     * @param loggedUser The first user.
+     * @param targetUser The second user.
+     * @return {@code true} if the users are the same, {@code false} otherwise.
+     */
     private static boolean areSameUser(User loggedUser, User targetUser) {
         return targetUser.getUserName().equals(loggedUser.getUserName());
     }

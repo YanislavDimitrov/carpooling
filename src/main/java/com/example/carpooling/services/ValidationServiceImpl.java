@@ -20,6 +20,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * The {@code ValidationServiceImpl} class provides methods for user account validation,
+ * including sending verification emails and generating verification tokens.
+ * It interacts with the TokenRepository to manage user verification tokens
+ * and uses JavaMailSender for sending verification emails.
+ *
+ * @author Yanislav Dimitrov & Ivan Boev
+ * @version 1.0
+ * @since 06.09.23
+ */
 @Service
 @PropertySource("classpath:application.properties")
 public class ValidationServiceImpl implements ValidationService {
@@ -27,6 +37,13 @@ public class ValidationServiceImpl implements ValidationService {
     private final JavaMailSender javaMailSender;
     private String baseUrl;
 
+    /**
+     * Constructs a new {@code ValidationServiceImpl} with the specified dependencies.
+     *
+     * @param env             The environment containing configuration properties.
+     * @param tokenRepository The repository for managing verification tokens.
+     * @param javaMailSender  The JavaMailSender for sending email messages.
+     */
     @Autowired
     public ValidationServiceImpl(Environment env, TokenRepository tokenRepository, JavaMailSender javaMailSender) {
         this.tokenRepository = tokenRepository;
@@ -34,6 +51,14 @@ public class ValidationServiceImpl implements ValidationService {
         this.baseUrl = env.getProperty("env.basepath");
     }
 
+    /**
+     * Validates a user's account by generating a verification token, saving it in the repository,
+     * and sending a verification email containing a verification link.
+     *
+     * @param user The user whose account is being validated.
+     * @throws IOException        If an error occurs while reading the HTML email template.
+     * @throws MessagingException If an error occurs while sending the verification email.
+     */
     @Override
     public void validate(User user) throws IOException, MessagingException {
         VerificationToken verificationToken = new VerificationToken(user);
@@ -44,6 +69,12 @@ public class ValidationServiceImpl implements ValidationService {
         sendVerificationEmail(user.getEmail(), htmlContent);
     }
 
+    /**
+     * Reads the HTML content of the email template from a file.
+     *
+     * @return The HTML content of the email template as a string.
+     * @throws IOException If an error occurs while reading the file.
+     */
     private static String readHtmlFromFile() throws IOException {
         ClassPathResource resource = new ClassPathResource("templates/WelcomeTemplateEmail.html");
         InputStream inputStream = resource.getInputStream();
@@ -58,6 +89,13 @@ public class ValidationServiceImpl implements ValidationService {
         return content.toString();
     }
 
+    /**
+     * Sends a verification email to the specified email address with the provided content.
+     *
+     * @param emailAddress The recipient's email address.
+     * @param content      The HTML content of the email.
+     * @throws MessagingException If an error occurs while sending the email.
+     */
     private void sendVerificationEmail(String emailAddress, String content) throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);

@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
  * The class utilizes a predefined API key for authentication and provides error handling for various scenarios, such as invalid locations or
  * impossible travel routes.
  *
- * @author Ivan Boev
+ * @author Ivan Boev & Yanislav Dimitrov
  * @version 1.0
  * @since 2023-09-04
  */
