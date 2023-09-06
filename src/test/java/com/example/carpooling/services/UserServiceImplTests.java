@@ -1047,4 +1047,22 @@ public class UserServiceImplTests {
         Mockito.verify(mockRepository, Mockito.times(1))
                 .save(mockUserLogged);
     }
+    @Test
+    public void findTopTenDrivers_Should_Invoke_Repository(){
+        //Act
+        userService.findTopTenDrivers();
+
+        //Assert
+        Mockito.verify(mockRepository,Mockito.times(1))
+                .findTopTenDrivers();
+    }
+    @Test
+    public void findTopTenPassengers_Should_Invoke_Repository(){
+        //Act
+        userService.findTopTenPassengers();
+
+        //Assert
+        Mockito.verify(mockRepository,Mockito.times(1))
+                .findTopTenPassengers();
+    }
 }
