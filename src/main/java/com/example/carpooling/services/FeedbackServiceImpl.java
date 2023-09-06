@@ -27,7 +27,7 @@ import java.util.List;
  * It allows creating, updating, deleting, and retrieving feedback objects, as well as various query operations.
  * Feedback is associated with specific travels and users.
  *
- * @author Ivan Boev
+ * @author Ivan Boev & Yanislav Dimitrov
  * @version 1.0
  * @since 2023-09-04
  */
