@@ -146,6 +146,7 @@ public class UserServiceImpl implements UserService {
      * @throws DuplicatePhoneNumberException If a user with the same phone number already exists.
      */
     @Override
+    @Transactional
     public User create(User user) throws MessagingException, IOException {
         checkForDuplicateUser(user);
         this.userRepository.save(user);
