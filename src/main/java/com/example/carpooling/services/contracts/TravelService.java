@@ -91,8 +91,12 @@ public interface TravelService {
 
     boolean isPassengerInThisTravel(User user, Travel travel);
 
+    boolean isPassengerRejected(User loggedUser, Travel travel);
+
     Long count();
+
     Long countCompleted();
+
     Long countOrganized();
 
 }

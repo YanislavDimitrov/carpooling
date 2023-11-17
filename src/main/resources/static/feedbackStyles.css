@@ -14,6 +14,12 @@
     width: 40%;
 }
 
+html {
+    font-size: 14px;
+    font-family: "Poppins", sans-serif;
+    background-color: #ffffff;
+}
+
 h1 {
     color: white;
     font-weight: 500;

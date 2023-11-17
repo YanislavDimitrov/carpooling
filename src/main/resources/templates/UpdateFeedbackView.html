@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="../static/reset.css" th:href="@{/reset.css}">
     <link rel="stylesheet" href="../static/header.css" th:href="@{/header.css}">
     <link rel="stylesheet" href="../static/footer.css" th:href="@{/footer.css}">
-    <link rel="stylesheet" href="../static/newTravelStyles.css" th:href="@{/newTravelStyles.css}">
     <link rel="stylesheet" href="../static/feedbackStyles.css" th:href="@{/feedbackStyles.css}">
 </head>
 <body>
@@ -15,28 +14,53 @@
 <header th:replace="index.html :: header"></header>
 <section class="main">
 
-    <h1 class="form-title">Create New Feedback</h1>
+    <h1 class="form-title">Update Feedback</h1>
     <form id="search-form" class="form" th:action="@{/feedbacks/{id}/update(id=${feedbackId})}" th:object="${feedback}"
           method="post">
-        <div class="names-container">
-            <div class="field-container">
-                <label th:text="#{feedback.label.comment}">Comment</label>
-                <label>
-                    <textarea rows="5" cols="15" th:field="*{comment}"
-                              placeholder="Comment (optional)">Comment</textarea>
-                </label>
+        <textarea id="textarea" th:field="*{comment}" placeholder="Comment (optional)"></textarea>
+        <div class="stars-container">
+            <span class="rating-label">Rating:</span>
+            <div class="stars">
+                <a class="star" data-value="1">
+                    <i class="fa-solid fa-star"></i>
+                </a>
+                <a class="star" data-value="2">
+                    <i class="fa-solid fa-star"></i>
+                </a>
+                <a class="star" data-value="3">
+                    <i class="fa-solid fa-star"></i>
+                </a>
+                <a class="star" data-value="4">
+                    <i class="fa-solid fa-star"></i>
+                </a>
+                <a class="star" data-value="5">
+                    <i class="fa-solid fa-star"></i>
+                </a>
             </div>
         </div>
-        <div class="rating">
-            <span class="star" data-value="1">&#9733;</span>
-            <span class="star" data-value="2">&#9733;</span>
-            <span class="star" data-value="3">&#9733;</span>
-            <span class="star" data-value="4">&#9733;</span>
-            <span class="star" data-value="5">&#9733;</span>
-        </div>
+
         <input type="hidden" th:field="*{rating}" id="ratingValue" name="rating" value="0">
         <label class="error" th:errors="*{rating}"></label>
-        <button type="submit" value="Leave feedback">Leave feedback</button>
+        <button class="btn" type="submit" value="Leave feedback">Leave feedback</button>
+<!--        <div class="names-container">-->
+<!--            <div class="field-container">-->
+<!--                <label th:text="#{feedback.label.comment}">Comment</label>-->
+<!--                <label>-->
+<!--                    <textarea rows="5" cols="15" th:field="*{comment}"-->
+<!--                              placeholder="Comment (optional)">Comment</textarea>-->
+<!--                </label>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="rating">-->
+<!--            <span class="star" data-value="1">&#9733;</span>-->
+<!--            <span class="star" data-value="2">&#9733;</span>-->
+<!--            <span class="star" data-value="3">&#9733;</span>-->
+<!--            <span class="star" data-value="4">&#9733;</span>-->
+<!--            <span class="star" data-value="5">&#9733;</span>-->
+<!--        </div>-->
+<!--        <input type="hidden" th:field="*{rating}" id="ratingValue" name="rating" value="0">-->
+<!--        <label class="error" th:errors="*{rating}"></label>-->
+<!--        <button type="submit" value="Leave feedback">Leave feedback</button>-->
     </form>
 </section>
 <footer th:replace="index.html :: footer"></footer>
@@ -57,4 +81,4 @@
 </script>
 
 </body>
-</html>ml>
+</html>

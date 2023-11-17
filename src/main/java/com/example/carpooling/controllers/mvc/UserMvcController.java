@@ -1,8 +1,12 @@
 package com.example.carpooling.controllers.mvc;
+
 import com.example.carpooling.exceptions.ActiveTravelException;
 import com.example.carpooling.exceptions.AuthenticationFailureException;
 import com.example.carpooling.exceptions.AuthorizationException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
+import com.example.carpooling.exceptions.duplicate.DuplicateEmailException;
+import com.example.carpooling.exceptions.duplicate.DuplicatePhoneNumberException;
+import com.example.carpooling.exceptions.duplicate.DuplicateUsernameException;
 import com.example.carpooling.helpers.AuthenticationHelper;
 import com.example.carpooling.models.Image;
 import com.example.carpooling.models.User;
@@ -28,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+
 @Controller
 @RequestMapping("/users")
 public class UserMvcController {
@@ -167,14 +172,28 @@ public class UserMvcController {
             return "redirect:/auth/login";
         }
 
-        if (bindingResult.hasErrors()) {
-            return "UpdateUserView";
-        }
-
         User targetUser = this.userService.getById(id);
 
         boolean revalidationRequired = !targetUser.getEmail().equals(dto.getEmail());
-        userService.update(id, dto, loggedUser);
+        try {
+            userService.update(id, dto, loggedUser);
+        } catch (DuplicateEmailException e) {
+            bindingResult.rejectValue("email",
+                    "duplicate_email",
+                    "User with this email already exists.");
+        } catch (DuplicateUsernameException e) {
+            bindingResult.rejectValue("userName",
+                    "duplicate_username",
+                    "User with this username already exists.");
+        } catch (DuplicatePhoneNumberException e) {
+            bindingResult.rejectValue("phoneNumber",
+                    "duplicate_phoneNumber",
+                    "User with this phone number already exists.");
+        }
+
+        if (bindingResult.hasErrors()) {
+            return "UpdateUserView";
+        }
 
         if (revalidationRequired) {
             userService.unverify(id);

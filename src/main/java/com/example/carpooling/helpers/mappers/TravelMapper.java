@@ -132,7 +132,6 @@ public class TravelMapper {
             }
 
         } else {
-            hours = 0;
             double minutes = durationAsDouble;
             if (minutes > 0) {
                 travelFrontEndView.setDuration(String.format("%.0f minutes", minutes));
@@ -142,7 +141,8 @@ public class TravelMapper {
         travelFrontEndView.setStatus(travel.getStatus());
         travelFrontEndView.setFreeSpots(travel.getFreeSpots());
         travelFrontEndView.setDepartureTime(travel.getDepartureTime());
-        travelFrontEndView.setDriverName(travel.getDriver().getUserName());
+        travelFrontEndView.setDriverUsername(travel.getDriver().getUserName());
+        travelFrontEndView.setDriverName(String.format("%s %s", travel.getDriver().getFirstName(), travel.getDriver().getLastName()));
         return travelFrontEndView;
     }
 

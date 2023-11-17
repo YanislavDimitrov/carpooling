@@ -333,7 +333,8 @@ public class TravelServiceImpl implements TravelService {
         if (!travelRepository.existsById(id)) {
             throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, id));
         }
-        Travel travel = travelRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, id)));
+        Travel travel = travelRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, id)));
         travel.setStatus(TravelStatus.CANCELED);
         travelRepository.delete(id);
     }
@@ -511,8 +512,10 @@ public class TravelServiceImpl implements TravelService {
      * @return True if the user has requested to join the travel, otherwise false.
      */
     public boolean isRequestedByUser(Long travelId, User user) {
-        Travel travel = travelRepository.findById(travelId).orElse(null);
-        return travel != null && travel.getTravelRequests().stream().anyMatch(request -> request.getPassenger().equals(user));
+        Travel travel = travelRepository.findById(travelId)
+                .orElseThrow(() -> new EntityNotFoundException("id", travelId));
+        return this.travelRequestRepository
+                .existsTravelRequestByTravelAndPassengerAndStatus(travel, user,TravelRequestStatus.PENDING);
     }
 
     /**
@@ -525,6 +528,12 @@ public class TravelServiceImpl implements TravelService {
     @Override
     public boolean isPassengerInThisTravel(User user, Travel travel) {
         return passengerRepository.existsByUserAndTravel(user, travel);
+    }
+
+    @Override
+    public boolean isPassengerRejected(User loggedUser, Travel travel) {
+        return this.travelRequestRepository
+                .existsTravelRequestByTravelAndPassengerAndStatus(travel, loggedUser, TravelRequestStatus.REJECTED);
     }
 
     /**

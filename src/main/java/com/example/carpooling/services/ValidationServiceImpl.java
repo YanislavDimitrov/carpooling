@@ -31,7 +31,7 @@ import java.nio.charset.StandardCharsets;
  * @since 06.09.23
  */
 @Service
-@PropertySource("classpath:application.properties")
+@PropertySource("classpath:application.yml")
 public class ValidationServiceImpl implements ValidationService {
     private final TokenRepository tokenRepository;
     private final JavaMailSender javaMailSender;

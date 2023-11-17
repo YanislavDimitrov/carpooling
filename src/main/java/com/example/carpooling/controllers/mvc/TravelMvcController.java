@@ -22,6 +22,7 @@ import com.example.carpooling.services.contracts.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -34,6 +35,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 @Controller
 @RequestMapping("/travels")
 public class TravelMvcController {
@@ -46,10 +48,11 @@ public class TravelMvcController {
     private final FeedbackMapper feedbackMapper;
     private final AuthenticationHelper authenticationHelper;
     private final ExtractionHelper extractionHelper;
+    private final ModelMapper modelMapper;
 
     public TravelMvcController(TravelService travelService,
                                TravelRequestService travelRequestService, UserService userService, FeedbackService feedbackService, TravelMapper travelMapper,
-                               FeedbackMapper feedbackMapper, AuthenticationHelper authenticationHelper, ExtractionHelper extractionHelper) {
+                               FeedbackMapper feedbackMapper, AuthenticationHelper authenticationHelper, ExtractionHelper extractionHelper, ModelMapper modelMapper) {
         this.travelService = travelService;
         this.travelRequestService = travelRequestService;
         this.userService = userService;
@@ -58,6 +61,7 @@ public class TravelMvcController {
         this.feedbackMapper = feedbackMapper;
         this.authenticationHelper = authenticationHelper;
         this.extractionHelper = extractionHelper;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping()
@@ -70,7 +74,8 @@ public class TravelMvcController {
             authenticationHelper.tryGetUser(session);
             List<TravelFrontEndView> travels = travelService.get()
                     .stream()
-                    .map(travelMapper::fromTravelToFrontEnd)
+//                    .map(travel -> modelMapper.map(travel, TravelFrontEndView.class))
+                    .map(travel -> travelMapper.fromTravelToFrontEnd(travel))
                     .toList();
 
             Sort sort;
@@ -202,17 +207,22 @@ public class TravelMvcController {
         }
         List<TravelRequest> travelRequests = travelRequestService.findByTravelIsAndStatus(travel, TravelRequestStatus.PENDING);
         boolean isRequestedByUser = travelService.isRequestedByUser(id, loggedUser);
-        boolean isPassenger = travelService.isPassengerInThisTravel(loggedUser, travelService.getById(id));
+        boolean isPassenger = travelService.isPassengerInThisTravel(loggedUser, travel);
+        boolean isRejected = travelService.isPassengerRejected(loggedUser, travel);
+        List<User> passengers = travelService.getAllPassengersForTravel(travelService.getById(id));
         List<Feedback> feedbacksForTravel = feedbackService.findByTravelId(id);
         model.addAttribute("startDestination", travelFrontEndView.getDeparturePoint());
         model.addAttribute("endDestination", travelFrontEndView.getArrivalPoint());
         model.addAttribute("travel", travelFrontEndView);
-        model.addAttribute("passengers", travelService.getAllPassengersForTravel(travelService.getById(id)));
+        model.addAttribute("passengers", passengers);
         model.addAttribute("travelRequestForThisTravel", travelRequests);
-        model.addAttribute("isRequestedByUser", isRequestedByUser);
+        model.addAttribute("isPendingApproval", isRequestedByUser);
         model.addAttribute("isPassenger", isPassenger);
+        model.addAttribute("isRejected", isRejected);
         model.addAttribute("driverId", travelService.getById(id).getDriver().getId());
         model.addAttribute("feedbacks", feedbacksForTravel);
+        model.addAttribute("requestsCount", travel.getTravelRequests().size());
+        model.addAttribute("passengersCount", passengers.size());
 
         return "TravelView";
     }
@@ -222,7 +232,7 @@ public class TravelMvcController {
         User loggedUser;
         try {
             loggedUser = authenticationHelper.tryGetUser(session);
-            if(loggedUser.getStatus() == UserStatus.BLOCKED) {
+            if (loggedUser.getStatus() == UserStatus.BLOCKED) {
                 return "BlockedUserView";
             }
         } catch (AuthenticationFailureException e) {
@@ -230,7 +240,7 @@ public class TravelMvcController {
         }
         model.addAttribute("travel", new TravelCreationOrUpdateDto());
         model.addAttribute("vehicles", loggedUser.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
-        model.addAttribute("loggedUser",loggedUser);
+        model.addAttribute("loggedUser", loggedUser);
         return "NewTravelView";
     }
 
@@ -247,17 +257,17 @@ public class TravelMvcController {
         if (driver.getStatus() == UserStatus.BLOCKED) {
             return "BlockedUserView";
         }
-        if(!driver.isValidated()) {
-            model.addAttribute("loggedUser",driver);
+        if (!driver.isValidated()) {
+            model.addAttribute("loggedUser", driver);
             return "NotValidatedUser";
         }
         if (errors.hasErrors()) {
             model.addAttribute("vehicles", driver.getVehicles().stream().filter(vehicle -> !vehicle.isDeleted()));
             return "NewTravelView";
         }
-      Travel newTravel;
+        Travel newTravel;
         try {
-             newTravel = travelMapper.toTravelFromTravelCreationDto(travel);
+            newTravel = travelMapper.toTravelFromTravelCreationDto(travel);
             travelService.create(newTravel, driver);
         } catch (InvalidOperationException e) {
             errors.rejectValue("departureTime", "creation_error", e.getMessage());
@@ -282,7 +292,7 @@ public class TravelMvcController {
             if (!travel.getDriver().equals(loggedUser)) {
                 return "AccessDeniedView";
             }
-            if(loggedUser.getStatus() == UserStatus.BLOCKED) {
+            if (loggedUser.getStatus() == UserStatus.BLOCKED) {
                 return "BlockedUserView";
             }
         } catch (AuthenticationFailureException e) {
@@ -351,26 +361,6 @@ public class TravelMvcController {
         return "redirect:/travels/" + id;
     }
 
-    @GetMapping("/{id}/delete")
-    public String deleteTravel(@PathVariable Long id, HttpSession session) {
-        try {
-            User loggedUser = this.authenticationHelper.tryGetUser(session);
-            Travel travel = travelService.getById(id);
-            if (!loggedUser.equals(travel.getDriver()) && loggedUser.getRole() != UserRole.ADMIN) {
-                return "AccessDeniedView";
-            }
-            if(loggedUser.getStatus() == UserStatus.BLOCKED) {
-                return "BlockedUserView";
-            }
-            travelService.delete(id, loggedUser);
-        } catch (EntityNotFoundException | AuthorizationException e) {
-            return "AccessDeniedView";
-        } catch (AuthenticationFailureException e) {
-            return "redirect:/auth/login";
-        }
-        return "redirect:/travels/search";
-    }
-
     @GetMapping("/{id}/cancel")
     public String cancelTravel(@PathVariable Long id, HttpSession session) {
         try {
@@ -379,7 +369,7 @@ public class TravelMvcController {
             if (!loggedUser.equals(travel.getDriver()) && loggedUser.getRole() != UserRole.ADMIN) {
                 return "AccessDeniedView";
             }
-            if(loggedUser.getStatus() == UserStatus.BLOCKED) {
+            if (loggedUser.getStatus() == UserStatus.BLOCKED) {
                 return "BlockedUserView";
             }
             travelService.cancelTravel(id, loggedUser);
@@ -398,20 +388,19 @@ public class TravelMvcController {
         try {
             User loggedUser = authenticationHelper.tryGetUser(session);
             Travel travel = travelService.getById(id);
-            if (travelRequestService.existsTravelRequestByTravelAndPassengerAndStatus(travel,
-                    loggedUser,
-                    TravelRequestStatus.PENDING)) {
-                travelRequestService.delete(travelRequestService.findByTravelIsAndPassengerIsAndStatus(
-                        travel, loggedUser, TravelRequestStatus.PENDING).getId(), loggedUser
-                );
-                return "RequestCancelledView";
+            if (travel.getDriver().equals(loggedUser)) {
+                throw new InvalidOperationException("Driver cannot apply as passenger");
+            }
+            if (travelRequestService
+                    .existsTravelRequestByTravelAndPassengerAndStatus(travel, loggedUser, TravelRequestStatus.REJECTED)) {
+                return "RequestRejectedView";
             }
 
-            if(loggedUser.getStatus() == UserStatus.BLOCKED) {
+            if (loggedUser.getStatus() == UserStatus.BLOCKED) {
                 return "BlockedUserView";
             }
             travelRequestService.createRequest(travel, loggedUser);
-            return "RequestSentView";
+            return String.format("redirect:/travels/%s", id);
         } catch (
                 AuthenticationFailureException e) {
             return "redirect:/auth/login";
@@ -434,7 +423,7 @@ public class TravelMvcController {
             User loggedUser = authenticationHelper.tryGetUser(session);
             User requestCreator = userService.getById(userId);
             Travel travel = travelService.getById(id);
-            if(loggedUser.getStatus() == UserStatus.BLOCKED || requestCreator.getStatus() == UserStatus.BLOCKED) {
+            if (loggedUser.getStatus() == UserStatus.BLOCKED || requestCreator.getStatus() == UserStatus.BLOCKED) {
                 return "BlockedUserView";
             }
             travelRequestService.approveRequest(travel, loggedUser, requestCreator);
@@ -454,11 +443,11 @@ public class TravelMvcController {
             User loggedUser = authenticationHelper.tryGetUser(session);
             Travel travel = travelService.getById(id);
             User requestCreator = userService.getById(userId);
-            if(loggedUser.getStatus() == UserStatus.BLOCKED) {
+            if (loggedUser.getStatus() == UserStatus.BLOCKED) {
                 return "BlockedUserView";
             }
             travelRequestService.rejectRequest(travel, loggedUser, requestCreator);
-            return "redirect:/travels/" + travel.getId();
+            return String.format("redirect:/travels/%s", id);
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         } catch (AuthorizationException e) {
@@ -474,11 +463,11 @@ public class TravelMvcController {
             User loggedUser = authenticationHelper.tryGetUser(session);
             User passenger = userService.getById(userId);
             Travel travel = travelService.getById(id);
-            if(loggedUser.getStatus() == UserStatus.BLOCKED) {
+            if (loggedUser.getStatus() == UserStatus.BLOCKED) {
                 return "BlockedUserView";
             }
             travelRequestService.rejectRequestWhenUserIsAlreadyPassenger(travel, passenger, loggedUser);
-            return "redirect:/travels/" + travel.getId();
+            return String.format("redirect:/travels/%s", id);
         } catch (EntityNotFoundException e) {
             return "NotFoundView";
         } catch (AuthenticationFailureException e) {
@@ -510,25 +499,34 @@ public class TravelMvcController {
     public String withdrawRequest(@PathVariable Long id, HttpSession session) {
         User loggedUser;
         try {
+            loggedUser = authenticationHelper.tryGetUser(session);
+            if (loggedUser.getStatus() == UserStatus.BLOCKED) {
+                return "BlockedUserView";
+            }
             Travel travel = travelService.getById(id);
+            if (travel.getDriver().equals(loggedUser)) {
+                throw new InvalidOperationException("Driver cannot apply as passenger");
+            }
             if (travel.getStatus() != TravelStatus.PLANNED) {
                 throw new InvalidTravelException(WITHDRAWAL_REJECTED);
             }
-            loggedUser = authenticationHelper.tryGetUser(session);
-            if(loggedUser.getStatus() == UserStatus.BLOCKED) {
-                return "BlockedUserView";
+            if (travelRequestService
+                    .existsTravelRequestByTravelAndPassengerAndStatus(travel, loggedUser, TravelRequestStatus.REJECTED)) {
+                return "RequestRejectedView";
             }
-            boolean isPassengerInThisTravel = travelService.isPassengerInThisTravel(loggedUser, travel);
+            boolean isPassengerInThisTravel = travelRequestService.existsByTravelAndPassenger(travel, loggedUser);
             if (isPassengerInThisTravel) {
-                travelRequestService.deleteByTravelAndAndPassenger(travel, loggedUser);
+                travelRequestService.deleteByTravelAndPassenger(travel, loggedUser);
             }
-            return "WithDrawRequest";
+            return String.format("redirect:/travels/%s", id);
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         } catch (EntityNotFoundException e) {
             return "NotFoundView";
         } catch (InvalidTravelException e) {
             return "InvalidTravelStatus";
+        } catch (InvalidOperationException e) {
+            return "InvalidOperationView";
         }
     }
 
@@ -544,7 +542,7 @@ public class TravelMvcController {
             creator = authenticationHelper.tryGetUser(session);
             travel = travelService.getById(travelId);
             recipient = userService.getById(recipientId);
-            if(creator.getStatus() == UserStatus.BLOCKED) {
+            if (creator.getStatus() == UserStatus.BLOCKED) {
                 return "BlockedUserView";
             }
         } catch (AuthenticationFailureException e) {
@@ -603,6 +601,7 @@ public class TravelMvcController {
             return false;
         }
     }
+
     @ModelAttribute("hasProfilePicture")
     public Boolean hasProfilePicture(HttpSession session) {
         try {
@@ -612,6 +611,7 @@ public class TravelMvcController {
             return false;
         }
     }
+
     @ModelAttribute("isBlocked")
     public boolean populateIsBlocked(HttpSession session) {
         try {

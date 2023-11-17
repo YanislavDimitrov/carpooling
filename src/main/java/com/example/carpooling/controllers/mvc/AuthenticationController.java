@@ -91,7 +91,6 @@ public class AuthenticationController {
     public String showLoginPage(Model model) {
         model.addAttribute("login", new LoginDto());
         return "LoginView";
-        //Todo LoginView
     }
 
 

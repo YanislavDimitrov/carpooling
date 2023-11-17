@@ -26,7 +26,7 @@ public interface TravelRequestService {
 
     void delete(Long id, User editor);
 
-    void deleteByTravelAndAndPassenger(Travel travel, User user);
+    void deleteByTravelAndPassenger(Travel travel, User user);
 
     void approveRequest(Travel travel, User editor, User requestCreator);
 

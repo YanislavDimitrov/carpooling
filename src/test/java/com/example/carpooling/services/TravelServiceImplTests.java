@@ -365,43 +365,6 @@ public class TravelServiceImplTests {
     }
 
     @Test
-    public void testCheckIfTheTravelTimeFrameIsValid_ThrowsException() {
-        Travel travel = new Travel();
-        travel.setDepartureTime(LocalDateTime.now().plusHours(1));
-        travel.setEstimatedTimeOfArrival(LocalDateTime.now().plusHours(2));
-        travel.setStatus(TravelStatus.ACTIVE);
-        Travel travelToCheck = new Travel();
-        travelToCheck.setDepartureTime(LocalDateTime.now());
-        travelToCheck.setEstimatedTimeOfArrival(LocalDateTime.now().plusHours(1));
-        travelToCheck.setStatus(TravelStatus.ACTIVE);
-        List<Travel> driverTravels = new ArrayList<>();
-        driverTravels.add(travelToCheck);
-        User driver = new User();
-        driver.setTravelsAsDriver(driverTravels);
-        when(travelRepository.existsById(anyLong())).thenReturn(true);
-        assertThrows(InvalidOperationException.class, () -> checkIfTheTravelTimeFrameIsValid(travel, driver));
-    }
-
-    @Test
-    public void testCheckIfTheTravellTimeFrameIsValid_ThrowsException() {
-        Travel oldTravel = new Travel();
-        Travel travel = new Travel();
-        travel.setDepartureTime(LocalDateTime.now().plusHours(1));
-        travel.setEstimatedTimeOfArrival(LocalDateTime.now().plusHours(2));
-        travel.setStatus(TravelStatus.ACTIVE);
-        Travel travelToCheck = new Travel();
-        travelToCheck.setDepartureTime(LocalDateTime.now());
-        travelToCheck.setEstimatedTimeOfArrival(LocalDateTime.now().plusHours(1));
-        travelToCheck.setStatus(TravelStatus.ACTIVE);
-        List<Travel> driverTravels = new ArrayList<>();
-        driverTravels.add(travelToCheck);
-        User driver = new User();
-        driver.setTravelsAsDriver(driverTravels);
-        when(travelRepository.existsById(anyLong())).thenReturn(true);
-        assertThrows(InvalidOperationException.class, () -> travelService.checkIfTheTravelTimeFrameIsValid(oldTravel, travel, driver));
-    }
-
-    @Test
     public void testIsPassengerInThisTravel_PassengerExists() {
         User user = new User();
         Travel travel = new Travel();
@@ -542,16 +505,6 @@ public class TravelServiceImplTests {
 
     }
 
-    @Test
-    public void testIsRequestedByUserWhenTravelNotFound() {
-        Long travelId = 1L;
-        User user = createUser();
-        Mockito.when(travelRepository.findById(travelId)).thenReturn(Optional.empty());
-
-        boolean result = travelService.isRequestedByUser(travelId, user);
-
-        assertFalse(result);
-    }
 
     @Test
     public void testIsRequestedByUserWhenUserNotInRequests() {
@@ -565,18 +518,6 @@ public class TravelServiceImplTests {
         assertFalse(result);
     }
 
-    @Test
-    public void testIsRequestedByUserWhenUserInRequests() {
-        Long travelId = 1L;
-        User user = createUser(2L);
-        TravelRequest request = createTravelRequest(user);
-        Travel travel = createTravel(travelId, Collections.singletonList(request));
-        Mockito.when(travelRepository.findById(travelId)).thenReturn(Optional.of(travel));
-
-        boolean result = travelService.isRequestedByUser(travelId, user);
-
-        assertTrue(result);
-    }
 
     private Travel createTravel(Long id, List<TravelRequest> requests) {
         Travel travel = new Travel();

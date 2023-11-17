@@ -28,7 +28,7 @@ public interface TravelRequestRepository extends JpaRepository<TravelRequest, Lo
 
     boolean existsByTravelAndPassenger(Travel travel, User user);
 
-    void deleteByTravelAndAndPassenger(Travel travel, User user);
+    void deleteByTravelAndPassenger(Travel travel, User user);
 
     @Query("update TravelRequest  as t set t.status = 'CANCELLED' where t.travel=:travel")
     @Modifying

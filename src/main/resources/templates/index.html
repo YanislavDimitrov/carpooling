@@ -52,7 +52,7 @@
                     <a class="btn" th:href="@{/travels/user}">
                         <div>
                             <i class="fa-solid fa-car-side"></i>
-                            <span class="btn-content">Your rides</span>
+                            <span class="btn-content">My travels</span>
                         </div>
                         <i class="fa-solid fa-chevron-right"></i>
                     </a>
@@ -62,7 +62,7 @@
                     <a class="btn" th:href="@{/feedbacks/user}">
                         <div>
                             <i class="fa-solid fa-comment"></i>
-                            <span class="btn-content">Received feedbacks</span>
+                            <span class="btn-content">My feedbacks</span>
                         </div>
                         <i class="fa-solid fa-chevron-right"></i>
                     </a>
@@ -99,6 +99,8 @@
             <span class="avatar avatar-content-container">
                 <div class="avatar profile-picture-container">
                     <img th:if="${isBlocked}" th:src="@{/images/BlockedIcon.png}"
+                         class="blocked" src="../static/images/BlockedIcon.png">
+                    <img th:if="${isAdmin} and ${!isBlocked}" th:src="@{/images/AdminIcon.png}"
                          class="blocked" src="../static/images/BlockedIcon.png">
                     <img th:if="${hasProfilePicture}" th:src="${profilePicture.getImageUrl()}"
                          class="avatar profile-picture" src="../static/images/avatar.png">
@@ -176,21 +178,6 @@
                 <div class="travel-route">
                     <a class="destination" th:href="@{/users/{id}(id=${driver.getId()})}"
                        th:text="${driver.getFirstName()}+' '+${driver.getLastName()}"></a>
-                </div>
-            </li>
-        </ul>
-    </div>
-    <div class="info-container">
-        <i class="fa-solid fa-star-half-stroke"></i>
-        <h2 class="info-title">Latest travels</h2>
-        <ul role="list">
-            <li th:each="travel : ${latestTravels}">
-                <div class="travel-route">
-                    <a class="destination" th:href="@{/travels/{id}(id=${travel.id})}"
-                       th:text="${travel.departurePoint}"></a>
-                    <div class="arrow"></div>
-                    <a class="destination" th:href="@{/travels/{id}(id=${travel.id})}"
-                       th:text="${travel.arrivalPoint}"></a>
                 </div>
             </li>
         </ul>

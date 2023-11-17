@@ -7,6 +7,7 @@ import com.example.carpooling.services.contracts.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,10 +19,12 @@ public class AuthenticationHelper {
     public static final String NO_USER_LOGGED_IN_MSG = "No user logged in!";
 
     private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public AuthenticationHelper(UserService userService) {
+    public AuthenticationHelper(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User tryGetUser(HttpHeaders headers) {
@@ -44,10 +47,10 @@ public class AuthenticationHelper {
         return userService.getByUsername(currentUser);
     }
 
-    public User verifyAuthentication(String username, String password) {
+    public User verifyAuthentication(String username, String rawPassword) {
         try {
             User user = userService.getByUsername(username);
-            if (!user.getPassword().equals(password)) {
+            if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
                 throw new AuthenticationFailureException(INVALID_AUTHENTICATION_ERROR);
             }
             return user;

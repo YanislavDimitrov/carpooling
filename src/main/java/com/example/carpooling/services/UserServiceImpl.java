@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,6 +50,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final VehicleRepository vehicleRepository;
     private final ValidationService validationService;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Constructs an instance of the UserServiceImpl class with the necessary dependencies.
@@ -56,12 +58,14 @@ public class UserServiceImpl implements UserService {
      * @param userRepository    The repository for storing and managing user data.
      * @param vehicleRepository The repository for storing and managing vehicle data.
      * @param validationService The service responsible for user validation.
+     * @param passwordEncoder   The bean responsible for encrypting the passwords.
      */
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, VehicleRepository vehicleRepository, ValidationService validationService) {
+    public UserServiceImpl(UserRepository userRepository, VehicleRepository vehicleRepository, ValidationService validationService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.vehicleRepository = vehicleRepository;
         this.validationService = validationService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -149,6 +153,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User create(User user) throws MessagingException, IOException {
         checkForDuplicateUser(user);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         this.userRepository.save(user);
 
         this.validationService.validate(user);

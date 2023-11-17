@@ -4,7 +4,11 @@ body {
     text-align: center;
     background-size: cover;
 }
-
+html {
+    font-size: 14px;
+    font-family: "Poppins", sans-serif;
+    background-color: #ffffff;
+}
 
 /* Header and Footer Styles */
 header {
@@ -39,12 +43,12 @@ input {
     position: relative;
     overflow: hidden;
     transition: transform 0.3s;
+}
+.travel-card:hover{
     cursor: pointer;
 }
 
-.travel-card:hover {
-    transform: scale(1.05);
-}
+
 
 /* Titles and Messages */
 #driver-title,

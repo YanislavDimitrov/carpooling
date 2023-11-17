@@ -1,2 +1,0 @@
-alter table passengers_travels
-drop column is_active

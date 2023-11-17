@@ -11,7 +11,9 @@ import lombok.Setter;
 @NoArgsConstructor
 public class VehicleUpdateDto {
     private Long id;
+    @NotEmpty(message = "Vehicle make must not be empty")
     private String make;
+    @NotEmpty(message = "Vehicle model must not be empty")
     private String model;
     private String licencePlateNumber;
     @NotEmpty(message = "Vehicle color must not be empty")

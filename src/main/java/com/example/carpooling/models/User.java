@@ -49,7 +49,6 @@ public class User {
     @JsonIgnore
     @OneToMany(mappedBy = "recipient")
     private List<Feedback> feedbacks;
-
     @OneToMany(mappedBy = "owner")
     private List<Vehicle> vehicles;
 

@@ -10,13 +10,14 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PassengerRepository extends JpaRepository<Passenger, Long> {
 
     List<Passenger> findAllByTravelIs(Travel travel);
 
-    Passenger findByUserAndTravel(User user, Travel travel);
+    Optional<Passenger> findByUserAndTravel(User user, Travel travel);
 
     boolean existsByUserAndTravel(User user, Travel travel);
 

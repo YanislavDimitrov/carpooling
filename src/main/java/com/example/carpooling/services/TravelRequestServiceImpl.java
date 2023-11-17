@@ -191,6 +191,7 @@ public class TravelRequestServiceImpl implements TravelRequestService {
      * @throws VehicleIsFullException If there are no available spots in the vehicle.
      */
     @Override
+    @Transactional
     public void approveRequest(Travel travel, User editor, User requestCreator) {
         TravelRequest request = travelRequestRepository.findByTravelIsAndPassengerIsAndStatus(travel, requestCreator, TravelRequestStatus.PENDING);
         if (request.getTravel().getDriver() != editor) {
@@ -247,6 +248,7 @@ public class TravelRequestServiceImpl implements TravelRequestService {
      * @throws InvalidOperationException If the travel status is not 'PLANNED.'
      */
     @Override
+    @Transactional
     public void rejectRequestWhenUserIsAlreadyPassenger(Travel travel, User user, User editor) {
         checkIfAttributesExists(travel, editor, user);
         if (!travel.getDriver().equals(editor)) {
@@ -256,13 +258,13 @@ public class TravelRequestServiceImpl implements TravelRequestService {
             throw new InvalidOperationException(INVALID_OPS);
         }
         TravelRequest travelRequest = findByTravelIsAndPassengerIsAndStatus(travel, user, TravelRequestStatus.APPROVED);
-        travelRequest.setStatus(TravelRequestStatus.REJECTED);
-        travelRequestRepository.delete(travelRequest);
+        travelRequest.setStatus(TravelRequestStatus.PENDING);
 
-        travel.setFreeSpots((short) (travel.getFreeSpots() + 1));
-
-        Passenger passenger = passengerRepository.findByUserAndTravel(user, travel);
-        passengerRepository.delete(passenger);
+        Optional<Passenger> passenger = passengerRepository.findByUserAndTravel(user, travel);
+        if (passenger.isPresent()) {
+            passengerRepository.delete(passenger.get());
+            travel.setFreeSpots((short) (travel.getFreeSpots() + 1));
+        }
     }
 
     /**
@@ -324,20 +326,15 @@ public class TravelRequestServiceImpl implements TravelRequestService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void deleteByTravelAndAndPassenger(Travel travel, User user) {
-        if (!travelRepository.existsById(travel.getId())) {
-            throw new EntityNotFoundException(String.format(TRAVEL_NOT_FOUND, travel.getId()));
+    public void deleteByTravelAndPassenger(Travel travel, User user) {
+        Optional<Passenger> passenger = passengerRepository.findByUserAndTravel(user, travel);
+
+        travelRequestRepository.deleteByTravelAndPassenger(travel, user);
+
+        if (passenger.isPresent()) {
+            passengerRepository.delete(passenger.get());
+            travel.setFreeSpots((short) (travel.getFreeSpots() + 1));
         }
-        if (!userRepository.existsById(user.getId())) {
-            throw new EntityNotFoundException(String.format(USER_NOT_FOUND, user.getId()));
-        }
-        boolean isPassenger = passengerRepository.existsByUserAndTravel(user, travel);
-        Passenger passenger = passengerRepository.findByUserAndTravel(user, travel);
-        if (isPassenger) {
-            travelRequestRepository.deleteByTravelAndAndPassenger(travel, user);
-        }
-        passengerRepository.delete(passenger);
-        travel.setFreeSpots((short) (travel.getFreeSpots() + 1));
     }
 
     /**

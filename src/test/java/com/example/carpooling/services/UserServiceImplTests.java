@@ -28,6 +28,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.IOException;
 import java.util.List;
@@ -44,11 +46,14 @@ public class UserServiceImplTests {
     private VehicleRepository vehicleRepository;
     @Mock
     private ValidationService validationService;
+    @Mock
+    private PasswordEncoder passwordEncoder;
     private ModelMapper modelMapper;
     @InjectMocks
     UserServiceImpl userService;
 
     public UserServiceImplTests() {
+        this.passwordEncoder = new BCryptPasswordEncoder();
         this.modelMapper = new ModelMapper();
     }
 
@@ -1047,22 +1052,24 @@ public class UserServiceImplTests {
         Mockito.verify(mockRepository, Mockito.times(1))
                 .save(mockUserLogged);
     }
+
     @Test
-    public void findTopTenDrivers_Should_Invoke_Repository(){
+    public void findTopTenDrivers_Should_Invoke_Repository() {
         //Act
         userService.findTopTenDrivers();
 
         //Assert
-        Mockito.verify(mockRepository,Mockito.times(1))
+        Mockito.verify(mockRepository, Mockito.times(1))
                 .findTopTenDrivers();
     }
+
     @Test
-    public void findTopTenPassengers_Should_Invoke_Repository(){
+    public void findTopTenPassengers_Should_Invoke_Repository() {
         //Act
         userService.findTopTenPassengers();
 
         //Assert
-        Mockito.verify(mockRepository,Mockito.times(1))
+        Mockito.verify(mockRepository, Mockito.times(1))
                 .findTopTenPassengers();
     }
 }

@@ -10,7 +10,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class VehicleCreateDto {
+    @NotEmpty(message = "Vehicle make must not be empty")
     private String make;
+    @NotEmpty(message = "Vehicle model must not be empty")
     private String model;
     private String licencePlateNumber;
     @NotEmpty(message = "Vehicle color must not be empty")

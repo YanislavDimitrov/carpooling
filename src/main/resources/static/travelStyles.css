@@ -13,23 +13,93 @@ body {
 }
 
 #main {
-    padding: 0px 5rem;
+    padding: 1rem 5rem;
+    min-height: 84vh;
+}
+
+#main div{
+    padding-top: .5rem;
 }
 
 /* Style the main content */
 #content {
-    margin: 0px;
+    width: 50%;
+    margin: auto;
     padding: 0px 0px;
     background-color: rgba(255, 255, 255, 0.9);
     border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.4);
+}
+
+#buttons {
+    padding: 0px 0px;
+    border-radius: 10px;
+}
+
+
+#navigation-btns-container{
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    width: 50%;
+    margin: auto;
+    border-radius: 10px;
+}
+
+#toggle-btns-container{
+    width: 50%;
+    margin: auto;
+}
+
+.green{
+    color: #1f5617;
+    font-weight: bold;
+}
+.yellow{
+    color: #c59618;
+    font-weight: bold;
+}
+.red{
+    color: darkred;
+    font-weight: bold;
+}
+.blue{
+    color: darkblue;
+    font-weight: bold;
+}
+
+/* Travel Card */
+.travel-card {
+    border-radius: 8px;
+    padding: 20px;
+    /*margin: 20px;*/
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s;
+    cursor: pointer;
+}
+.bold{
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+.travel-card-content {
+    color: black;
+}
+
+.travel-card-content > * {
+    padding: .3rem;
+    gap: .6rem;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
 }
 
 #infoContainer,
 #information-container {
-    transform: translateX(0);
-    width: 21%;
-    left: 50%;
+    width: 40%;
 }
 
 #toggleButton:hover + #infoContainer,
@@ -41,7 +111,7 @@ body {
 #infoContainer table td,
 #information-container table th,
 #information-container table td {
-    border-radius: 20px; /* Adjust the value to make it more or less oval */
+    border-radius: 15px; /* Adjust the value to make it more or less oval */
 }
 
 #no-passengers, #no-requests {
@@ -106,29 +176,29 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 5px;
+    border: none;
 }
 
 th, td {
-    padding: 12px;
+    padding: 10px;
     text-align: left;
     border-bottom: 1px solid #ccc;
+    border: none;
 }
 
 th {
-    background-color: #f0f0f0;
+    background-color: rgba(255, 255, 255, 0.9);
     font-weight: bold;
+    border: none;
     color: #444;
 }
 
 td {
-    background-color: #fff;
+    background-color: rgba(255, 255, 255, 0.9);
     color: #333;
+    border: none;
 }
 
-/* Add hover effect to table rows */
-tbody tr:hover {
-    background-color: #f5f5f5;
-}
 
 /* Style the buttons */
 .btn {

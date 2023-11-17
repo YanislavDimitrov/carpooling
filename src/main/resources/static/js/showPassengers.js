@@ -4,12 +4,13 @@ const infoContainer = document.getElementById('infoContainer');
 let isInfoVisible = false;
 
 toggleButton.addEventListener('click', () => {
+    const passengersCount = document.getElementsByClassName("passenger").length;
     if (isInfoVisible) {
         infoContainer.style.display = 'none';
-        toggleButton.textContent = 'Show Passengers';
+        toggleButton.innerHTML = 'Show requests ' + '(' + passengersCount + ') ';
     } else {
         infoContainer.style.display = 'block';
-        toggleButton.textContent = 'Hide Passengers';
+        toggleButton.innerHTML = 'Hide passengers ';
     }
     isInfoVisible = !isInfoVisible;
 });

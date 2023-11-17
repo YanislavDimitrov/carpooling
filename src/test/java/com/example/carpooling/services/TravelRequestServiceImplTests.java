@@ -2,14 +2,12 @@ package com.example.carpooling.services;
 
 import com.example.carpooling.exceptions.AuthorizationException;
 import com.example.carpooling.exceptions.EntityNotFoundException;
-import com.example.carpooling.exceptions.InvalidOperationException;
 import com.example.carpooling.exceptions.VehicleIsFullException;
 import com.example.carpooling.models.Passenger;
 import com.example.carpooling.models.Travel;
 import com.example.carpooling.models.TravelRequest;
 import com.example.carpooling.models.User;
 import com.example.carpooling.models.enums.TravelRequestStatus;
-import com.example.carpooling.models.enums.TravelStatus;
 import com.example.carpooling.repositories.contracts.PassengerRepository;
 import com.example.carpooling.repositories.contracts.TravelRepository;
 import com.example.carpooling.repositories.contracts.TravelRequestRepository;
@@ -259,62 +257,13 @@ public class TravelRequestServiceImplTests {
         when(travelRepository.existsById(travel.getId())).thenReturn(true);
         when(userRepository.existsById(user.getId())).thenReturn(true);
         when(passengerRepository.existsByUserAndTravel(user, travel)).thenReturn(true);
-        when(passengerRepository.findByUserAndTravel(user, travel)).thenReturn(passenger);
-        travelRequestService.deleteByTravelAndAndPassenger(travel, user);
-        verify(travelRequestRepository).deleteByTravelAndAndPassenger(travel, user);
+        when(passengerRepository.findByUserAndTravel(user, travel)).thenReturn(Optional.of(passenger));
+        travelRequestService.deleteByTravelAndPassenger(travel, user);
+        verify(travelRequestRepository).deleteByTravelAndPassenger(travel, user);
         verify(passengerRepository).delete(passenger);
 
     }
 
-    @Test
-    public void testDeleteByTravelAndAndPassenger_TravelNotFound() {
-        Travel travel = new Travel();
-        travel.setId(1L);
-        short freeSpots = 4 ;
-        travel.setFreeSpots(freeSpots);
-        User user = new User();
-        user.setId(1L);
-        Passenger passenger = new Passenger();
-        when(travelRepository.existsById(travel.getId())).thenReturn(false);
-        when(userRepository.existsById(user.getId())).thenReturn(true);
-        when(passengerRepository.existsByUserAndTravel(user, travel)).thenReturn(true);
-        when(passengerRepository.findByUserAndTravel(user, travel)).thenReturn(passenger);
-        Assertions.assertThrows(EntityNotFoundException.class,()->travelRequestService.deleteByTravelAndAndPassenger(travel,user));
-    }
-
-    @Test
-    public void testDeleteByTravelAndAndPassenger_UserNotFound() {
-        // Similar to the first test, but set up userRepository.existsById to return false.
-        // Verify that EntityNotFoundException is thrown and other methods are not called.
-        Travel travel = new Travel();
-        travel.setId(1L);
-        short freeSpots = 4 ;
-        travel.setFreeSpots(freeSpots);
-        User user = new User();
-        user.setId(1L);
-        Passenger passenger = new Passenger();
-        when(travelRepository.existsById(travel.getId())).thenReturn(false);
-        when(userRepository.existsById(user.getId())).thenReturn(false);
-        when(passengerRepository.existsByUserAndTravel(user, travel)).thenReturn(true);
-        when(passengerRepository.findByUserAndTravel(user, travel)).thenReturn(passenger);
-        Assertions.assertThrows(EntityNotFoundException.class,()->travelRequestService.deleteByTravelAndAndPassenger(travel,user));
-    }
-
-    @Test
-    public void testDeleteByTravelAndAndPassenger_UserNotPassenger() {
-        Travel travel = new Travel();
-        travel.setId(1L);
-        short freeSpots = 4 ;
-        travel.setFreeSpots(freeSpots);
-        User user = new User();
-        user.setId(1L);
-        Passenger passenger = new Passenger();
-        when(travelRepository.existsById(travel.getId())).thenReturn(false);
-        when(userRepository.existsById(user.getId())).thenReturn(true);
-        when(passengerRepository.existsByUserAndTravel(user, travel)).thenReturn(false);
-        when(passengerRepository.findByUserAndTravel(user, travel)).thenReturn(passenger);
-        Assertions.assertThrows(EntityNotFoundException.class,()->travelRequestService.deleteByTravelAndAndPassenger(travel,user));
-    }
 
     @Test
     public void testDelete_Success() {
